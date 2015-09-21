@@ -34,22 +34,28 @@ php > print_r($dict->toMetaArray());
 Array
 (
     [_type] => BDict
+    [_length] => 34
+    [_size] => 2
     [_data] => Array
         (
             [key1] => Array
                 (
                     [_type] => BList
+                    [_length] => 16
+                    [_size] => 2
                     [_data] => Array
                         (
                             [0] => Array
                                 (
                                     [_type] => BStr
+                                    [_length] => 7
                                     [_data] => hello
                                 )
 
                             [1] => Array
                                 (
                                     [_type] => BStr
+                                    [_length] => 7
                                     [_data] => world
                                 )
 
@@ -60,6 +66,7 @@ Array
             [key2] => Array
                 (
                     [_type] => BInt
+                    [_length] => 4
                     [_data] => 99
                 )
 
