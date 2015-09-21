@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 class BItem : public Php::Base {
     protected:
@@ -218,6 +219,113 @@ class BInt : public BItem {
         BInt &operator+(const int64_t &that) { _value += that; return *this; }
         BInt &operator-(const int64_t &that) { _value -= that; return *this; }
         BInt &operator*(const int64_t &that) { _value *= that; return *this; }
+};
+
+class BList : public BItem {
+    public:
+        std::vector<BItem*> BData;
+
+        /**
+         * C++ constructor and destructor
+         */
+        BList() : BItem() {}
+
+        BList(const BList &that) :
+            BItem(), BData( that.BData ) {}
+
+        BList(const BList *that) :
+            BItem(), BData( that->BData ) {}
+
+        BList(const BItem *that) :
+            BItem(), BData( that->getData() ) {}
+
+        virtual ~BList() {}
+
+        /**
+         * Regular functions
+         */
+        Php::Value getType() const {
+            return "BList";
+        }
+
+        std::unordered_map<std::string, BItem*> getData() const {
+            return BData;
+        }
+
+        Php::Value get(Php::Parameters &params) const {
+            size_t key = params[0];
+            if (key < 0 || key >= BData.size()) {
+                throw Php::Exception("Out of range");
+            }
+
+            BItem *found = BData[key];
+            if (found->getType().stringValue() == "BDict") {
+                BDict *found1 = new BDict(found);
+                return Php::Object(found->getType(), found1);
+            } else if (found->getType().stringValue() == "BList") {
+                BList *found1 = new BList(found);
+                return Php::Object(found->getType(), found1);
+            } else if (found->getType().stringValue() == "BStr") {
+                BStr *found1 = new BStr(found);
+                return Php::Object(found->getType(), found1);
+            } else if (found->getType().stringValue() == "BInt") {
+                BInt *found1 = new BInt(found);
+                return Php::Object(found->getType(), found1);
+            }
+            return (Php::Value)nullptr;
+        }
+
+        void set(Php::Parameters &params) {
+            size_t key = params[0];
+            if (key < 0) {
+                throw Php::Exception("Index of BList should be a positive value");
+            }
+            if (key >= BData.size()) {
+                throw Php::Exception("Out of range, do you mean BList->add() ?");
+            }
+            Php::Value item = params[1];
+            if (!(item.instanceOf("BDict") || item.instanceOf("BList") ||
+                    item.instanceOf("BStr") || item.instanceOf("BInt"))) {
+                throw Php::Exception("Error adding to BList");
+            }
+            BItem *cppItem = (BItem*)item.implementation();
+            if (cppItem->getType().stringValue() == "BDict") {
+                BDict *cppItem1 = (BDict*)item.implementation();
+                BDict *cppItemCpy = new BDict(*cppItem1);
+                BData[key] = cppItemCpy;
+            } else if (cppItem->getType().stringValue() == "BList") {
+                BList *cppItem1 =  (BList*)item.implementation();
+                BList *cppItemCpy = new BList(*cppItem1);
+                BData[key] = cppItemCpy;
+            } else if (cppItem->getType().stringValue() == "BStr") {
+                BStr *cppItem1 = (BStr*)item.implementation();
+                BStr *cppItemCpy = new BStr(*cppItem1);
+                BData[key] = cppItemCpy;
+            } else if (cppItem->getType().stringValue() == "BInt") {
+                BInt *cppItem1 = (BInt*)item.implementation();
+                BInt *cppItemCpy = new BInt(*cppItem1);
+                BData[key] = cppItemCpy;
+            }
+        }
+
+        Php::Value length() {
+            return (int64_t)BData.size();
+        }
+
+        /**
+         * Magic methods
+         */
+        virtual void __construct() {
+            BData.clear();
+        }
+
+        virtual void __destruct() {
+            BData.clear();
+        }
+
+        Php::Value __toString() {
+            return "list testing";
+        }
 };
 
 class BDict : public BItem {
