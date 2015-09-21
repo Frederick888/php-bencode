@@ -64,6 +64,8 @@ class BItem : public Php::Base {
 
         static Php::Value parse(Php::Parameters &params);
 
+        static Php::Value load(Php::Parameters &params);
+
         /**
          * Magic methods
          */
@@ -427,6 +429,30 @@ bool BItem::isSizet(const std::string &intstr) const {
 
 Php::Value BItem::parse(Php::Parameters &params) {
     std::string ben = params[0];
+    size_t pt = 0;
+    if (ben[0] == 'd') {
+        return Php::Object("BDict", BDict::parseD(ben, pt));
+    } else if (ben[0] == 'l') {
+        return Php::Object("BList", BList::parseL(ben, pt));
+    } else if (ben[0] >= '0' && ben[0] <= '9') {
+        return Php::Object("BStr", BStr::parseS(ben, pt));
+    } else if (ben[0] == 'i') {
+        return Php::Object("BInt", BInt::parseI(ben, pt));
+    } else {
+        throw Php::Exception("Error parsing: " + ben[0]);
+    }
+}
+
+Php::Value BItem::load(Php::Parameters &params) {
+    std::string file = params[0];
+    
+    std::ifstream benFile(file);
+    if (!benFile.is_open()) throw Php::Exception("Error opening file");
+
+    std::string ben((std::istreambuf_iterator<char>(benFile)),
+                    (std::istreambuf_iterator<char>()));
+    benFile.close();
+
     size_t pt = 0;
     if (ben[0] == 'd') {
         return Php::Object("BDict", BDict::parseD(ben, pt));
@@ -854,6 +880,9 @@ extern "C" {
         _BItem.method("getType", &BItem::getType, {});
         _BItem.method("parse", &BItem::parse, {
                 Php::ByVal("ben", Php::Type::String, true)
+                });
+        _BItem.method("load", &BItem::load, {
+                Php::ByVal("file", Php::Type::String, true)
                 });
 
         Php::Class<BDict> _BDict("BDict");
