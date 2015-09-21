@@ -265,6 +265,8 @@ class BDict : public BItem {
 
         BItem* getPath(const std::string &key) const;
 
+        Php::Value has(Php::Parameters &params) const;
+
         void set(Php::Parameters &params);
 
         template<typename T>
@@ -330,7 +332,10 @@ class BList : public BItem {
         }
 
         Php::Value get(Php::Parameters &params) const;
+
         BItem* getPath(const std::string &key) const;
+
+        Php::Value has(Php::Parameters &params) const;
 
         void set(Php::Parameters &params);
 
@@ -572,6 +577,15 @@ BItem* BDict::getPath(const std::string &key) const {
     }
 }
 
+Php::Value BDict::has(Php::Parameters &params) const {
+    std::string key = params[0];
+    if (getPath(key) == nullptr) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 void BDict::set(Php::Parameters &params) {
     std::string key = params[0];
 
@@ -788,6 +802,15 @@ BItem* BList::getPath(const std::string &key) const {
     } else throw Php::Exception("Error handling BList");
 }
 
+Php::Value BList::has(Php::Parameters &params) const {
+    std::string key = params[0];
+    if (getPath(key) == nullptr) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 void BList::set(Php::Parameters &params) {
     std::string key = params[0];
     
@@ -982,6 +1005,9 @@ extern "C" {
         _BDict.method("get", &BDict::get, {
                 Php::ByVal("key", Php::Type::String, true)
                 });
+        _BDict.method("has", &BDict::has, {
+                Php::ByVal("key", Php::Type::String, true)
+                });
         _BDict.method("del", &BDict::del, {
                 Php::ByVal("key", Php::Type::String, true)
                 });
@@ -1000,6 +1026,9 @@ extern "C" {
                 Php::ByVal("value", Php::Type::Null, true)
                 });
         _BList.method("get", &BList::get, {
+                Php::ByVal("key", Php::Type::String, true)
+                });
+        _BList.method("has", &BList::has, {
                 Php::ByVal("key", Php::Type::String, true)
                 });
         _BList.method("del", &BList::del, {
