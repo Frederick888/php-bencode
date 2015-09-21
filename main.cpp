@@ -273,6 +273,8 @@ class BDict : public BItem {
 
         Php::Value has(Php::Parameters &params) const;
 
+        bool chas(const std::string &key) const;
+
         void set(Php::Parameters &params);
 
         template<typename T>
@@ -344,6 +346,8 @@ class BList : public BItem {
         BItem* getPath(const std::string &key) const;
 
         Php::Value has(Php::Parameters &params) const;
+
+        bool chas(const std::string &key) const;
 
         void set(Php::Parameters &params);
 
@@ -619,6 +623,14 @@ Php::Value BDict::has(Php::Parameters &params) const {
     }
 }
 
+bool BDict::chas(const std::string &key) const {
+    if (getPath(key) == nullptr) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 void BDict::set(Php::Parameters &params) {
     std::string key = params[0];
 
@@ -655,6 +667,8 @@ void BDict::setPath(const std::string &key, T *BItem) {
     // all parents are ensured, set the item
     if (path == "") {
         BData.erase(field);
+        if (BItem == nullptr)
+            return;
         // make a copy explicitly
         T *item = new T(*BItem);
         BData.insert({field, item});
@@ -698,13 +712,10 @@ void BDict::setPath(const std::string &key, T *BItem) {
 
 Php::Value BDict::del(Php::Parameters &params) {
     std::string key = params[0];
-    auto search = BData.find(key);
-    if (search != BData.end()) {
-        BData.erase(key);
-        return true;
-    } else {
+    if (!chas(key))
         return false;
-    }
+    setPath(key, (BStr*)nullptr);
+    return true;
 }
 
 Php::Value BDict::getKeys() const {
@@ -869,6 +880,14 @@ Php::Value BList::has(Php::Parameters &params) const {
     }
 }
 
+bool BList::chas(const std::string &key) const {
+    if (getPath(key) == nullptr) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 void BList::set(Php::Parameters &params) {
     std::string key = params[0];
     
@@ -905,6 +924,10 @@ void BList::setPath(const std::string &key, T *BItem) {
 
     // all parents are ensured, set the item
     if (path == "") {
+        if (BItem == nullptr) {
+            BData.erase(BData.begin() + ifield);
+            return;
+        }
         // make a copy explicitly
         T *item = new T(*BItem);
         if (ifield < BData.size()) {
@@ -952,10 +975,10 @@ void BList::setPath(const std::string &key, T *BItem) {
 }
 
 Php::Value BList::del(Php::Parameters &params) {
-    size_t key = (int64_t)params[0];
-    if (key < 0 || key >= BData.size())
+    std::string key =  params[0];
+    if (!chas(key))
         return false;
-    BData.erase(BData.begin() + key);
+    setPath(key, (BStr*)nullptr);
     return true;
 }
 
@@ -1116,7 +1139,7 @@ extern "C" {
                 Php::ByVal("key", Php::Type::String, true)
                 });
         _BList.method("del", &BList::del, {
-                Php::ByVal("key", Php::Type::Numeric, true)
+                Php::ByVal("key", Php::Type::String, true)
                 });
         _BList.method("add", &BList::add, {
                 Php::ByVal("value", Php::Type::Null, true)
