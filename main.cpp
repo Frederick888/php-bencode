@@ -1134,7 +1134,9 @@ extern "C" {
         _BStr.method("length", &BStr::length);
         _BStr.method("toMetaArray", &BStr::toMetaArray);
         _BStr.method("__toString", &BStr::__toString);
-        _BStr.method("__construct", &BStr::__construct);
+        _BStr.method("__construct", &BStr::__construct, {
+                Php::ByVal("value", Php::Type::String, false)
+                });
 
         Php::Class<BInt> _BInt("BInt");
         _BInt.extends(_BItem);
@@ -1146,7 +1148,9 @@ extern "C" {
         _BInt.method("length", &BInt::length);
         _BInt.method("toMetaArray", &BInt::toMetaArray);
         _BInt.method("__toString", &BInt::__toString);
-        _BInt.method("__construct", &BInt::__construct);
+        _BInt.method("__construct", &BInt::__construct, {
+                Php::ByVal("value", Php::Type::Numeric, false)
+                });
 
         myExtension.add(std::move(_BItem));
         myExtension.add(std::move(_BDict));
