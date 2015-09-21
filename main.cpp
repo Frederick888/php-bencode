@@ -900,6 +900,7 @@ extern "C" {
                 });
         _BDict.method("getKeys", &BDict::getKeys, {});
         _BDict.method("length", &BDict::length, {});
+        _BDict.method("__toString", &BDict::__toString);
         _BDict.method("__construct", &BDict::__construct);
         _BDict.method("__destruct", &BDict::__destruct);
 
@@ -920,6 +921,7 @@ extern "C" {
                 Php::ByVal("value", Php::Type::Null, true)
                 });
         _BList.method("length", &BList::length, {});
+        _BList.method("__toString", &BList::__toString);
         _BList.method("__construct", &BList::__construct);
         _BList.method("__destruct", &BList::__destruct);
 
@@ -930,6 +932,7 @@ extern "C" {
         _BStr.method("set", &BStr::set, {
                 Php::ByVal("value", Php::Type::String, true)
                 });
+        _BStr.method("__toString", &BStr::__toString);
         _BStr.method("__construct", &BStr::__construct);
 
         Php::Class<BInt> _BInt("BInt");
@@ -939,6 +942,7 @@ extern "C" {
         _BInt.method("set", &BInt::set, {
                 Php::ByVal("value", Php::Type::String, true)
                 });
+        _BInt.method("__toString", &BInt::__toString);
         _BInt.method("__construct", &BInt::__construct);
 
         myExtension.add(std::move(_BItem));
