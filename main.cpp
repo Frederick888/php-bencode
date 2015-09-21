@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 class BItem : public Php::Base {
@@ -52,8 +52,8 @@ class BItem : public Php::Base {
             return;
         }
 
-        virtual std::unordered_map<std::string, BItem*> getDataD() const {
-            std::unordered_map<std::string, BItem*> dummy;
+        virtual std::map<std::string, BItem*> getDataD() const {
+            std::map<std::string, BItem*> dummy;
             return dummy;
         }
 
@@ -238,7 +238,7 @@ class BInt : public BItem {
 
 class BDict : public BItem {
     public:
-        std::unordered_map<std::string, BItem*> BData;
+        std::map<std::string, BItem*> BData;
 
         /**
          * C++ constructor and destructor
@@ -263,7 +263,7 @@ class BDict : public BItem {
             return "BDict";
         }
 
-        std::unordered_map<std::string, BItem*> getDataD() const {
+        std::map<std::string, BItem*> getDataD() const {
             return BData;
         }
 
