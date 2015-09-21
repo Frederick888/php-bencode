@@ -347,9 +347,7 @@ class BList : public BItem {
             BData.clear();
         }
 
-        Php::Value __toString() {
-            return "list testing";
-        }
+        Php::Value __toString() const;
 };
 
 /**
@@ -480,7 +478,7 @@ void BDict::setPath(const std::string &key, T *BItem) {
     if (path == "") {
         BData.erase(field);
         // make a copy explicitly
-        T *item = new T(BItem);
+        T *item = new T(*BItem);
         BData.insert({field, item});
         return;
     }
@@ -495,19 +493,28 @@ void BDict::setPath(const std::string &key, T *BItem) {
         std::string field_n = splitKey(path_n);
         if (isSizet(field_n)) {
             BList *newList = new BList();
+            newList->setPath(path, BItem);
             BData.insert({field, newList});
         } else {
             BDict *newDict = new BDict();
+            newDict->setPath(path, BItem);
             BData.insert({field, newDict});
         }
-    }
-
-    // go to next level
-    auto search = BData.find(field);
-    if (search != BData.end()) {
-        search->second->setPath(path, BItem);
     } else {
-        throw Php::Exception("Error handling BDict");
+        std::string subLevel = BData[field]->getType();
+        if (subLevel == "BList") {
+            BList *sub = new BList(BData[field]);
+            sub->setPath(path, BItem);
+            BData.erase(field);
+            BData.insert({field, sub});
+        } else if (subLevel == "BDict") {
+            BDict *sub = new BDict(BData[field]);
+            sub->setPath(path, BItem);
+            BData.erase(field);
+            BData.insert({field, sub});
+        } else {
+            throw Php::Exception(subLevel + " cannot have childs");
+        }
     }
 }
 
@@ -539,7 +546,19 @@ Php::Value BDict::__toString() const {
     while (iter != BData.end()) {
         BStr key(iter->first);
         retval += key.__toString().stringValue();
-        retval += iter->second->__toString().stringValue();
+        if (iter->second->getType() == "BDict") {
+            BDict *current = new BDict(iter->second);
+            retval += current->__toString().stringValue();
+        } else if (iter->second->getType() == "BList") {
+            BList *current = new BList(iter->second);
+            retval += current->__toString().stringValue();
+        } else if (iter->second->getType() == "BStr") {
+            BStr *current = new BStr(iter->second);
+            retval += current->__toString().stringValue();
+        } else if (iter->second->getType() == "BInt") {
+            BInt *current = new BInt(iter->second);
+            retval += current->__toString().stringValue();
+        }
         ++iter;
     }
     retval += "e";
@@ -609,7 +628,7 @@ void BList::setPath(const std::string &key, T *BItem) {
     // all parents are ensured, set the item
     if (path == "") {
         // make a copy explicitly
-        T *item = new T(BItem);
+        T *item = new T(*BItem);
         if (ifield < BData.size()) {
             BData[ifield] = item;
         } else if (ifield == BData.size()) {
@@ -629,15 +648,29 @@ void BList::setPath(const std::string &key, T *BItem) {
         std::string field_n = splitKey(path_n);
         if (isSizet(field_n)) {
             BList *newList = new BList();
+            newList->setPath(path, BItem);
             BData.push_back(newList);
         } else {
             BDict *newDict = new BDict();
+            newDict->setPath(path, BItem);
             BData.push_back(newDict);
         }
+    } else {
+        std::string subLevel = BData[ifield]->getType();
+        if (subLevel == "BList") {
+            BList *sub = new BList(BData[ifield]);
+            sub->setPath(path, BItem);
+            BData.erase(BData.begin() + ifield);
+            BData.insert(BData.begin() + ifield, sub);
+        } else if (subLevel == "BDict") {
+            BDict *sub = new BDict(BData[ifield]);
+            sub->setPath(path, BItem);
+            BData.erase(BData.begin() + ifield);
+            BData.insert(BData.begin() + ifield, sub);
+        } else {
+            throw Php::Exception(subLevel + " cannot have childs");
+        }
     }
-
-    // go to next level
-    BData[ifield]->setPath(path, BItem);
 }
 
 Php::Value BList::del(Php::Parameters &params) {
@@ -672,6 +705,27 @@ void BList::add(Php::Parameters &params) {
         BInt *cppItemCpy = new BInt(*cppItem1);
         BData.push_back(cppItemCpy);
     }
+}
+
+Php::Value BList::__toString() const {
+    std::string retval = "l";
+    for (size_t i = 0; i < BData.size(); i++) {
+        if (BData[i]->getType() == "BDict") {
+            BDict *current = new BDict(BData[i]);
+            retval += current->__toString().stringValue();
+        } else if (BData[i]->getType() == "BList") {
+            BList *current = new BList(BData[i]);
+            retval += current->__toString().stringValue();
+        } else if (BData[i]->getType() == "BStr") {
+            BStr *current = new BStr(BData[i]);
+            retval += current->__toString().stringValue();
+        } else if (BData[i]->getType() == "BInt") {
+            BInt *current = new BInt(BData[i]);
+            retval += current->__toString().stringValue();
+        }
+    }
+    retval += "e";
+    return retval;
 }
 
 /**
