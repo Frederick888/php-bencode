@@ -36,22 +36,6 @@ class BItem : public Php::Base {
             return (Php::Value)nullptr;
         }
 
-        virtual void set(std::string v) {
-            return;
-        }
-
-        virtual void set(int64_t v) {
-            return;
-        }
-
-        virtual void set(const std::string &vk, const BItem *vv) {
-            return;
-        }
-
-        virtual void setPath(std::string vk, BItem *vv) {
-            return;
-        }
-
         virtual std::map<std::string, BItem*> getDataD() const {
             std::map<std::string, BItem*> dummy;
             return dummy;
@@ -116,13 +100,17 @@ class BStr : public BItem {
             _value = value;
         }
 
+        Php::Value length() const {
+            return (int64_t)(__toString().stringValue().length());
+        }
+
         static BStr* parseS(const std::string &ben, size_t &pt);
 
         /**
          * Magic methods
          */
-        Php::Value __toString() {
-            return numtos(_value.length()) + ":" + _value;
+        Php::Value __toString() const {
+            return numtos(_value.size()) + ":" + _value;
         }
 
         virtual void __construct(Php::Parameters &params) {
@@ -196,12 +184,16 @@ class BInt : public BItem {
             _value = value;
         }
 
+        Php::Value length() const {
+            return (int64_t)(__toString().stringValue().length());
+        }
+
         static BInt* parseI(const std::string &ben, size_t &pt);
 
         /**
          * Magic methods
          */
-        Php::Value __toString() {
+        Php::Value __toString() const {
             return "i" + numtos(_value) + "e";
         }
 
@@ -280,7 +272,11 @@ class BDict : public BItem {
 
         Php::Value getKeys() const;
 
-        Php::Value length() {
+        Php::Value length() const {
+            return (int64_t)(__toString().stringValue().length());
+        }
+
+        Php::Value size() const {
             return (int64_t)BData.size();
         }
 
@@ -342,7 +338,11 @@ class BList : public BItem {
 
         void add(Php::Parameters &params);
 
-        Php::Value length() {
+        Php::Value length() const {
+            return (int64_t)(__toString().stringValue().length());
+        }
+
+        Php::Value size() const {
             return (int64_t)BData.size();
         }
 
@@ -597,7 +597,7 @@ void BDict::setPath(const std::string &key, T *BItem) {
             BData.erase(field);
             BData.insert({field, sub});
         } else {
-            throw Php::Exception(subLevel + " cannot have childs");
+            throw Php::Exception(subLevel + " cannot own childs");
         }
     }
 }
@@ -778,7 +778,7 @@ void BList::setPath(const std::string &key, T *BItem) {
             BData.erase(BData.begin() + ifield);
             BData.insert(BData.begin() + ifield, sub);
         } else {
-            throw Php::Exception(subLevel + " cannot have childs");
+            throw Php::Exception(subLevel + " cannot own childs");
         }
     }
 }
@@ -877,7 +877,7 @@ extern "C" {
         static Php::Extension myExtension("bencode", "1.0");
 
         Php::Class<BItem> _BItem("BItem");
-        _BItem.method("getType", &BItem::getType, {});
+        _BItem.method("getType", &BItem::getType);
         _BItem.method("parse", &BItem::parse, {
                 Php::ByVal("ben", Php::Type::String, true)
                 });
@@ -887,7 +887,7 @@ extern "C" {
 
         Php::Class<BDict> _BDict("BDict");
         _BDict.extends(_BItem);
-        _BDict.method("getType", &BDict::getType, {});
+        _BDict.method("getType", &BDict::getType);
         _BDict.method("set", &BDict::set, {
                 Php::ByVal("key", Php::Type::String, true),
                 Php::ByVal("value", Php::Type::Null, true)
@@ -898,15 +898,16 @@ extern "C" {
         _BDict.method("del", &BDict::del, {
                 Php::ByVal("key", Php::Type::String, true)
                 });
-        _BDict.method("getKeys", &BDict::getKeys, {});
-        _BDict.method("length", &BDict::length, {});
+        _BDict.method("getKeys", &BDict::getKeys);
+        _BDict.method("length", &BDict::length);
+        _BDict.method("size", &BDict::size);
         _BDict.method("__toString", &BDict::__toString);
         _BDict.method("__construct", &BDict::__construct);
         _BDict.method("__destruct", &BDict::__destruct);
 
         Php::Class<BList> _BList("BList");
         _BList.extends(_BItem);
-        _BList.method("getType", &BList::getType, {});
+        _BList.method("getType", &BList::getType);
         _BList.method("set", &BList::set, {
                 Php::ByVal("key", Php::Type::String, true),
                 Php::ByVal("value", Php::Type::Null, true)
@@ -920,28 +921,31 @@ extern "C" {
         _BList.method("add", &BList::add, {
                 Php::ByVal("value", Php::Type::Null, true)
                 });
-        _BList.method("length", &BList::length, {});
+        _BList.method("length", &BList::length);
+        _BList.method("size", &BList::size);
         _BList.method("__toString", &BList::__toString);
         _BList.method("__construct", &BList::__construct);
         _BList.method("__destruct", &BList::__destruct);
 
         Php::Class<BStr> _BStr("BStr");
         _BStr.extends(_BItem);
-        _BStr.method("getType", &BStr::getType, {});
-        _BStr.method("get", &BStr::get, {});
+        _BStr.method("getType", &BStr::getType);
+        _BStr.method("get", &BStr::get);
         _BStr.method("set", &BStr::set, {
                 Php::ByVal("value", Php::Type::String, true)
                 });
+        _BStr.method("length", &BStr::length);
         _BStr.method("__toString", &BStr::__toString);
         _BStr.method("__construct", &BStr::__construct);
 
         Php::Class<BInt> _BInt("BInt");
         _BInt.extends(_BItem);
-        _BInt.method("getType", &BInt::getType, {});
-        _BInt.method("get", &BInt::get, {});
+        _BInt.method("getType", &BInt::getType);
+        _BInt.method("get", &BInt::get);
         _BInt.method("set", &BInt::set, {
                 Php::ByVal("value", Php::Type::String, true)
                 });
+        _BInt.method("length", &BInt::length);
         _BInt.method("__toString", &BInt::__toString);
         _BInt.method("__construct", &BInt::__construct);
 
