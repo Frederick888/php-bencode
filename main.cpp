@@ -108,6 +108,8 @@ class BStr : public BItem {
 
         static BStr* parseS(const std::string &ben, size_t &pt);
 
+        Php::Value toMetaArray() const;
+
         /**
          * Magic methods
          */
@@ -191,6 +193,8 @@ class BInt : public BItem {
         }
 
         static BInt* parseI(const std::string &ben, size_t &pt);
+
+        Php::Value toMetaArray() const;
 
         /**
          * Magic methods
@@ -288,6 +292,8 @@ class BDict : public BItem {
 
         static BDict* parseD(const std::string &ben, size_t &pt);
 
+        Php::Value toMetaArray() const;
+
         /**
          * Magic methods
          */
@@ -357,6 +363,8 @@ class BList : public BItem {
         }
 
         static BList* parseL(const std::string &ben, size_t &pt);
+
+        Php::Value toMetaArray() const;
 
         /**
          * Magic methods
@@ -501,6 +509,13 @@ BStr* BStr::parseS(const std::string &ben, size_t &pt) {
     return retval;
 }
 
+Php::Value BStr::toMetaArray() const {
+    Php::Value retval;
+    retval["_type"] = "BStr";
+    retval["_data"] = _value;
+    return retval;
+}
+
 /**
  * BInt implements
  */
@@ -515,6 +530,13 @@ BInt* BInt::parseI(const std::string &ben, size_t &pt) {
     }
     ++pt;
     BInt *retval = new BInt(std::stoll(strint));
+    return retval;
+}
+
+Php::Value BInt::toMetaArray() const {
+    Php::Value retval;
+    retval["_type"] = "BInt";
+    retval["_data"] = _value;
     return retval;
 }
 
@@ -719,6 +741,31 @@ BDict* BDict::parseD(const std::string &ben, size_t &pt) {
         } else throw Php::Exception("Error parsing BDict");
     }
     ++pt;
+    return retval;
+}
+
+Php::Value BDict::toMetaArray() const {
+    Php::Value retval;
+    retval["_type"] = "BDict";
+    auto iter = BData.begin();
+    while (iter != BData.end()) {
+        std::string key = iter->first;
+        std::string type = iter->second->getType();
+        if (type == "BDict") {
+            BDict *current = new BDict(iter->second);
+            retval["_data"][key] = current->toMetaArray();
+        } else if (type == "BList") {
+            BList *current = new BList(iter->second);
+            retval["_data"][key] = current->toMetaArray();
+        } else if (type == "BStr") {
+            BStr *current = new BStr(iter->second);
+            retval["_data"][key] = current->toMetaArray();
+        } else if (type == "BInt") {
+            BInt *current = new BInt(iter->second);
+            retval["_data"][key] = current->toMetaArray();
+        }
+        ++iter;
+    }
     return retval;
 }
 
@@ -958,6 +1005,28 @@ BList* BList::parseL(const std::string &ben, size_t &pt) {
     return retval;
 }
 
+Php::Value BList::toMetaArray() const {
+    Php::Value retval;
+    retval["_type"] = "BList";
+    for (size_t i = 0; i < BData.size(); i++) {
+        std::string type = BData[i]->getType();
+        if (type == "BDict") {
+            BDict *current = new BDict(BData[i]);
+            retval["_data"][i] = current->toMetaArray();
+        } else if (type == "BList") {
+            BList *current = new BList(BData[i]);
+            retval["_data"][i] = current->toMetaArray();
+        } else if (type == "BStr") {
+            BStr *current = new BStr(BData[i]);
+            retval["_data"][i] = current->toMetaArray();
+        } else if (type == "BInt") {
+            BInt *current = new BInt(BData[i]);
+            retval["_data"][i] = current->toMetaArray();
+        }
+    }
+    return retval;
+}
+
 Php::Value BList::__toString() const {
     std::string retval = "l";
     for (size_t i = 0; i < BData.size(); i++) {
@@ -1028,6 +1097,7 @@ extern "C" {
         _BDict.method("getKeys", &BDict::getKeys);
         _BDict.method("length", &BDict::length);
         _BDict.method("size", &BDict::size);
+        _BDict.method("toMetaArray", &BDict::toMetaArray);
         _BDict.method("__toString", &BDict::__toString);
         _BDict.method("__construct", &BDict::__construct);
         _BDict.method("__destruct", &BDict::__destruct);
@@ -1053,6 +1123,7 @@ extern "C" {
                 });
         _BList.method("length", &BList::length);
         _BList.method("size", &BList::size);
+        _BList.method("toMetaArray", &BList::toMetaArray);
         _BList.method("__toString", &BList::__toString);
         _BList.method("__construct", &BList::__construct);
         _BList.method("__destruct", &BList::__destruct);
@@ -1065,6 +1136,7 @@ extern "C" {
                 Php::ByVal("value", Php::Type::String, true)
                 });
         _BStr.method("length", &BStr::length);
+        _BStr.method("toMetaArray", &BStr::toMetaArray);
         _BStr.method("__toString", &BStr::__toString);
         _BStr.method("__construct", &BStr::__construct);
 
@@ -1076,6 +1148,7 @@ extern "C" {
                 Php::ByVal("value", Php::Type::String, true)
                 });
         _BInt.method("length", &BInt::length);
+        _BInt.method("toMetaArray", &BInt::toMetaArray);
         _BInt.method("__toString", &BInt::__toString);
         _BInt.method("__construct", &BInt::__construct);
 
