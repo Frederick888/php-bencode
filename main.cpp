@@ -62,6 +62,8 @@ class BItem : public Php::Base {
             return dummy;
         }
 
+        static Php::Value parse(Php::Parameters &params);
+
         /**
          * Magic methods
          */
@@ -111,6 +113,8 @@ class BStr : public BItem {
             std::string value = params[0];
             _value = value;
         }
+
+        static BStr* parseS(const std::string &ben, size_t &pt);
 
         /**
          * Magic methods
@@ -189,6 +193,8 @@ class BInt : public BItem {
             int64_t value = params[0];
             _value = value;
         }
+
+        static BInt* parseI(const std::string &ben, size_t &pt);
 
         /**
          * Magic methods
@@ -276,6 +282,8 @@ class BDict : public BItem {
             return (int64_t)BData.size();
         }
 
+        static BDict* parseD(const std::string &ben, size_t &pt);
+
         /**
          * Magic methods
          */
@@ -335,6 +343,8 @@ class BList : public BItem {
         Php::Value length() {
             return (int64_t)BData.size();
         }
+
+        static BList* parseL(const std::string &ben, size_t &pt);
 
         /**
          * Magic methods
@@ -413,6 +423,54 @@ bool BItem::isSizet(const std::string &intstr) const {
         }
     }
     return true;
+}
+
+Php::Value BItem::parse(Php::Parameters &params) {
+    std::string ben = params[0];
+    size_t pt = 0;
+    if (ben[0] == 'd') {
+        return Php::Object("BDict", BDict::parseD(ben, pt));
+    } else if (ben[0] == 'l') {
+        return Php::Object("BList", BList::parseL(ben, pt));
+    } else if (ben[0] >= '0' && ben[0] <= '9') {
+        return Php::Object("BStr", BStr::parseS(ben, pt));
+    } else if (ben[0] == 'i') {
+        return Php::Object("BInt", BInt::parseI(ben, pt));
+    } else {
+        throw Php::Exception("Error parsing: " + ben[0]);
+    }
+}
+
+/**
+ * BStr implements
+ */
+BStr* BStr::parseS(const std::string &ben, size_t &pt) {
+    if (ben[pt] < '0' || ben[pt] > '9')
+        throw Php::Exception("Error parsing BStr");
+    const size_t start = pt;
+    while (ben[pt] >= '0' && ben[pt] <= '9') ++pt;
+    std::string len = ben.substr(start, pt - start);
+    ++pt;
+    BStr *retval = new BStr(ben.substr(pt, std::stoull(len)));
+    pt += std::stoull(len);
+    return retval;
+}
+
+/**
+ * BInt implements
+ */
+BInt* BInt::parseI(const std::string &ben, size_t &pt) {
+    if (ben[pt] != 'i')
+        throw Php::Exception("Error parsing BInt");
+    ++pt;
+    std::string strint = "";
+    while (ben[pt] != 'e') {
+        strint += ben[pt];
+        ++pt;
+    }
+    ++pt;
+    BInt *retval = new BInt(std::stoll(strint));
+    return retval;
 }
 
 /**
@@ -537,6 +595,32 @@ Php::Value BDict::getKeys() const {
         retval[index] = iter->first;
         ++index; ++iter;
     }
+    return retval;
+}
+
+BDict* BDict::parseD(const std::string &ben, size_t &pt) {
+    if (ben[pt] != 'd')
+        throw Php::Exception("Error parsing BDict");
+    ++pt;
+    BDict *retval = new BDict();
+    while (ben[pt] != 'e') {
+        size_t start = pt;
+        while (ben[pt] >= '0' && ben[pt] <= '9') ++pt;
+        std::string len = ben.substr(start, pt - start);
+        ++pt;
+        std::string key = ben.substr(pt, std::stoull(len));
+        pt += std::stoull(len);
+        if (ben[pt] == 'd') {
+            retval->BData.insert({key, BDict::parseD(ben, pt)});
+        } else if (ben[pt] == 'l') {
+            retval->BData.insert({key, BList::parseL(ben, pt)});
+        } else if (ben[pt] >= '0' && ben[pt] <= '9') {
+            retval->BData.insert({key, BStr::parseS(ben, pt)});
+        } else if (ben[pt] == 'i') {
+            retval->BData.insert({key, BInt::parseI(ben, pt)});
+        } else throw Php::Exception("Error parsing BDict");
+    }
+    ++pt;
     return retval;
 }
 
@@ -707,6 +791,26 @@ void BList::add(Php::Parameters &params) {
     }
 }
 
+BList* BList::parseL(const std::string &ben, size_t &pt) {
+    if (ben[pt] != 'l')
+        throw Php::Exception("Error parsing BList");
+    ++pt;
+    BList *retval = new BList();
+    while (ben[pt] != 'e') {
+        if (ben[pt] == 'd') {
+            retval->BData.push_back(BDict::parseD(ben, pt));
+        } else if (ben[pt] == 'l') {
+            retval->BData.push_back(BList::parseL(ben, pt));
+        } else if (ben[pt] >= '0' && ben[pt] <= '9') {
+            retval->BData.push_back(BStr::parseS(ben, pt));
+        } else if (ben[pt] == 'i') {
+            retval->BData.push_back(BInt::parseI(ben, pt));
+        } else throw Php::Exception("Error parsing BDict");
+    }
+    ++pt;
+    return retval;
+}
+
 Php::Value BList::__toString() const {
     std::string retval = "l";
     for (size_t i = 0; i < BData.size(); i++) {
@@ -748,6 +852,9 @@ extern "C" {
 
         Php::Class<BItem> _BItem("BItem");
         _BItem.method("getType", &BItem::getType, {});
+        _BItem.method("parse", &BItem::parse, {
+                Php::ByVal("ben", Php::Type::String, true)
+                });
 
         Php::Class<BDict> _BDict("BDict");
         _BDict.extends(_BItem);
