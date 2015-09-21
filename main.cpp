@@ -356,8 +356,6 @@ class BList : public BItem {
 
         Php::Value del(Php::Parameters &params);
 
-        void add(Php::Parameters &params);
-
         Php::Value length() const {
             return (int64_t)(__toString().stringValue().length());
         }
@@ -936,10 +934,8 @@ void BList::setPath(const std::string &key, T *BItem) {
         T *item = new T(*BItem);
         if (ifield < BData.size()) {
             BData[ifield] = item;
-        } else if (ifield == BData.size()) {
+        } else if (ifield >= BData.size()) {
             BData.push_back(item);
-        } else {
-            throw Php::Exception("the key is too large for the current BList");
         }
         return;
     }
@@ -984,32 +980,6 @@ Php::Value BList::del(Php::Parameters &params) {
         return false;
     setPath(key, (BStr*)nullptr);
     return true;
-}
-
-void BList::add(Php::Parameters &params) {
-    Php::Value item = params[0];
-    if (!(item.instanceOf("BDict") || item.instanceOf("BList") ||
-            item.instanceOf("BStr") || item.instanceOf("BInt"))) {
-        throw Php::Exception("Error adding to BList");
-    }
-    BItem *cppItem = (BItem*)item.implementation();
-    if (cppItem->getType().stringValue() == "BDict") {
-        BDict *cppItem1 = (BDict*)item.implementation();
-        BDict *cppItemCpy = new BDict(*cppItem1);
-        BData.push_back(cppItemCpy);
-    } else if (cppItem->getType().stringValue() == "BList") {
-        BList *cppItem1 =  (BList*)item.implementation();
-        BList *cppItemCpy = new BList(*cppItem1);
-        BData.push_back(cppItemCpy);
-    } else if (cppItem->getType().stringValue() == "BStr") {
-        BStr *cppItem1 = (BStr*)item.implementation();
-        BStr *cppItemCpy = new BStr(*cppItem1);
-        BData.push_back(cppItemCpy);
-    } else if (cppItem->getType().stringValue() == "BInt") {
-        BInt *cppItem1 = (BInt*)item.implementation();
-        BInt *cppItemCpy = new BInt(*cppItem1);
-        BData.push_back(cppItemCpy);
-    }
 }
 
 BList* BList::parseL(const std::string &ben, size_t &pt) {
@@ -1146,9 +1116,6 @@ extern "C" {
                 });
         _BList.method("del", &BList::del, {
                 Php::ByVal("key", Php::Type::String, true)
-                });
-        _BList.method("add", &BList::add, {
-                Php::ByVal("value", Php::Type::Null, true)
                 });
         _BList.method("length", &BList::length);
         _BList.method("size", &BList::size);
