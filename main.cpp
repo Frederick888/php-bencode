@@ -516,6 +516,7 @@ BStr* BStr::parseS(const std::string &ben, size_t &pt) {
 Php::Value BStr::toMetaArray() const {
     Php::Value retval;
     retval["_type"] = "BStr";
+    retval["_length"] = length();
     retval["_data"] = _value;
     return retval;
 }
@@ -540,6 +541,7 @@ BInt* BInt::parseI(const std::string &ben, size_t &pt) {
 Php::Value BInt::toMetaArray() const {
     Php::Value retval;
     retval["_type"] = "BInt";
+    retval["_length"] = length();
     retval["_data"] = _value;
     return retval;
 }
@@ -758,6 +760,8 @@ BDict* BDict::parseD(const std::string &ben, size_t &pt) {
 Php::Value BDict::toMetaArray() const {
     Php::Value retval;
     retval["_type"] = "BDict";
+    retval["_length"] = length();
+    retval["_size"] = size();
     auto iter = BData.begin();
     while (iter != BData.end()) {
         std::string key = iter->first;
@@ -1031,6 +1035,8 @@ BList* BList::parseL(const std::string &ben, size_t &pt) {
 Php::Value BList::toMetaArray() const {
     Php::Value retval;
     retval["_type"] = "BList";
+    retval["_length"] = length();
+    retval["_size"] = size();
     for (size_t i = 0; i < BData.size(); i++) {
         std::string type = BData[i]->getType();
         if (type == "BDict") {
