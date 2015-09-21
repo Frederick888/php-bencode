@@ -263,6 +263,8 @@ class BDict : public BItem {
 
         Php::Value get(Php::Parameters &params) const;
 
+        BItem* getPath(const std::string &key) const;
+
         void set(Php::Parameters &params);
 
         template<typename T>
@@ -328,6 +330,7 @@ class BList : public BItem {
         }
 
         Php::Value get(Php::Parameters &params) const;
+        BItem* getPath(const std::string &key) const;
 
         void set(Php::Parameters &params);
 
@@ -505,24 +508,68 @@ BInt* BInt::parseI(const std::string &ben, size_t &pt) {
 Php::Value BDict::get(Php::Parameters &params) const {
     std::string key = params[0];
 
-    auto search = BData.find(key);
+    BItem *found = getPath(key);
+    if (found == nullptr) {
+        return (Php::Value)nullptr;
+    } else if (found->getType().stringValue() == "BDict") {
+        BDict *found1 = new BDict(found);
+        return Php::Object(found->getType(), found1);
+    } else if (found->getType().stringValue() == "BList") {
+        BList *found1 = new BList(found);
+        return Php::Object(found->getType(), found1);
+    } else if (found->getType().stringValue() == "BStr") {
+        BStr *found1 = new BStr(found);
+        return Php::Object(found->getType(), found1);
+    } else if (found->getType().stringValue() == "BInt") {
+        BInt *found1 = new BInt(found);
+        return Php::Object(found->getType(), found1);
+    }
+    return (Php::Value)nullptr;
+}
+
+BItem* BDict::getPath(const std::string &key) const {
+    std::string path = trimKey(key);
+    std::string field = splitKey(path);
+
+    if (path == "") {
+        auto search = BData.find(field);
+        if(search != BData.end()) {
+            BItem *found = search->second;
+            if (found->getType().stringValue() == "BDict") {
+                BDict *found1 = new BDict(found);
+                return found1;
+            } else if (found->getType().stringValue() == "BList") {
+                BList *found1 = new BList(found);
+                return found1;
+            } else if (found->getType().stringValue() == "BStr") {
+                BStr *found1 = new BStr(found);
+                return found1;
+            } else if (found->getType().stringValue() == "BInt") {
+                BInt *found1 = new BInt(found);
+                return found1;
+            } else throw Php::Exception("Error handling BDict");
+        } else {
+            return nullptr;
+        }
+    }
+
+    auto search = BData.find(field);
     if(search != BData.end()) {
         BItem *found = search->second;
         if (found->getType().stringValue() == "BDict") {
             BDict *found1 = new BDict(found);
-            return Php::Object(found->getType(), found1);
+            return found1->getPath(path);
         } else if (found->getType().stringValue() == "BList") {
             BList *found1 = new BList(found);
-            return Php::Object(found->getType(), found1);
+            return found1->getPath(path);
         } else if (found->getType().stringValue() == "BStr") {
-            BStr *found1 = new BStr(found);
-            return Php::Object(found->getType(), found1);
+            return nullptr;
         } else if (found->getType().stringValue() == "BInt") {
-            BInt *found1 = new BInt(found);
-            return Php::Object(found->getType(), found1);
-        }
+            return nullptr;
+        } else throw Php::Exception("Error handling BDict");
+    } else {
+        return nullptr;
     }
-    return (Php::Value)nullptr;
 }
 
 void BDict::set(Php::Parameters &params) {
@@ -679,13 +726,12 @@ Php::Value BDict::__toString() const {
  * BList implements
  */
 Php::Value BList::get(Php::Parameters &params) const {
-    size_t key = (int64_t)params[0];
-    if (key < 0 || key >= BData.size()) {
-        return (Php::Value)nullptr;
-    }
+    std::string key = params[0];
 
-    BItem *found = BData[key];
-    if (found->getType().stringValue() == "BDict") {
+    BItem *found = getPath(key);
+    if (found == nullptr) {
+        return (Php::Value)nullptr;
+    } else if (found->getType().stringValue() == "BDict") {
         BDict *found1 = new BDict(found);
         return Php::Object(found->getType(), found1);
     } else if (found->getType().stringValue() == "BList") {
@@ -699,6 +745,47 @@ Php::Value BList::get(Php::Parameters &params) const {
         return Php::Object(found->getType(), found1);
     }
     return (Php::Value)nullptr;
+}
+
+BItem* BList::getPath(const std::string &key) const {
+    std::string path = trimKey(key);
+    std::string field = splitKey(path);
+
+    if (!isSizet(field))
+        return nullptr;
+    size_t ifield = std::stoull(field);
+    if (ifield >= BData.size())
+        return nullptr;
+
+    if (path == "") {
+        BItem *found = BData[ifield];
+        if (found->getType().stringValue() == "BDict") {
+            BDict *found1 = new BDict(found);
+            return found1;
+        } else if (found->getType().stringValue() == "BList") {
+            BList *found1 = new BList(found);
+            return found1;
+        } else if (found->getType().stringValue() == "BStr") {
+            BStr *found1 = new BStr(found);
+            return found1;
+        } else if (found->getType().stringValue() == "BInt") {
+            BInt *found1 = new BInt(found);
+            return found1;
+        } else throw Php::Exception("Error handling BList");
+    }
+
+    BItem *found = BData[ifield];
+    if (found->getType().stringValue() == "BDict") {
+        BDict *found1 = new BDict(found);
+        return found1;
+    } else if (found->getType().stringValue() == "BList") {
+        BList *found1 = new BList(found);
+        return found1;
+    } else if (found->getType().stringValue() == "BStr") {
+        return nullptr;
+    } else if (found->getType().stringValue() == "BInt") {
+        return nullptr;
+    } else throw Php::Exception("Error handling BList");
 }
 
 void BList::set(Php::Parameters &params) {
@@ -913,7 +1000,7 @@ extern "C" {
                 Php::ByVal("value", Php::Type::Null, true)
                 });
         _BList.method("get", &BList::get, {
-                Php::ByVal("key", Php::Type::Numeric, true)
+                Php::ByVal("key", Php::Type::String, true)
                 });
         _BList.method("del", &BList::del, {
                 Php::ByVal("key", Php::Type::Numeric, true)
