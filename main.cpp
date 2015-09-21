@@ -50,10 +50,12 @@ class BItem : public Php::Base {
 
         static Php::Value load(Php::Parameters &params);
 
+        void save(Php::Parameters &params) const;
+
         /**
          * Magic methods
          */
-        virtual Php::Value __toString() {
+        virtual Php::Value __toString() const {
             return "this is a BItem";
         }
 };
@@ -473,6 +475,15 @@ Php::Value BItem::load(Php::Parameters &params) {
     } else {
         throw Php::Exception("Error parsing: " + ben[0]);
     }
+}
+
+void BItem::save(Php::Parameters &params) const {
+    std::string file = params[0];
+
+    std::ofstream benFile(file);
+    if (!benFile.is_open()) throw Php::Exception("Error opening file");
+    benFile << this->__toString().stringValue();
+    benFile.close();
 }
 
 /**
@@ -992,6 +1003,9 @@ extern "C" {
                 Php::ByVal("ben", Php::Type::String, true)
                 });
         _BItem.method("load", &BItem::load, {
+                Php::ByVal("file", Php::Type::String, true)
+                });
+        _BItem.method("save", &BItem::save, {
                 Php::ByVal("file", Php::Type::String, true)
                 });
 
