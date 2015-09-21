@@ -29,7 +29,7 @@ NAME				=	bencode
 #	one for each extension. Use this variable to specify this directory.
 #
 
-INI_DIR				=	/etc/php.d
+INI_DIR				=	$(shell php-config --configure-options | sed -r "s/.*--with-config-file-scan-dir=([^ ]*).*/\1/")
 
 
 #
