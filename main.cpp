@@ -9,13 +9,13 @@
 class BItem : public Php::Base {
     protected:
         template<typename T>
-        std::string numtos(const T &value) const {
-            std::string retval;
-            std::stringstream sstream;
-            sstream << value;
-            sstream >> retval;
-            return retval;
-        }
+        std::string numtos(const T &value) const;
+
+        std::string trimKey(const std::string &key) const;
+
+        std::string splitKey(std::string &key) const;
+
+        bool isSizet(const std::string &intstr) const;
 
     public:
         /**
@@ -33,7 +33,7 @@ class BItem : public Php::Base {
         }
 
         virtual Php::Value get() const {
-            return Php::Value();
+            return (Php::Value)nullptr;
         }
 
         virtual void set(std::string v) {
@@ -44,12 +44,21 @@ class BItem : public Php::Base {
             return;
         }
 
-        virtual void set(std::string vk, BItem *vv) {
+        virtual void set(const std::string &vk, const BItem *vv) {
             return;
         }
 
-        virtual std::unordered_map<std::string, BItem*> getData() const {
+        virtual void setPath(std::string vk, BItem *vv) {
+            return;
+        }
+
+        virtual std::unordered_map<std::string, BItem*> getDataD() const {
             std::unordered_map<std::string, BItem*> dummy;
+            return dummy;
+        }
+
+        virtual std::vector<BItem*> getDataL() const {
+            std::vector<BItem*> dummy;
             return dummy;
         }
 
@@ -221,6 +230,66 @@ class BInt : public BItem {
         BInt &operator*(const int64_t &that) { _value *= that; return *this; }
 };
 
+class BDict : public BItem {
+    public:
+        std::unordered_map<std::string, BItem*> BData;
+
+        /**
+         * C++ constructor and destructor
+         */
+        BDict() : BItem() {}
+
+        BDict(const BDict &that) :
+            BItem(), BData( that.BData ) {}
+
+        BDict(const BDict *that) :
+            BItem(), BData( that->BData ) {}
+
+        BDict(const BItem *that) :
+            BItem(), BData( that->getDataD() ) {}
+
+        virtual ~BDict() {}
+
+        /**
+         * Regular functions
+         */
+        Php::Value getType() const {
+            return "BDict";
+        }
+
+        std::unordered_map<std::string, BItem*> getDataD() const {
+            return BData;
+        }
+
+        Php::Value get(Php::Parameters &params) const;
+
+        void set(Php::Parameters &params);
+
+        template<typename T>
+        void setPath(const std::string &key, T *BItem);
+
+        Php::Value del(Php::Parameters &params);
+
+        Php::Value getKeys() const;
+
+        Php::Value length() {
+            return (int64_t)BData.size();
+        }
+
+        /**
+         * Magic methods
+         */
+        virtual void __construct() {
+            BData.clear();
+        }
+
+        virtual void __destruct() {
+            BData.clear();
+        }
+
+        Php::Value __toString() const;
+};
+
 class BList : public BItem {
     public:
         std::vector<BItem*> BData;
@@ -237,7 +306,7 @@ class BList : public BItem {
             BItem(), BData( that->BData ) {}
 
         BList(const BItem *that) :
-            BItem(), BData( that->getData() ) {}
+            BItem(), BData( that->getDataL() ) {}
 
         virtual ~BList() {}
 
@@ -248,65 +317,20 @@ class BList : public BItem {
             return "BList";
         }
 
-        std::unordered_map<std::string, BItem*> getData() const {
+        std::vector<BItem*> getDataL() const {
             return BData;
         }
 
-        Php::Value get(Php::Parameters &params) const {
-            size_t key = params[0];
-            if (key < 0 || key >= BData.size()) {
-                throw Php::Exception("Out of range");
-            }
+        Php::Value get(Php::Parameters &params) const;
 
-            BItem *found = BData[key];
-            if (found->getType().stringValue() == "BDict") {
-                BDict *found1 = new BDict(found);
-                return Php::Object(found->getType(), found1);
-            } else if (found->getType().stringValue() == "BList") {
-                BList *found1 = new BList(found);
-                return Php::Object(found->getType(), found1);
-            } else if (found->getType().stringValue() == "BStr") {
-                BStr *found1 = new BStr(found);
-                return Php::Object(found->getType(), found1);
-            } else if (found->getType().stringValue() == "BInt") {
-                BInt *found1 = new BInt(found);
-                return Php::Object(found->getType(), found1);
-            }
-            return (Php::Value)nullptr;
-        }
+        void set(Php::Parameters &params);
 
-        void set(Php::Parameters &params) {
-            size_t key = params[0];
-            if (key < 0) {
-                throw Php::Exception("Index of BList should be a positive value");
-            }
-            if (key >= BData.size()) {
-                throw Php::Exception("Out of range, do you mean BList->add() ?");
-            }
-            Php::Value item = params[1];
-            if (!(item.instanceOf("BDict") || item.instanceOf("BList") ||
-                    item.instanceOf("BStr") || item.instanceOf("BInt"))) {
-                throw Php::Exception("Error adding to BList");
-            }
-            BItem *cppItem = (BItem*)item.implementation();
-            if (cppItem->getType().stringValue() == "BDict") {
-                BDict *cppItem1 = (BDict*)item.implementation();
-                BDict *cppItemCpy = new BDict(*cppItem1);
-                BData[key] = cppItemCpy;
-            } else if (cppItem->getType().stringValue() == "BList") {
-                BList *cppItem1 =  (BList*)item.implementation();
-                BList *cppItemCpy = new BList(*cppItem1);
-                BData[key] = cppItemCpy;
-            } else if (cppItem->getType().stringValue() == "BStr") {
-                BStr *cppItem1 = (BStr*)item.implementation();
-                BStr *cppItemCpy = new BStr(*cppItem1);
-                BData[key] = cppItemCpy;
-            } else if (cppItem->getType().stringValue() == "BInt") {
-                BInt *cppItem1 = (BInt*)item.implementation();
-                BInt *cppItemCpy = new BInt(*cppItem1);
-                BData[key] = cppItemCpy;
-            }
-        }
+        template<typename T>
+        void setPath(const std::string &key, T *BItem);
+
+        Php::Value del(Php::Parameters &params);
+
+        void add(Php::Parameters &params);
 
         Php::Value length() {
             return (int64_t)BData.size();
@@ -328,102 +352,327 @@ class BList : public BItem {
         }
 };
 
-class BDict : public BItem {
-    public:
-        std::unordered_map<std::string, BItem*> BData;
+/**
+ * BItem implements
+ */
+template<typename T>
+std::string BItem::numtos(const T &value) const {
+    std::string retval;
+    std::stringstream sstream;
+    sstream << value;
+    sstream >> retval;
+    return retval;
+}
 
-        /**
-         * C++ constructor and destructor
-         */
-        BDict() : BItem() {}
+std::string BItem::trimKey(const std::string &key) const {
+    std::string retval = key;
+    while (retval[0] == '/') {
+        retval = retval.substr(1);
+    }
+    while (retval[retval.length() - 1] == '/' && retval[retval.length() - 2] != '\\') {
+        retval = retval.substr(0, retval.length() - 2);
+    }
+    return retval;
+}
 
-        BDict(const BDict &that) :
-            BItem(), BData( that.BData ) {}
-
-        BDict(const BDict *that) :
-            BItem(), BData( that->BData ) {}
-
-        BDict(const BItem *that) :
-            BItem(), BData( that->getData() ) {}
-
-        virtual ~BDict() {}
-
-        /**
-         * Regular functions
-         */
-        Php::Value getType() const {
-            return "BDict";
-        }
-
-        std::unordered_map<std::string, BItem*> getData() const {
-            return BData;
-        }
-
-        Php::Value get(Php::Parameters &params) const {
-            std::string key = params[0];
-
-            auto search = BData.find(key);
-            if(search != BData.end()) {
-                BItem *found = search->second;
-                if (found->getType().stringValue() == "BDict") {
-                    BDict *found1 = new BDict(found);
-                    return Php::Object(found->getType(), found1);
-                } else if (found->getType().stringValue() == "BList") {
-                } else if (found->getType().stringValue() == "BStr") {
-                    BStr *found1 = new BStr(found);
-                    return Php::Object(found->getType(), found1);
-                } else if (found->getType().stringValue() == "BInt") {
-                    BInt *found1 = new BInt(found);
-                    return Php::Object(found->getType(), found1);
+std::string BItem::splitKey(std::string &key) const {
+    // Find the first slash which is not escaped
+    int pos = key.find('/');
+    if (pos > 0) {
+        while (key[pos - 1] == '\\') {
+            if ((size_t)pos == key.length() - 1) {
+                break;
+            } else {
+                pos = key.find('/', pos + 1);
+                if (pos < 0) {
+                    pos = key.length() - 1;
+                    break;
                 }
             }
-            return (Php::Value)nullptr;
         }
+    }
+    // Get key for searching this time and edit key itself
+    std::string searchKey;
+    if (pos < 0 || (size_t)pos == key.length() - 1) {
+        searchKey = key;
+        key = "";
+    } else {
+        searchKey = key.substr(0, pos);
+        key = key.substr(pos + 1);
+    }
+    while (int i = searchKey.find("\\/")) {
+        if (i < 0) break;
+        searchKey.replace(i, 2, "/");
+    }
 
-        void set(Php::Parameters &params) {
-            std::string key = params[0];
-            Php::Value item = params[1];
-            if (!(item.instanceOf("BDict") || item.instanceOf("BList") ||
-                    item.instanceOf("BStr") || item.instanceOf("BInt"))) {
-                throw Php::Exception("Error adding to BDict");
-            }
-            BData.erase(key);
-            BItem *cppItem = (BItem*)item.implementation();
-            if (cppItem->getType().stringValue() == "BDict") {
-                BDict *cppItem1 = (BDict*)item.implementation();
-                BDict *cppItemCpy = new BDict(*cppItem1);
-                BData.insert({key, cppItemCpy});
-            } else if (cppItem->getType().stringValue() == "BList") {
-            } else if (cppItem->getType().stringValue() == "BStr") {
-                BStr *cppItem1 = (BStr*)item.implementation();
-                BStr *cppItemCpy = new BStr(*cppItem1);
-                BData.insert({key, cppItemCpy});
-            } else if (cppItem->getType().stringValue() == "BInt") {
-                BInt *cppItem1 = (BInt*)item.implementation();
-                BInt *cppItemCpy = new BInt(*cppItem1);
-                BData.insert({key, cppItemCpy});
-            }
-        }
+    return searchKey;
+}
 
-        Php::Value length() {
-            return (int64_t)BData.size();
+bool BItem::isSizet(const std::string &intstr) const {
+    for (size_t i = 0; i < intstr.length(); ++i) {
+        if (intstr[i] < '0' || intstr[i] > '9') {
+            return false;
         }
+    }
+    return true;
+}
 
-        /**
-         * Magic methods
-         */
-        virtual void __construct() {
-            BData.clear();
-        }
+/**
+ * BDict implements
+ */
+Php::Value BDict::get(Php::Parameters &params) const {
+    std::string key = params[0];
 
-        virtual void __destruct() {
-            BData.clear();
+    auto search = BData.find(key);
+    if(search != BData.end()) {
+        BItem *found = search->second;
+        if (found->getType().stringValue() == "BDict") {
+            BDict *found1 = new BDict(found);
+            return Php::Object(found->getType(), found1);
+        } else if (found->getType().stringValue() == "BList") {
+            BList *found1 = new BList(found);
+            return Php::Object(found->getType(), found1);
+        } else if (found->getType().stringValue() == "BStr") {
+            BStr *found1 = new BStr(found);
+            return Php::Object(found->getType(), found1);
+        } else if (found->getType().stringValue() == "BInt") {
+            BInt *found1 = new BInt(found);
+            return Php::Object(found->getType(), found1);
         }
+    }
+    return (Php::Value)nullptr;
+}
 
-        Php::Value __toString() {
-            return "dict testing";
+void BDict::set(Php::Parameters &params) {
+    std::string key = params[0];
+
+    Php::Value item = params[1];
+    if (!(item.instanceOf("BDict") || item.instanceOf("BList") ||
+            item.instanceOf("BStr") || item.instanceOf("BInt"))) {
+        throw Php::Exception("Error adding to BDict");
+    }
+    BItem *cppItem = (BItem*)item.implementation();
+    if (cppItem->getType().stringValue() == "BDict") {
+        BDict *cppItem1 = (BDict*)item.implementation();
+        //BDict *cppItemCpy = new BDict(*cppItem1);
+        setPath(key, cppItem1);
+    } else if (cppItem->getType().stringValue() == "BList") {
+        BList *cppItem1 = (BList*)item.implementation();
+        setPath(key, cppItem1);
+    } else if (cppItem->getType().stringValue() == "BStr") {
+        BStr *cppItem1 = (BStr*)item.implementation();
+        setPath(key, cppItem1);
+    } else if (cppItem->getType().stringValue() == "BInt") {
+        BInt *cppItem1 = (BInt*)item.implementation();
+        setPath(key, cppItem1);
+    }
+}
+
+template<typename T>
+void BDict::setPath(const std::string &key, T *BItem) {
+    std::string path = trimKey(key);
+    // according to https://en.wikipedia.org/wiki/Bencode
+    // all keys must be byte strings
+    // so field is treated as a string even it contains only numbers
+    std::string field = splitKey(path);
+
+    // all parents are ensured, set the item
+    if (path == "") {
+        BData.erase(field);
+        // make a copy explicitly
+        T *item = new T(BItem);
+        BData.insert({field, item});
+        return;
+    }
+
+    // path not completely consumed, check the existance of the next level
+    if (BData.count(field) == 0) {
+        // fetch the next field to determin which type to insert
+        // by the way, negative numbers are treated as string here
+        // you can pre-create the parents explicitly at PHP level to avoid
+        //      the auto-decision here
+        std::string path_n = path;
+        std::string field_n = splitKey(path_n);
+        if (isSizet(field_n)) {
+            BList *newList = new BList();
+            BData.insert({field, newList});
+        } else {
+            BDict *newDict = new BDict();
+            BData.insert({field, newDict});
         }
-};
+    }
+
+    // go to next level
+    auto search = BData.find(field);
+    if (search != BData.end()) {
+        search->second->setPath(path, BItem);
+    } else {
+        throw Php::Exception("Error handling BDict");
+    }
+}
+
+Php::Value BDict::del(Php::Parameters &params) {
+    std::string key = params[0];
+    auto search = BData.find(key);
+    if (search != BData.end()) {
+        BData.erase(key);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+Php::Value BDict::getKeys() const {
+    Php::Value retval;
+    size_t index = 0;
+    auto iter = BData.begin();
+    while (iter != BData.end()) {
+        retval[index] = iter->first;
+        ++index; ++iter;
+    }
+    return retval;
+}
+
+Php::Value BDict::__toString() const {
+    std::string retval = "d";
+    auto iter = BData.begin();
+    while (iter != BData.end()) {
+        BStr key(iter->first);
+        retval += key.__toString().stringValue();
+        retval += iter->second->__toString().stringValue();
+        ++iter;
+    }
+    retval += "e";
+    return retval;
+}
+
+/**
+ * BList implements
+ */
+Php::Value BList::get(Php::Parameters &params) const {
+    size_t key = (int64_t)params[0];
+    if (key < 0 || key >= BData.size()) {
+        return (Php::Value)nullptr;
+    }
+
+    BItem *found = BData[key];
+    if (found->getType().stringValue() == "BDict") {
+        BDict *found1 = new BDict(found);
+        return Php::Object(found->getType(), found1);
+    } else if (found->getType().stringValue() == "BList") {
+        BList *found1 = new BList(found);
+        return Php::Object(found->getType(), found1);
+    } else if (found->getType().stringValue() == "BStr") {
+        BStr *found1 = new BStr(found);
+        return Php::Object(found->getType(), found1);
+    } else if (found->getType().stringValue() == "BInt") {
+        BInt *found1 = new BInt(found);
+        return Php::Object(found->getType(), found1);
+    }
+    return (Php::Value)nullptr;
+}
+
+void BList::set(Php::Parameters &params) {
+    std::string key = params[0];
+    
+    Php::Value item = params[1];
+    if (!(item.instanceOf("BDict") || item.instanceOf("BList") ||
+            item.instanceOf("BStr") || item.instanceOf("BInt"))) {
+        throw Php::Exception("Error adding to BList");
+    }
+    BItem *cppItem = (BItem*)item.implementation();
+    if (cppItem->getType().stringValue() == "BDict") {
+        BDict *cppItem1 = (BDict*)item.implementation();
+        //BDict *cppItemCpy = new BDict(*cppItem1);
+        setPath(key, cppItem1);
+    } else if (cppItem->getType().stringValue() == "BList") {
+        BList *cppItem1 =  (BList*)item.implementation();
+        setPath(key, cppItem1);
+    } else if (cppItem->getType().stringValue() == "BStr") {
+        BStr *cppItem1 = (BStr*)item.implementation();
+        setPath(key, cppItem1);
+    } else if (cppItem->getType().stringValue() == "BInt") {
+        BInt *cppItem1 = (BInt*)item.implementation();
+        setPath(key, cppItem1);
+    }
+}
+
+template<typename T>
+void BList::setPath(const std::string &key, T *BItem) {
+    std::string path = trimKey(key);
+    std::string field = splitKey(path);
+    if (!isSizet(field)) {
+        throw Php::Exception("BList only accept unsigned integers as keys");
+    }
+    size_t ifield = std::stoull(field);
+
+    // all parents are ensured, set the item
+    if (path == "") {
+        // make a copy explicitly
+        T *item = new T(BItem);
+        if (ifield < BData.size()) {
+            BData[ifield] = item;
+        } else if (ifield == BData.size()) {
+            BData.push_back(item);
+        } else {
+            throw Php::Exception("the key is too large for the current BList");
+        }
+        return;
+    }
+
+    // path not completely consumed, check the existance of the next level
+    if (ifield > BData.size()) {
+        throw Php::Exception("the key is too large for the current BList");
+    }
+    if (ifield == BData.size()) {
+        std::string path_n = path;
+        std::string field_n = splitKey(path_n);
+        if (isSizet(field_n)) {
+            BList *newList = new BList();
+            BData.push_back(newList);
+        } else {
+            BDict *newDict = new BDict();
+            BData.push_back(newDict);
+        }
+    }
+
+    // go to next level
+    BData[ifield]->setPath(path, BItem);
+}
+
+Php::Value BList::del(Php::Parameters &params) {
+    size_t key = (int64_t)params[0];
+    if (key < 0 || key >= BData.size())
+        return false;
+    BData.erase(BData.begin() + key);
+    return true;
+}
+
+void BList::add(Php::Parameters &params) {
+    Php::Value item = params[0];
+    if (!(item.instanceOf("BDict") || item.instanceOf("BList") ||
+            item.instanceOf("BStr") || item.instanceOf("BInt"))) {
+        throw Php::Exception("Error adding to BList");
+    }
+    BItem *cppItem = (BItem*)item.implementation();
+    if (cppItem->getType().stringValue() == "BDict") {
+        BDict *cppItem1 = (BDict*)item.implementation();
+        BDict *cppItemCpy = new BDict(*cppItem1);
+        BData.push_back(cppItemCpy);
+    } else if (cppItem->getType().stringValue() == "BList") {
+        BList *cppItem1 =  (BList*)item.implementation();
+        BList *cppItemCpy = new BList(*cppItem1);
+        BData.push_back(cppItemCpy);
+    } else if (cppItem->getType().stringValue() == "BStr") {
+        BStr *cppItem1 = (BStr*)item.implementation();
+        BStr *cppItemCpy = new BStr(*cppItem1);
+        BData.push_back(cppItemCpy);
+    } else if (cppItem->getType().stringValue() == "BInt") {
+        BInt *cppItem1 = (BInt*)item.implementation();
+        BInt *cppItemCpy = new BInt(*cppItem1);
+        BData.push_back(cppItemCpy);
+    }
+}
 
 /**
  *  tell the compiler that the get_module is a pure C function
@@ -456,9 +705,33 @@ extern "C" {
         _BDict.method("get", &BDict::get, {
                 Php::ByVal("key", Php::Type::String, true)
                 });
+        _BDict.method("del", &BDict::del, {
+                Php::ByVal("key", Php::Type::String, true)
+                });
+        _BDict.method("getKeys", &BDict::getKeys, {});
         _BDict.method("length", &BDict::length, {});
         _BDict.method("__construct", &BDict::__construct);
         _BDict.method("__destruct", &BDict::__destruct);
+
+        Php::Class<BList> _BList("BList");
+        _BList.extends(_BItem);
+        _BList.method("getType", &BList::getType, {});
+        _BList.method("set", &BList::set, {
+                Php::ByVal("key", Php::Type::String, true),
+                Php::ByVal("value", Php::Type::Null, true)
+                });
+        _BList.method("get", &BList::get, {
+                Php::ByVal("key", Php::Type::Numeric, true)
+                });
+        _BList.method("del", &BList::del, {
+                Php::ByVal("key", Php::Type::Numeric, true)
+                });
+        _BList.method("add", &BList::add, {
+                Php::ByVal("value", Php::Type::Null, true)
+                });
+        _BList.method("length", &BList::length, {});
+        _BList.method("__construct", &BList::__construct);
+        _BList.method("__destruct", &BList::__destruct);
 
         Php::Class<BStr> _BStr("BStr");
         _BStr.extends(_BItem);
@@ -480,6 +753,7 @@ extern "C" {
 
         myExtension.add(std::move(_BItem));
         myExtension.add(std::move(_BDict));
+        myExtension.add(std::move(_BList));
         myExtension.add(std::move(_BStr));
         myExtension.add(std::move(_BInt));
         
