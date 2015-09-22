@@ -98,9 +98,9 @@ LINKER_DEPENDENCIES	=	-lphpcpp
 #	So you can probably leave this as it is
 #
 
-RM				=	rm -rf
+RM				=	rm -f
 CP				=	cp -f
-MKDIR				=	mkdir -p
+MKDIR				=	@mkdir -p
 
 
 #
@@ -114,31 +114,27 @@ MKDIR				=	mkdir -p
 SRCDIR				=	src
 BUILDDIR			=	build
 SOURCES				=	$(shell find $(SRCDIR) -type f -name *.cpp)
-OBJECTS				=	$(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.cpp=.o))
+OBJECTS				=	$(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:%.cpp=%.o))
 
 
 #
 #	From here the build instructions start
 #
 
-all:					$(OBJECTS) $(EXTENSION)
+all:			$(OBJECTS) $(EXTENSION)
 
-$(EXTENSION):				$(OBJECTS) $(BINDIR)
-						$(LINKER) $(LINKER_FLAGS) -o $@ $(OBJECTS) $(LINKER_DEPENDENCIES)
+$(EXTENSION):		$(OBJECTS)
+				$(MKDIR) $(BINDIR)
+				$(LINKER) $(LINKER_FLAGS) -o $@ $(OBJECTS) $(LINKER_DEPENDENCIES)
 
-$(BINDIR):
-						$(MKDIR) $@
-
-$(BUILDDIR)/%.o:			$(SRCDIR)/%.cpp $(BUILDDIR)
-						$(COMPILER) $(COMPILER_FLAGS) $@ $<
-
-$(BUILDDIR):
-						$(MKDIR) $@
+$(OBJECTS):
+				$(MKDIR) $(BUILDDIR)
+				$(COMPILER) $(COMPILER_FLAGS) $@ $(patsubst $(BUILDDIR)/%,$(SRCDIR)/%,$(@:%.o=%.cpp))
 
 install:		
-						$(CP) $(EXTENSION) $(EXTENSION_DIR)
-						$(CP) $(INI) $(INI_DIR)
+				$(CP) $(EXTENSION) $(EXTENSION_DIR)
+				$(CP) $(INI) $(INI_DIR)
 				
 clean:
-						$(RM) $(BUILDDIR)/ $(BINDIR)/
-
+				$(RM) $(OBJECTS)
+				$(RM) $(EXTENSION)
