@@ -53,6 +53,7 @@ extern "C" {
         _BDict.method("getKeys", &BDict::getKeys);
         _BDict.method("length", &BDict::length);
         _BDict.method("size", &BDict::size);
+        _BDict.method("toArray", &BDict::toArray);
         _BDict.method("toMetaArray", &BDict::toMetaArray);
         _BDict.method("__toString", &BDict::__toString);
         _BDict.method("__construct", &BDict::__construct);
@@ -76,6 +77,7 @@ extern "C" {
                 });
         _BList.method("length", &BList::length);
         _BList.method("size", &BList::size);
+        _BList.method("toArray", &BList::toArray);
         _BList.method("toMetaArray", &BList::toMetaArray);
         _BList.method("__toString", &BList::__toString);
         _BList.method("__construct", &BList::__construct);
@@ -89,6 +91,7 @@ extern "C" {
                 Php::ByVal("value", Php::Type::String, true)
                 });
         _BStr.method("length", &BStr::length);
+        _BStr.method("toArray", &BStr::toArray);
         _BStr.method("toMetaArray", &BStr::toMetaArray);
         _BStr.method("__toString", &BStr::__toString);
         _BStr.method("__construct", &BStr::__construct, {
@@ -103,6 +106,7 @@ extern "C" {
                 Php::ByVal("value", Php::Type::String, true)
                 });
         _BInt.method("length", &BInt::length);
+        _BInt.method("toArray", &BInt::toArray);
         _BInt.method("toMetaArray", &BInt::toMetaArray);
         _BInt.method("__toString", &BInt::__toString);
         _BInt.method("__construct", &BInt::__construct, {

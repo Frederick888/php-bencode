@@ -44,6 +44,8 @@ class BStr : public BItem {
 
         static BStr* parseS(const std::string &ben, size_t &pt);
 
+        Php::Value toArray() const;
+
         Php::Value toMetaArray() const;
 
         /**
