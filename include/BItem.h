@@ -11,7 +11,6 @@
 
 class BItem : public Php::Base {
     protected:
-        //TODO figure out why can't this be placed in source (causing undefined symbol at runtime)
         template<typename T>
         std::string numtos(const T &value) const {
             std::string retval;
