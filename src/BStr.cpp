@@ -51,6 +51,10 @@ BStr* BStr::parseS(const std::string &ben, size_t &pt) {
     return retval;
 }
 
+Php::Value BStr::toArray() const {
+    return _value;
+}
+
 Php::Value BStr::toMetaArray() const {
     Php::Value retval;
     retval["_type"] = "BStr";

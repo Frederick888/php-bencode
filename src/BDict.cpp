@@ -231,6 +231,30 @@ BDict* BDict::parseD(const std::string &ben, size_t &pt) {
     return retval;
 }
 
+Php::Value BDict::toArray() const {
+    Php::Value retval;
+    auto iter = BData.begin();
+    while (iter != BData.end()) {
+        std::string key = iter->first;
+        std::string type = iter->second->getType();
+        if (type == "BDict") {
+            BDict *current = new BDict(iter->second);
+            retval[key] = current->toArray();
+        } else if (type == "BList") {
+            BList *current = new BList(iter->second);
+            retval[key] = current->toArray();
+        } else if (type == "BStr") {
+            BStr *current = new BStr(iter->second);
+            retval[key] = current->toArray();
+        } else if (type == "BInt") {
+            BInt *current = new BInt(iter->second);
+            retval[key] = current->toArray();
+        }
+        ++iter;
+    }
+    return retval;
+}
+
 Php::Value BDict::toMetaArray() const {
     Php::Value retval;
     retval["_type"] = "BDict";

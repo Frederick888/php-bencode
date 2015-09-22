@@ -44,6 +44,10 @@ BInt* BInt::parseI(const std::string &ben, size_t &pt) {
     return retval;
 }
 
+Php::Value BInt::toArray() const {
+    return _value;
+}
+
 Php::Value BInt::toMetaArray() const {
     Php::Value retval;
     retval["_type"] = "BInt";

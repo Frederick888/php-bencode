@@ -215,6 +215,27 @@ BList* BList::parseL(const std::string &ben, size_t &pt) {
     return retval;
 }
 
+Php::Value BList::toArray() const {
+    Php::Value retval;
+    for (size_t i = 0; i < BData.size(); i++) {
+        std::string type = BData[i]->getType();
+        if (type == "BDict") {
+            BDict *current = new BDict(BData[i]);
+            retval[i] = current->toArray();
+        } else if (type == "BList") {
+            BList *current = new BList(BData[i]);
+            retval[i] = current->toArray();
+        } else if (type == "BStr") {
+            BStr *current = new BStr(BData[i]);
+            retval[i] = current->toArray();
+        } else if (type == "BInt") {
+            BInt *current = new BInt(BData[i]);
+            retval[i] = current->toArray();
+        }
+    }
+    return retval;
+}
+
 Php::Value BList::toMetaArray() const {
     Php::Value retval;
     retval["_type"] = "BList";

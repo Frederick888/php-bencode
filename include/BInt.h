@@ -44,6 +44,8 @@ class BInt : public BItem {
 
         static BInt* parseI(const std::string &ben, size_t &pt);
 
+        Php::Value toArray() const;
+
         Php::Value toMetaArray() const;
 
         /**
