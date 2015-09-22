@@ -28,7 +28,7 @@ make install
 
 Basic Usage
 ===
-***Example 1*** Parsing a string directly.
+***Example 1*** Parsing a string directly
 ```
 php > $dict = BItem::parse("d4:key1l5:hello5:worlde4:key2i99ee");
 php > print_r($dict->toMetaArray());
@@ -77,4 +77,32 @@ php > $dict=BItem::load("/path/sample.torrent");
 php > $dict->save("/path/sample_copy.torrent");
 php > echo md5_file("/path/sample.torrent") === md5_file("/path/sample_copy.torrent");
 1
+```
+***Example 3*** Set/delete a path
+```
+php > $dict = new BDict();
+php > $dict->set('key\/1/0', new BStr('hello'));    // Escape the slash if you need it in a key
+php > $dict->set('key\/1/5', new BStr('world'));
+php > print_r($dict->toArray());
+Array
+(
+    [key/1] => Array
+        (
+            [0] => hello
+            [1] => world
+        )
+
+)
+php > echo $dict->del('key2');      // inexistent key
+php > echo $dict->del('key\/1/1');
+1
+php > print_r($dict->toArray());
+Array
+(
+    [key/1] => Array
+        (
+            [0] => hello
+        )
+
+)
 ```
