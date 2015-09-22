@@ -11,8 +11,15 @@
 
 class BItem : public Php::Base {
     protected:
+        //TODO figure out why can't this be placed in source (causing undefined symbol at runtime)
         template<typename T>
-        std::string numtos(const T &value) const;
+        std::string numtos(const T &value) const {
+            std::string retval;
+            std::stringstream sstream;
+            sstream << value;
+            sstream >> retval;
+            return retval;
+        }
 
         std::string trimKey(const std::string &key) const;
 

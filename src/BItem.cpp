@@ -25,15 +25,6 @@ std::vector<BItem*> BItem::getDataL() const {
     return dummy;
 }
 
-template<typename T>
-std::string BItem::numtos(const T &value) const {
-    std::string retval;
-    std::stringstream sstream;
-    sstream << value;
-    sstream >> retval;
-    return retval;
-}
-
 std::string BItem::trimKey(const std::string &key) const {
     std::string retval = key;
     while (retval[0] == '/') {
