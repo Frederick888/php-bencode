@@ -1,3 +1,14 @@
+#ifndef HEADER_BITEM
+#define HEADER_BITEM
+
+#include <phpcpp.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <map>
+#include <vector>
+
 class BItem : public Php::Base {
     protected:
         template<typename T>
@@ -39,3 +50,5 @@ class BItem : public Php::Base {
          */
         virtual Php::Value __toString() const;
 };
+
+#endif

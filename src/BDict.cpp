@@ -1,7 +1,3 @@
-#include <phpcpp.h>
-#include <string>
-#include <map>
-
 #include "BItem.h"
 #include "BStr.h"
 #include "BInt.h"

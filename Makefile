@@ -51,8 +51,9 @@ EXTENSION_DIR		=	$(shell php-config --extension-dir)
 #	a certain extension to them (.so or .ini)
 #
 
-EXTENSION 			=	${NAME}.so
-INI 				=	${NAME}.ini
+BINDIR				=	bin
+EXTENSION 			=	$(BINDIR)/$(NAME).so
+INI 				=	doc/$(NAME).ini
 
 
 #
@@ -85,7 +86,7 @@ LINKER				=	g++
 #	with a list of all flags that should be passed to the linker.
 #
 
-COMPILER_FLAGS		=	-Wall -c -O2 -std=c++11 -fPIC -o 
+COMPILER_FLAGS		=	-Wall -c -O2 -std=c++11 -fPIC -I include -o 
 LINKER_FLAGS		=	-shared
 LINKER_DEPENDENCIES	=	-lphpcpp
 
@@ -97,8 +98,8 @@ LINKER_DEPENDENCIES	=	-lphpcpp
 #	So you can probably leave this as it is
 #
 
-RM					=	rm -f
-CP					=	cp -f
+RM				=	rm -rf
+CP				=	cp -f
 MKDIR				=	mkdir -p
 
 
@@ -110,26 +111,34 @@ MKDIR				=	mkdir -p
 #	file, with the .cpp extension being replaced by .o.
 #
 
-SOURCES				=	$(wildcard *.cpp)
-OBJECTS				=	$(SOURCES:%.cpp=%.o)
+SRCDIR				=	src
+BUILDDIR			=	build
+SOURCES				=	$(shell find $(SRCDIR) -type f -name *.cpp)
+OBJECTS				=	$(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.cpp=.o))
 
 
 #
 #	From here the build instructions start
 #
 
-all:					${OBJECTS} ${EXTENSION}
+all:					$(OBJECTS) $(EXTENSION)
 
-${EXTENSION}:			${OBJECTS}
-						${LINKER} ${LINKER_FLAGS} -o $@ ${OBJECTS} ${LINKER_DEPENDENCIES}
+$(EXTENSION):				$(OBJECTS) $(BINDIR)
+						$(LINKER) $(LINKER_FLAGS) -o $@ $(OBJECTS) $(LINKER_DEPENDENCIES)
 
-${OBJECTS}:
-						${COMPILER} ${COMPILER_FLAGS} $@ ${@:%.o=%.cpp}
+$(BINDIR):
+						$(MKDIR) $@
+
+$(BUILDDIR)/%.o:			$(SRCDIR)/%.cpp $(BUILDDIR)
+						$(COMPILER) $(COMPILER_FLAGS) $@ $<
+
+$(BUILDDIR):
+						$(MKDIR) $@
 
 install:		
-						${CP} ${EXTENSION} ${EXTENSION_DIR}
-						${CP} ${INI} ${INI_DIR}
+						$(CP) $(EXTENSION) $(EXTENSION_DIR)
+						$(CP) $(INI) $(INI_DIR)
 				
 clean:
-						${RM} ${EXTENSION} ${OBJECTS}
+						$(RM) $(BUILDDIR)/ $(BINDIR)/
 

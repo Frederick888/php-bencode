@@ -1,11 +1,3 @@
-#include <phpcpp.h>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <map>
-#include <vector>
-
 #include "BItem.h"
 #include "BStr.h"
 #include "BInt.h"

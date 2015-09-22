@@ -1,3 +1,14 @@
+#ifndef HEADER_BSTR
+#define HEADER_BSTR
+
+#include <phpcpp.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <map>
+#include <vector>
+
 class BStr : public BItem {
     public:
         std::string _value;
@@ -65,3 +76,5 @@ class BStr : public BItem {
 
         BStr &operator+(const std::string &that) { _value += that; return *this; }
 };
+
+#endif

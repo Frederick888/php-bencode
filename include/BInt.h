@@ -1,3 +1,14 @@
+#ifndef HEADER_BINT
+#define HEADER_BINT
+
+#include <phpcpp.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <map>
+#include <vector>
+
 class BInt : public BItem {
     public:
         int64_t _value;
@@ -69,3 +80,5 @@ class BInt : public BItem {
         BInt &operator-(const int64_t &that) { _value -= that; return *this; }
         BInt &operator*(const int64_t &that) { _value *= that; return *this; }
 };
+
+#endif

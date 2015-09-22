@@ -1,29 +1,40 @@
-class BList : public BItem {
+#ifndef HEADER_BDICT
+#define HEADER_BDICT
+
+#include <phpcpp.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <map>
+#include <vector>
+
+class BDict : public BItem {
     public:
-        std::vector<BItem*> BData;
+        std::map<std::string, BItem*> BData;
 
         /**
          * C++ constructor and destructor
          */
-        BList() : BItem() {}
+        BDict() : BItem() {}
 
-        BList(const BList &that) :
+        BDict(const BDict &that) :
             BItem(), BData( that.BData ) {}
 
-        BList(const BList *that) :
+        BDict(const BDict *that) :
             BItem(), BData( that->BData ) {}
 
-        BList(const BItem *that) :
-            BItem(), BData( that->getDataL() ) {}
+        BDict(const BItem *that) :
+            BItem(), BData( that->getDataD() ) {}
 
-        virtual ~BList() {}
+        virtual ~BDict() {}
 
         /**
          * Regular functions
          */
         Php::Value getType() const;
 
-        std::vector<BItem*> getDataL() const;
+        std::map<std::string, BItem*> getDataD() const;
 
         Php::Value get(Php::Parameters &params) const;
 
@@ -40,11 +51,13 @@ class BList : public BItem {
 
         Php::Value del(Php::Parameters &params);
 
+        Php::Value getKeys() const;
+
         Php::Value length() const;
 
         Php::Value size() const;
 
-        static BList* parseL(const std::string &ben, size_t &pt);
+        static BDict* parseD(const std::string &ben, size_t &pt);
 
         Php::Value toMetaArray() const;
 
@@ -57,3 +70,5 @@ class BList : public BItem {
 
         Php::Value __toString() const;
 };
+
+#endif

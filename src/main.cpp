@@ -1,5 +1,3 @@
-#include <phpcpp.h>
-
 #include "BItem.h"
 #include "BStr.h"
 #include "BInt.h"
