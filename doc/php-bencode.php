@@ -152,6 +152,19 @@ class BDict extends BItem
     }
 
     /**
+     * @return array Return the array without meta
+     *
+     * convert the Bencode to a simple PHP array
+     * notice that it may cause data loss,
+     * so DO NOT use this function if you're not pretty sure about the content
+     *
+     * @see BDict::toMetaArray()
+     */
+    function toArray()
+    {
+    }
+
+    /**
      * @return array Return the meta array
      *
      * in a meta array, each single element will be described as a array
@@ -263,6 +276,14 @@ class BList extends BItem
     }
 
     /**
+     * @return array Return the array without meta
+     * @see BDict::toArray()
+     */
+    function toArray()
+    {
+    }
+
+    /**
      * @return array Return the meta array
      * @see BDict::toMetaArray()
      */
@@ -330,6 +351,16 @@ class BStr extends BItem
     }
 
     /**
+     * @return string This will simply return the contained value
+     *
+     * this is somehow useless to PHP developers
+     * it will be called mostly when recursively converting a BDict or BList to array
+     */
+    function toArray()
+    {
+    }
+
+    /**
      * @return array
      * @see BDict::toMetaArray()
      */
@@ -352,6 +383,11 @@ class BStr extends BItem
     }
 }
 
+/**
+ * Class BInt
+ *
+ * Integer of Bencode.
+ */
 class BInt extends BItem
 {
     /**
@@ -379,6 +415,16 @@ class BInt extends BItem
      * @return int
      */
     function length()
+    {
+    }
+
+    /**
+     * @return int This will simply return the contained value
+     *
+     * this is somehow useless to PHP developers
+     * it will be called mostly when recursively converting a BDict or BList to array
+     */
+    function toArray()
     {
     }
 
