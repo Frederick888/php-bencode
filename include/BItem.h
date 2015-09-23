@@ -20,7 +20,11 @@ class BItem : public Php::Base {
             return retval;
         }
 
-        std::string trimKey(const std::string &key) const;
+        std::string trimKey(std::string key) const;
+
+        std::string escapeKey(std::string key) const;
+
+        std::string parseKey(std::string key) const;
 
         std::string splitKey(std::string &key) const;
 

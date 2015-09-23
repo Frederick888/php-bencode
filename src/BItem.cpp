@@ -25,46 +25,50 @@ std::vector<BItem*> BItem::getDataL() const {
     return dummy;
 }
 
-std::string BItem::trimKey(const std::string &key) const {
-    std::string retval = key;
-    while (retval[0] == '/') {
-        retval = retval.substr(1);
+std::string BItem::trimKey(std::string key) const {
+    while (key[0] == '/') {
+        key = key.substr(1);
     }
-    while (retval[retval.length() - 1] == '/' && retval[retval.length() - 2] != '\\') {
-        retval = retval.substr(0, retval.length() - 2);
+    while (key[key.length() - 1] == '/' && key[key.length() - 2] != '\\') {
+        key.pop_back();
     }
-    return retval;
+    return key;
+}
+
+std::string BItem::escapeKey(std::string key) const {
+    for (size_t i = 0; i < key.length(); i++) {
+        if (key[i] == '/') key.replace(i++, 1, "\\/");
+    }
+    return key;
+}
+
+std::string BItem::parseKey(std::string key) const {
+    for (size_t i = 0; i < key.length(); i++) {
+        if (key.substr(i, 2) == "\\/") key.replace(i, 2, "/");
+    }
+    return key;
 }
 
 std::string BItem::splitKey(std::string &key) const {
     // Find the first slash which is not escaped
-    int pos = key.find('/');
-    if (pos > 0) {
-        while (key[pos - 1] == '\\') {
-            if ((size_t)pos == key.length() - 1) {
-                break;
-            } else {
-                pos = key.find('/', pos + 1);
-                if (pos < 0) {
-                    pos = key.length() - 1;
-                    break;
-                }
-            }
+    size_t pos = key.find('/');
+    while (pos < key.length() && key[pos - 1] == '\\') {
+        if (pos == key.length() - 1) {
+            break;
+        } else {
+            pos = key.find('/', pos + 1);
         }
     }
     // Get key for searching this time and edit key itself
     std::string searchKey;
-    if (pos < 0 || (size_t)pos == key.length() - 1) {
+    if (pos >= key.length() - 1) {
         searchKey = key;
         key = "";
     } else {
         searchKey = key.substr(0, pos);
         key = key.substr(pos + 1);
     }
-    while (int i = searchKey.find("\\/")) {
-        if (i < 0) break;
-        searchKey.replace(i, 2, "/");
-    }
+    searchKey = parseKey(searchKey);
 
     return searchKey;
 }
