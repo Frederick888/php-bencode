@@ -140,7 +140,7 @@ Php::Value BItem::search(Php::Parameters &params) const {
     std::vector<std::string> pathStack;
     std::vector<std::string> result;
     csearch(needle, mode[0], pathStack, result);
-    Php::Value presult;
+    Php::Value presult; presult[0] = ""; presult.unset(0);
     for (size_t i = 0; i < result.size(); i++) presult[i] = result[i];
     return presult;
 }
