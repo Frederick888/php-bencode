@@ -181,6 +181,15 @@ class BDict extends BItem
     }
 
     /**
+     * @param string $needle The string or integer to search
+     * @param string $mode k[ey], s[tring] or i[nt]
+     * @return array The result array containing a series of paths
+     */
+    function search($needle, $mode)
+    {
+    }
+
+    /**
      * @return string The encoded content
      *
      * this magic method will be called implicitly when being converted to string
@@ -288,6 +297,15 @@ class BList extends BItem
      * @see BDict::toMetaArray()
      */
     function toMetaArray()
+    {
+    }
+
+    /**
+     * @param string $needle The string or integer to search
+     * @param string $mode k[ey], s[tring] or i[nt]
+     * @return array The result array containing a series of paths
+     */
+    function search($needle, $mode)
     {
     }
 
