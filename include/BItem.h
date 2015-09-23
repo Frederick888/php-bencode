@@ -55,6 +55,11 @@ class BItem : public Php::Base {
 
         void save(Php::Parameters &params) const;
 
+        Php::Value search(Php::Parameters &params) const;
+
+        virtual void csearch(const std::string &needle, const char &mode,
+                            std::vector<std::string> &pathStack, std::vector<std::string> &result) const;
+
         /**
          * Magic methods
          */

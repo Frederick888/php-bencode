@@ -61,6 +61,9 @@ class BList : public BItem {
 
         Php::Value toMetaArray() const;
 
+        void csearch(const std::string &needle, const char &mode,
+                    std::vector<std::string> &pathStack, std::vector<std::string> &result) const;
+
         /**
          * Magic methods
          */

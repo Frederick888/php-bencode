@@ -33,6 +33,10 @@ extern "C" {
         _BItem.method("save", &BItem::save, {
                 Php::ByVal("file", Php::Type::String, true)
                 });
+        _BItem.method("search", &BItem::search, {
+                Php::ByVal("needle", Php::Type::String, true),
+                Php::ByVal("mode", Php::Type::String, true)
+                });
 
         Php::Class<BDict> _BDict("BDict");
         _BDict.extends(_BItem);

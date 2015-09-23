@@ -56,6 +56,17 @@ Php::Value BInt::toMetaArray() const {
     return retval;
 }
 
+void BInt::csearch(const std::string &needle, const char &mode,
+                    std::vector<std::string> &pathStack, std::vector<std::string> &result) const {
+    if (mode != 'i') return;
+    if (numtos(_value) == needle) {
+        std::string path;
+        for (size_t i = 0; i < pathStack.size(); i++)
+            path += pathStack[i];
+        result.push_back(trimKey(path));
+    }
+}
+
 Php::Value BInt::__toString() const {
     return "i" + numtos(_value) + "e";
 }

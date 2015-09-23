@@ -282,6 +282,35 @@ Php::Value BDict::toMetaArray() const {
     return retval;
 }
 
+void BDict::csearch(const std::string &needle, const char &mode,
+                    std::vector<std::string> &pathStack, std::vector<std::string> &result) const {
+    auto iter = BData.begin();
+    while (iter != BData.end()) {
+        pathStack.push_back(escapeKey(iter->first) + "/");
+        if (mode == 'k' && iter->first == needle) {
+            std::string path;
+            for (size_t i = 0; i < pathStack.size(); i++)
+                path += pathStack[i];
+            result.push_back(trimKey(path));
+        }
+        if (iter->second->getType() == "BDict") {
+            BDict *current = new BDict(iter->second);
+            current->csearch(needle, mode, pathStack, result);
+        } else if (iter->second->getType() == "BList") {
+            BList *current = new BList(iter->second);
+            current->csearch(needle, mode, pathStack, result);
+        } else if (iter->second->getType() == "BStr") {
+            BStr *current = new BStr(iter->second);
+            current->csearch(needle, mode, pathStack, result);
+        } else if (iter->second->getType() == "BInt") {
+            BInt *current = new BInt(iter->second);
+            current->csearch(needle, mode, pathStack, result);
+        }
+        pathStack.pop_back();
+        ++iter;
+    }
+}
+
 Php::Value BDict::__toString() const {
     std::string retval = "d";
     auto iter = BData.begin();

@@ -260,6 +260,27 @@ Php::Value BList::toMetaArray() const {
     return retval;
 }
 
+void BList::csearch(const std::string &needle, const char &mode,
+                    std::vector<std::string> &pathStack, std::vector<std::string> &result) const {
+    for (size_t i = 0; i < BData.size(); i++) {
+        pathStack.push_back(numtos(i) + "/");
+        if (BData[i]->getType() == "BDict") {
+            BDict *current = new BDict(BData[i]);
+            current->csearch(needle, mode, pathStack, result);
+        } else if (BData[i]->getType() == "BList") {
+            BList *current = new BList(BData[i]);
+            current->csearch(needle, mode, pathStack, result);
+        } else if (BData[i]->getType() == "BStr") {
+            BStr *current = new BStr(BData[i]);
+            current->csearch(needle, mode, pathStack, result);
+        } else if (BData[i]->getType() == "BInt") {
+            BInt *current = new BInt(BData[i]);
+            current->csearch(needle, mode, pathStack, result);
+        }
+        pathStack.pop_back();
+    }
+}
+
 Php::Value BList::__toString() const {
     std::string retval = "l";
     for (size_t i = 0; i < BData.size(); i++) {

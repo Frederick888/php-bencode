@@ -131,6 +131,25 @@ void BItem::save(Php::Parameters &params) const {
     benFile.close();
 }
 
+Php::Value BItem::search(Php::Parameters &params) const {
+    std::string needle = params[0];
+    std::string mode = params[1];
+    if (mode[0] != 's' && mode[0] != 'i' && mode[0] != 'k') {
+        throw Php::Exception("Unsupported mode");
+    }
+    std::vector<std::string> pathStack;
+    std::vector<std::string> result;
+    csearch(needle, mode[0], pathStack, result);
+    Php::Value presult;
+    for (size_t i = 0; i < result.size(); i++) presult[i] = result[i];
+    return presult;
+}
+
+void BItem::csearch(const std::string &needle, const char &mode,
+            std::vector<std::string> &pathStack, std::vector<std::string> &result) const{
+    return;
+}
+
 Php::Value BItem::__toString() const {
     return "this is a BItem";
 }

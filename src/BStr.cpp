@@ -30,6 +30,17 @@ Php::Value BStr::length() const {
     return (int64_t)(__toString().stringValue().length());
 }
 
+void BStr::csearch(const std::string &needle, const char &mode,
+                    std::vector<std::string> &pathStack, std::vector<std::string> &result) const {
+    if (mode != 's') return;
+    if (_value.find(needle) < _value.length()) {
+        std::string path;
+        for (size_t i = 0; i < pathStack.size(); i++)
+            path += pathStack[i];
+        result.push_back(trimKey(path));
+    }
+}
+
 Php::Value BStr::__toString() const {
     return numtos(_value.size()) + ":" + _value;
 }
