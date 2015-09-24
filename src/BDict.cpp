@@ -287,7 +287,7 @@ void BDict::csearch(const std::string &needle, const char &mode,
     auto iter = BData.begin();
     while (iter != BData.end()) {
         pathStack.push_back(escapeKey(iter->first) + "/");
-        if (mode == 'k' && iter->first == needle) {
+        if (mode == 'k' && iter->first.find(needle) < iter->first.length()) {
             std::string path;
             for (size_t i = 0; i < pathStack.size(); i++)
                 path += pathStack[i];
