@@ -10,6 +10,9 @@
 #include <vector>
 
 class BList : public BItem {
+    private:
+        BList *me_list;
+
     public:
         std::vector<BItem*> BData;
 
@@ -19,13 +22,13 @@ class BList : public BItem {
         BList() : BItem() {}
 
         BList(const BList &that) :
-            BItem(), BData( that.BData ) {}
+            BItem(), BData( that.BData ) { me_list = this; }
 
         BList(const BList *that) :
-            BItem(), BData( that->BData ) {}
+            BItem(), BData( that->BData ) { me_list = this; }
 
         BList(const BItem *that) :
-            BItem(), BData( that->getDataL() ) {}
+            BItem(), BData( that->getDataL() ) { me_list = this; }
 
         virtual ~BList() {}
 
@@ -33,6 +36,8 @@ class BList : public BItem {
          * Regular functions
          */
         Php::Value getType() const;
+
+        BList* me() { return me_list; }
 
         std::vector<BItem*> getDataL() const;
 

@@ -10,6 +10,9 @@
 #include <vector>
 
 class BDict : public BItem {
+    private:
+        BDict *me_dict;
+
     public:
         std::map<std::string, BItem*> BData;
 
@@ -19,13 +22,13 @@ class BDict : public BItem {
         BDict() : BItem() {}
 
         BDict(const BDict &that) :
-            BItem(), BData( that.BData ) {}
+            BItem(), BData( that.BData ) { me_dict = this; }
 
         BDict(const BDict *that) :
-            BItem(), BData( that->BData ) {}
+            BItem(), BData( that->BData ) { me_dict = this; }
 
         BDict(const BItem *that) :
-            BItem(), BData( that->getDataD() ) {}
+            BItem(), BData( that->getDataD() ) { me_dict = this; }
 
         virtual ~BDict() {}
 
@@ -33,6 +36,8 @@ class BDict : public BItem {
          * Regular functions
          */
         Php::Value getType() const;
+
+        BDict* me() { return me_dict; }
 
         std::map<std::string, BItem*> getDataD() const;
 

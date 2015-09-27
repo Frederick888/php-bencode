@@ -10,6 +10,9 @@
 #include <vector>
 
 class BItem : public Php::Base {
+    private:
+        BItem *me_item;
+
     protected:
         template<typename T>
         std::string numtos(const T &value) const {
@@ -34,14 +37,16 @@ class BItem : public Php::Base {
         /**
          * C++ constructor and destructor
          */
-        BItem() {}
-        BItem(const BItem &that) {}
+        BItem() { me_item = this; }
+        BItem(const BItem &that) { me_item = this; }
         virtual ~BItem() {}
 
         /**
          * Regular functions
          */
         virtual Php::Value getType() const;
+
+        virtual BItem* me() { return me_item; }
 
         virtual Php::Value get() const;
 

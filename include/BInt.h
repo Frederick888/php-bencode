@@ -10,22 +10,25 @@
 #include <vector>
 
 class BInt : public BItem {
+    private:
+        BInt *me_int;
+
     public:
         int64_t _value;
 
         /**
          * C++ constructor and destructor
          */
-        BInt() : BItem() {}
+        BInt() : BItem() { me_int = this; }
 
         BInt(int64_t value) :
-            BItem(), _value( value ) {}
+            BItem(), _value( value ) { me_int = this; }
 
         BInt(const BInt &that) :
-            BItem(), _value( that._value ) {}
+            BItem(), _value( that._value ) { me_int = this; }
 
         BInt(const BInt *that) :
-            BItem(), _value( that->_value ) {}
+            BItem(), _value( that->_value ) { me_int = this; }
 
         BInt(const BItem *that);
 
@@ -35,6 +38,8 @@ class BInt : public BItem {
          * Regular functions
          */
         Php::Value getType() const;
+
+        BInt* me() { return me_int; }
 
         Php::Value get() const;
 
