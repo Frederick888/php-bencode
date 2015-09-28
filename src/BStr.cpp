@@ -18,6 +18,11 @@ Php::Value BStr::getType() const {
     return "BStr";
 }
 
+BStr* BStr::clone() const {
+    BStr *clone = new BStr(this);
+    return clone;
+}
+
 std::string BStr::getDataS() const {
     return _value;
 }

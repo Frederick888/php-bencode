@@ -11,6 +11,10 @@ Php::Value BList::getType() const {
     return "BList";
 }
 
+BList* BList::clone() const {
+    BList* clone = new BList(this);
+    return clone;
+}
 std::vector<BItem*> BList::getDataL() const {
     return BData;
 }

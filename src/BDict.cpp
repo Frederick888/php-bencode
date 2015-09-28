@@ -11,6 +11,11 @@ Php::Value BDict::getType() const {
     return "BDict";
 }
 
+BDict* BDict::clone() const {
+    BDict* clone = new BDict(this);
+    return clone;
+}
+
 std::map<std::string, BItem*> BDict::getDataD() const {
     return BData;
 }

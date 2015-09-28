@@ -37,7 +37,9 @@ class BDict : public BItem {
          */
         Php::Value getType() const;
 
-        BDict* me() { return me_dict; }
+        BDict* me() const { return me_dict; }
+
+        BDict* clone() const;
 
         std::map<std::string, BItem*> getDataD() const;
 

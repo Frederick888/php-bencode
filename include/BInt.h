@@ -39,7 +39,9 @@ class BInt : public BItem {
          */
         Php::Value getType() const;
 
-        BInt* me() { return me_int; }
+        BInt* me() const { return me_int; }
+
+        BInt* clone() const;
 
         int64_t getDataI() const;
 

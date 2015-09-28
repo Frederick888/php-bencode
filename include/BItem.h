@@ -48,6 +48,8 @@ class BItem : public Php::Base {
 
         virtual BItem* me() const { return me_item; }
 
+        virtual BItem* clone() const = 0;
+
         virtual Php::Value get(Php::Parameters &params) const;
 
         virtual BItem* getPath(const std::string &key) const;

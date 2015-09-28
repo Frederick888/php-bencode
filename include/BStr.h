@@ -39,7 +39,9 @@ class BStr : public BItem {
          */
         Php::Value getType() const;
 
-        BStr* me() { return me_str; }
+        BStr* me() const { return me_str; }
+
+        BStr* clone() const;
 
         std::string getDataS() const;
 

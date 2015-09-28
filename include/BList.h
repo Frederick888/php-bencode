@@ -37,7 +37,9 @@ class BList : public BItem {
          */
         Php::Value getType() const;
 
-        BList* me() { return me_list; }
+        BList* me() const { return me_list; }
+
+        BList* clone() const;
 
         std::vector<BItem*> getDataL() const;
 

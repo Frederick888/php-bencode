@@ -18,6 +18,11 @@ Php::Value BInt::getType() const {
     return "BInt";
 }
 
+BInt* BInt::clone() const {
+    BInt *clone = new BInt(this);
+    return clone;
+}
+
 int64_t BInt::getDataI() const {
     return _value;
 }
