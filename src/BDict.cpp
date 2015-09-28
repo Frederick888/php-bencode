@@ -197,20 +197,7 @@ Php::Value BDict::toArray() const {
     auto iter = BData.begin();
     while (iter != BData.end()) {
         std::string key = iter->first;
-        std::string type = iter->second->getType();
-        if (type == "BDict") {
-            BDict *current = new BDict(iter->second);
-            retval[key] = current->toArray();
-        } else if (type == "BList") {
-            BList *current = new BList(iter->second);
-            retval[key] = current->toArray();
-        } else if (type == "BStr") {
-            BStr *current = new BStr(iter->second);
-            retval[key] = current->toArray();
-        } else if (type == "BInt") {
-            BInt *current = new BInt(iter->second);
-            retval[key] = current->toArray();
-        }
+        retval[key] = iter->second->toArray();
         ++iter;
     }
     return retval;
@@ -224,20 +211,7 @@ Php::Value BDict::toMetaArray() const {
     auto iter = BData.begin();
     while (iter != BData.end()) {
         std::string key = iter->first;
-        std::string type = iter->second->getType();
-        if (type == "BDict") {
-            BDict *current = new BDict(iter->second);
-            retval["_data"][key] = current->toMetaArray();
-        } else if (type == "BList") {
-            BList *current = new BList(iter->second);
-            retval["_data"][key] = current->toMetaArray();
-        } else if (type == "BStr") {
-            BStr *current = new BStr(iter->second);
-            retval["_data"][key] = current->toMetaArray();
-        } else if (type == "BInt") {
-            BInt *current = new BInt(iter->second);
-            retval["_data"][key] = current->toMetaArray();
-        }
+        retval["_data"][key] = iter->second->toMetaArray();
         ++iter;
     }
     return retval;
@@ -254,19 +228,7 @@ void BDict::csearch(const std::string &needle, const char &mode,
                 path += pathStack[i];
             result.push_back(trimKey(path));
         }
-        if (iter->second->getType() == "BDict") {
-            BDict *current = new BDict(iter->second);
-            current->csearch(needle, mode, pathStack, result);
-        } else if (iter->second->getType() == "BList") {
-            BList *current = new BList(iter->second);
-            current->csearch(needle, mode, pathStack, result);
-        } else if (iter->second->getType() == "BStr") {
-            BStr *current = new BStr(iter->second);
-            current->csearch(needle, mode, pathStack, result);
-        } else if (iter->second->getType() == "BInt") {
-            BInt *current = new BInt(iter->second);
-            current->csearch(needle, mode, pathStack, result);
-        }
+        iter->second->csearch(needle, mode, pathStack, result);
         pathStack.pop_back();
         ++iter;
     }
@@ -278,19 +240,7 @@ Php::Value BDict::__toString() const {
     while (iter != BData.end()) {
         BStr key(iter->first);
         retval += key.__toString().stringValue();
-        if (iter->second->getType() == "BDict") {
-            BDict *current = new BDict(iter->second);
-            retval += current->__toString().stringValue();
-        } else if (iter->second->getType() == "BList") {
-            BList *current = new BList(iter->second);
-            retval += current->__toString().stringValue();
-        } else if (iter->second->getType() == "BStr") {
-            BStr *current = new BStr(iter->second);
-            retval += current->__toString().stringValue();
-        } else if (iter->second->getType() == "BInt") {
-            BInt *current = new BInt(iter->second);
-            retval += current->__toString().stringValue();
-        }
+        retval += iter->second->__toString().stringValue();
         ++iter;
     }
     retval += "e";

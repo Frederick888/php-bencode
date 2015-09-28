@@ -8,6 +8,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <limits>
 
 class BItem : public Php::Base {
     private:
@@ -67,6 +68,10 @@ class BItem : public Php::Base {
         static Php::Value load(Php::Parameters &params);
 
         void save(Php::Parameters &params) const;
+
+        virtual Php::Value toArray() const = 0;
+
+        virtual Php::Value toMetaArray() const = 0;
 
         Php::Value search(Php::Parameters &params) const;
 

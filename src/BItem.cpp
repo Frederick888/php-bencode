@@ -21,21 +21,7 @@ Php::Value BItem::get(Php::Parameters &params) const {
     if (found == nullptr) {
         return (Php::Value)nullptr;
     } else {
-        if (found->getType() == "BDict") {
-            BDict *foundCpy = new BDict(found);
-            return Php::Object(found->getType(), foundCpy);
-        } else if (found->getType() == "BList") {
-            BList *foundCpy = new BList(found);
-            return Php::Object(found->getType(), foundCpy);
-        } else if (found->getType() == "BStr") {
-            BStr *foundCpy = new BStr(found);
-            return Php::Object(found->getType(), foundCpy);
-        } else if (found->getType() == "BInt") {
-            BInt *foundCpy = new BInt(found);
-            return Php::Object(found->getType(), foundCpy);
-        } else {
-            throw Php::Exception("Error getting item");
-        }
+        return Php::Object(found->getType(), found->clone());
     }
 }
 
@@ -59,7 +45,7 @@ std::string BItem::getDataS() const {
 }
 
 int64_t BItem::getDataI() const {
-    int64_t dummy;
+    int64_t dummy = std::numeric_limits<int64_t>::min();
     return dummy;
 }
 
