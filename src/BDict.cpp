@@ -27,8 +27,7 @@ BItem* BDict::getPath(const std::string &key) const {
     if (path == "") {
         auto search = BData.find(field);
         if(search != BData.end()) {
-            BItem *found = search->second;
-            return found->me();
+            return search->second->clone();
         } else {
             return nullptr;
         }
@@ -36,8 +35,7 @@ BItem* BDict::getPath(const std::string &key) const {
 
     auto search = BData.find(field);
     if(search != BData.end()) {
-        BItem *found = search->second;
-        return found->getPath(path);
+        return search->second->getPath(path);
     } else {
         return nullptr;
     }

@@ -30,12 +30,10 @@ BItem* BList::getPath(const std::string &key) const {
         return nullptr;
 
     if (path == "") {
-        BItem *found = BData[ifield];
-        return found->me();
+        return BData[ifield]->clone();
     }
 
-    BItem *found = BData[ifield];
-    return found->me();
+    return BData[ifield]->getPath(path);
 }
 
 Php::Value BList::has(Php::Parameters &params) const {
