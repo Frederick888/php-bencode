@@ -86,8 +86,8 @@ LINKER				=	g++
 #	with a list of all flags that should be passed to the linker.
 #
 
-COMPILER_FLAGS		=	-Wall -c -O2 -std=c++11 -fPIC -I include -o 
-LINKER_FLAGS		=	-shared
+COMPILER_FLAGS		=	-Wall -c -O3 -std=c++11 -fPIC -I include -o 
+LINKER_FLAGS		=	-shared -Wl,--strip-all
 LINKER_DEPENDENCIES	=	-lphpcpp
 
 
