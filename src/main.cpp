@@ -37,6 +37,9 @@ extern "C" {
                 Php::ByVal("needle", Php::Type::String, true),
                 Php::ByVal("mode", Php::Type::String, true)
                 });
+        _BItem.method("get", &BItem::get, {
+                Php::ByVal("key", Php::Type::String, true)
+                });
 
         Php::Class<BDict> _BDict("BDict");
         _BDict.extends(_BItem);
@@ -44,9 +47,6 @@ extern "C" {
         _BDict.method("set", &BDict::set, {
                 Php::ByVal("key", Php::Type::String, true),
                 Php::ByVal("value", Php::Type::Null, true)
-                });
-        _BDict.method("get", &BDict::get, {
-                Php::ByVal("key", Php::Type::String, true)
                 });
         _BDict.method("has", &BDict::has, {
                 Php::ByVal("key", Php::Type::String, true)
@@ -69,9 +69,6 @@ extern "C" {
         _BList.method("set", &BList::set, {
                 Php::ByVal("key", Php::Type::String, true),
                 Php::ByVal("value", Php::Type::Null, true)
-                });
-        _BList.method("get", &BList::get, {
-                Php::ByVal("key", Php::Type::String, true)
                 });
         _BList.method("has", &BList::has, {
                 Php::ByVal("key", Php::Type::String, true)

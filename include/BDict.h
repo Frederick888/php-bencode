@@ -41,8 +41,6 @@ class BDict : public BItem {
 
         std::map<std::string, BItem*> getDataD() const;
 
-        Php::Value get(Php::Parameters &params) const;
-
         BItem* getPath(const std::string &key) const;
 
         Php::Value has(Php::Parameters &params) const;

@@ -41,6 +41,8 @@ class BInt : public BItem {
 
         BInt* me() { return me_int; }
 
+        int64_t getDataI() const;
+
         Php::Value get() const;
 
         void set(Php::Parameters &params);

@@ -41,8 +41,6 @@ class BList : public BItem {
 
         std::vector<BItem*> getDataL() const;
 
-        Php::Value get(Php::Parameters &params) const;
-
         BItem* getPath(const std::string &key) const;
 
         Php::Value has(Php::Parameters &params) const;

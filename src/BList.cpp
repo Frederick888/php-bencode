@@ -15,28 +15,6 @@ std::vector<BItem*> BList::getDataL() const {
     return BData;
 }
 
-Php::Value BList::get(Php::Parameters &params) const {
-    std::string key = params[0];
-
-    BItem *found = getPath(key);
-    if (found == nullptr) {
-        return (Php::Value)nullptr;
-    } else if (found->getType().stringValue() == "BDict") {
-        BDict *found1 = new BDict(found);
-        return Php::Object(found->getType(), found1);
-    } else if (found->getType().stringValue() == "BList") {
-        BList *found1 = new BList(found);
-        return Php::Object(found->getType(), found1);
-    } else if (found->getType().stringValue() == "BStr") {
-        BStr *found1 = new BStr(found);
-        return Php::Object(found->getType(), found1);
-    } else if (found->getType().stringValue() == "BInt") {
-        BInt *found1 = new BInt(found);
-        return Php::Object(found->getType(), found1);
-    }
-    return (Php::Value)nullptr;
-}
-
 BItem* BList::getPath(const std::string &key) const {
     std::string path = trimKey(key);
     std::string field = splitKey(path);
@@ -49,33 +27,11 @@ BItem* BList::getPath(const std::string &key) const {
 
     if (path == "") {
         BItem *found = BData[ifield];
-        if (found->getType().stringValue() == "BDict") {
-            BDict *found1 = new BDict(found);
-            return found1;
-        } else if (found->getType().stringValue() == "BList") {
-            BList *found1 = new BList(found);
-            return found1;
-        } else if (found->getType().stringValue() == "BStr") {
-            BStr *found1 = new BStr(found);
-            return found1;
-        } else if (found->getType().stringValue() == "BInt") {
-            BInt *found1 = new BInt(found);
-            return found1;
-        } else throw Php::Exception("Error handling BList");
+        return found->me();
     }
 
     BItem *found = BData[ifield];
-    if (found->getType().stringValue() == "BDict") {
-        BDict *found1 = new BDict(found);
-        return found1;
-    } else if (found->getType().stringValue() == "BList") {
-        BList *found1 = new BList(found);
-        return found1;
-    } else if (found->getType().stringValue() == "BStr") {
-        return nullptr;
-    } else if (found->getType().stringValue() == "BInt") {
-        return nullptr;
-    } else throw Php::Exception("Error handling BList");
+    return found->me();
 }
 
 Php::Value BList::has(Php::Parameters &params) const {

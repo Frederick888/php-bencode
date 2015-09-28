@@ -10,12 +10,16 @@
 BStr::BStr(const BItem *that) {
     if (that->getType().stringValue() != "BStr")
         throw Php::Exception("Error converting BItem to BStr, the original type is " + that->getType());
-    _value = that->get().stringValue();
+    _value = that->getDataS();
     me_str = this;
 }
 
 Php::Value BStr::getType() const {
     return "BStr";
+}
+
+std::string BStr::getDataS() const {
+    return _value;
 }
 
 Php::Value BStr::get() const {

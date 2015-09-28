@@ -11,8 +11,36 @@ Php::Value BItem::getType() const {
     return "BItem";
 }
 
-Php::Value BItem::get() const {
-    return (Php::Value)nullptr;
+Php::Value BItem::get(Php::Parameters &params) const {
+    if (getType() == "BItem" || getType() == "BStr" || getType() == "BInt")
+        return (Php::Value)nullptr;
+
+    std::string key = params[0];
+
+    BItem *found = getPath(key);
+    if (found == nullptr) {
+        return (Php::Value)nullptr;
+    } else {
+        if (found->getType() == "BDict") {
+            BDict *foundCpy = new BDict(found);
+            return Php::Object(found->getType(), foundCpy);
+        } else if (found->getType() == "BList") {
+            BList *foundCpy = new BList(found);
+            return Php::Object(found->getType(), foundCpy);
+        } else if (found->getType() == "BStr") {
+            BStr *foundCpy = new BStr(found);
+            return Php::Object(found->getType(), foundCpy);
+        } else if (found->getType() == "BInt") {
+            BInt *foundCpy = new BInt(found);
+            return Php::Object(found->getType(), foundCpy);
+        } else {
+            throw Php::Exception("Error getting item");
+        }
+    }
+}
+
+BItem* BItem::getPath(const std::string &key) const {
+    return nullptr;
 }
 
 std::map<std::string, BItem*> BItem::getDataD() const {
@@ -22,6 +50,16 @@ std::map<std::string, BItem*> BItem::getDataD() const {
 
 std::vector<BItem*> BItem::getDataL() const {
     std::vector<BItem*> dummy;
+    return dummy;
+}
+
+std::string BItem::getDataS() const {
+    std::string dummy;
+    return dummy;
+}
+
+int64_t BItem::getDataI() const {
+    int64_t dummy;
     return dummy;
 }
 

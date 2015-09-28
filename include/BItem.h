@@ -46,13 +46,19 @@ class BItem : public Php::Base {
          */
         virtual Php::Value getType() const;
 
-        virtual BItem* me() { return me_item; }
+        virtual BItem* me() const { return me_item; }
 
-        virtual Php::Value get() const;
+        virtual Php::Value get(Php::Parameters &params) const;
+
+        virtual BItem* getPath(const std::string &key) const;
 
         virtual std::map<std::string, BItem*> getDataD() const;
 
         virtual std::vector<BItem*> getDataL() const;
+
+        virtual std::string getDataS() const;
+
+        virtual int64_t getDataI() const;
 
         static Php::Value parse(Php::Parameters &params);
 

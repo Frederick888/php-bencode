@@ -41,6 +41,8 @@ class BStr : public BItem {
 
         BStr* me() { return me_str; }
 
+        std::string getDataS() const;
+
         Php::Value get() const;
 
         void set(Php::Parameters &params);
