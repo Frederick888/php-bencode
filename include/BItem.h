@@ -67,6 +67,8 @@ class BItem : public Php::Base {
 
         static Php::Value load(Php::Parameters &params);
 
+        static Php::Value parseStr(const std::string &ben);
+
         void save(Php::Parameters &params) const;
 
         virtual Php::Value toArray() const = 0;

@@ -108,18 +108,7 @@ bool BItem::isSizet(const std::string &intstr) const {
 
 Php::Value BItem::parse(Php::Parameters &params) {
     std::string ben = params[0];
-    size_t pt = 0;
-    if (ben[0] == 'd') {
-        return Php::Object("BDict", BDict::parseD(ben, pt));
-    } else if (ben[0] == 'l') {
-        return Php::Object("BList", BList::parseL(ben, pt));
-    } else if (ben[0] >= '0' && ben[0] <= '9') {
-        return Php::Object("BStr", BStr::parseS(ben, pt));
-    } else if (ben[0] == 'i') {
-        return Php::Object("BInt", BInt::parseI(ben, pt));
-    } else {
-        throw Php::Exception("Error parsing: " + ben[0]);
-    }
+    return parseStr(ben);
 }
 
 Php::Value BItem::load(Php::Parameters &params) {
@@ -131,7 +120,11 @@ Php::Value BItem::load(Php::Parameters &params) {
     std::string ben((std::istreambuf_iterator<char>(benFile)),
                     (std::istreambuf_iterator<char>()));
     benFile.close();
+    
+    return parseStr(ben);
+}
 
+Php::Value BItem::parseStr(const std::string &ben) {
     size_t pt = 0;
     if (ben[0] == 'd') {
         return Php::Object("BDict", BDict::parseD(ben, pt));
