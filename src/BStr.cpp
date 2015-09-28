@@ -11,7 +11,6 @@ BStr::BStr(const BItem *that) {
     if (that->getType().stringValue() != "BStr")
         throw Php::Exception("Error converting BItem to BStr, the original type is " + that->getType());
     _value = that->getDataS();
-    me_str = this;
 }
 
 Php::Value BStr::getType() const {

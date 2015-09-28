@@ -11,7 +11,6 @@ BInt::BInt(const BItem *that) {
     if (that->getType().stringValue() != "BInt")
         throw Php::Exception("Error converting BItem to BInt, the original type is " + that->getType());
     _value = that->getDataI();
-    me_int = this;
 }
 
 Php::Value BInt::getType() const {

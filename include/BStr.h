@@ -10,25 +10,22 @@
 #include <vector>
 
 class BStr : public BItem {
-    private:
-        BStr *me_str;
-
     public:
         std::string _value;
 
         /**
          * C++ constructor and destructor
          */
-        BStr() : BItem() { me_str = this; }
+        BStr() : BItem() {}
         
         BStr(std::string value) :
-            BItem(), _value( value ) { me_str = this; }
+            BItem(), _value( value ) {}
 
         BStr(const BStr &that) :
-            BItem(), _value( that._value ) { me_str = this; }
+            BItem(), _value( that._value ) {}
 
         BStr(const BStr *that) :
-            BItem(), _value( that->_value ) { me_str = this; }
+            BItem(), _value( that->_value ) {}
 
         BStr(const BItem *that);
 
@@ -38,8 +35,6 @@ class BStr : public BItem {
          * Regular functions
          */
         Php::Value getType() const;
-
-        BStr* me() const { return me_str; }
 
         BStr* clone() const;
 
