@@ -64,20 +64,7 @@ void BList::set(Php::Parameters &params) {
         throw Php::Exception("Error adding to BList");
     }
     BItem *cppItem = (BItem*)item.implementation();
-    if (cppItem->getType().stringValue() == "BDict") {
-        BDict *cppItem1 = (BDict*)item.implementation();
-        //BDict *cppItemCpy = new BDict(*cppItem1);
-        setPath(key, cppItem1);
-    } else if (cppItem->getType().stringValue() == "BList") {
-        BList *cppItem1 =  (BList*)item.implementation();
-        setPath(key, cppItem1);
-    } else if (cppItem->getType().stringValue() == "BStr") {
-        BStr *cppItem1 = (BStr*)item.implementation();
-        setPath(key, cppItem1);
-    } else if (cppItem->getType().stringValue() == "BInt") {
-        BInt *cppItem1 = (BInt*)item.implementation();
-        setPath(key, cppItem1);
-    }
+    setPath(key, cppItem);
 }
 
 template<typename T>
@@ -96,7 +83,7 @@ void BList::setPath(const std::string &key, T *BItem) {
             return;
         }
         // make a copy explicitly
-        T *item = new T(*BItem);
+        auto *item = BItem->clone();
         if (ifield < BData.size()) {
             BData[ifield] = item;
         } else if (ifield >= BData.size()) {
