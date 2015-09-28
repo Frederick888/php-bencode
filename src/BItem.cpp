@@ -182,12 +182,3 @@ Php::Value BItem::search(Php::Parameters &params) const {
     for (size_t i = 0; i < result.size(); i++) presult[i] = result[i];
     return presult;
 }
-
-void BItem::csearch(const std::string &needle, const char &mode,
-            std::vector<std::string> &pathStack, std::vector<std::string> &result) const{
-    return;
-}
-
-Php::Value BItem::__toString() const {
-    return "this is a BItem";
-}
