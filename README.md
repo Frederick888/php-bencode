@@ -73,7 +73,7 @@ d4:key1l5:hello5:worlde4:key2i100ee
 ```
 ***Example 2*** Loading from/saving to a file
 ```
-php > $dict=BItem::load("/path/sample.torrent");
+php > $dict = BItem::load("/path/sample.torrent");
 php > $dict->save("/path/sample_copy.torrent");
 php > echo md5_file("/path/sample.torrent") === md5_file("/path/sample_copy.torrent");
 1
