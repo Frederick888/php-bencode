@@ -27,7 +27,7 @@ class BList : public BItem {
         BList(const BItem *that) :
             BItem(), BData( that->getDataL() ) {}
 
-        virtual ~BList() {}
+        virtual ~BList() { BData.clear(); }
 
         /**
          * Regular functions

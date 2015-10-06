@@ -27,7 +27,7 @@ class BDict : public BItem {
         BDict(const BItem *that) :
             BItem(), BData( that->getDataD() ) {}
 
-        virtual ~BDict() {}
+        virtual ~BDict() { BData.clear(); }
 
         /**
          * Regular functions
