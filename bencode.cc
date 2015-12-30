@@ -2,135 +2,214 @@
 #include "config.h"
 #endif
 #include "php_bencode.h"
-#include "bdict.h"
+#include "binit.h"
 
-#define Z_BDICT_OBJ_P(zv) php_bdict_object_fetch_object(Z_OBJ_P(zv))
-
-zend_object_handlers bdict_object_handlers;
-
-typedef struct _bdict_object {
-    BDict *bdict_data;
-    zend_object std;
-} bdict_object;
-
-zend_class_entry *bdict_ce;
-
-static void bdict_free_storage(zend_object *object TSRMLS_DC)
+/**** BITEM *****/
+PHP_METHOD(bitem, __construct)
 {
-    //bdict_object *intern = (bdict_object *)object;
-    //zend_object_std_dtor(&intern->std TSRMLS_CC);
-    zend_object_std_dtor(object TSRMLS_CC);
-    //delete intern->bdict_data;
-}
-
-zend_object * bdict_object_new(zend_class_entry *ce TSRMLS_DC)
-{
-    bdict_object *intern = (bdict_object *)ecalloc(1,
-            sizeof(bdict_object) +
-            zend_object_properties_size(ce));
-
-    zend_object_std_init(&intern->std, ce TSRMLS_CC);
-    object_properties_init(&intern->std, ce);
-    intern->std.handlers = &bdict_object_handlers;
-
-    return &intern->std;
-}
-
-static inline bdict_object * php_bdict_object_fetch_object(zend_object *obj)
-{
-    return (bdict_object *)((char *)obj - XtOffsetOf(bdict_object, std));
-}
-
-PHP_METHOD(BDict, __construct)
-{
-    long maxGear;
-    BDict *bdict = NULL;
-
+    bitem *bnode = NULL;
+/*
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &maxGear) == FAILURE) {
         RETURN_NULL();
     }
-
-    bdict = new BDict(maxGear);
-    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    intern->bdict_data = bdict;
+*/
+    bnode = new bitem();
+    bitem_object *intern = Z_BITEM_OBJ_P(getThis());
+    intern->bitem_data = bnode;
 }
-PHP_METHOD(BDict, shift)
+PHP_METHOD(bitem, get_type)
 {
-    long gear;
-    BDict *bdict = NULL;
-
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &gear) == FAILURE) {
-        RETURN_NULL();
-    }
-
-    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    bdict = intern->bdict_data;
-    if (bdict != NULL) {
-        bdict->shift(gear);
-    }
+    std::string result;
+    bitem_object *intern = Z_BITEM_OBJ_P(getThis());
+    result = intern->bitem_data->get_type();
+    RETURN_STRING(result.c_str());
 }
-PHP_METHOD(BDict, accelerate)
+PHP_METHOD(bitem, parse)
 {
-    BDict *bdict = NULL;
-    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    bdict = intern->bdict_data;
-    if (bdict != NULL) {
-        bdict->accelerate();
-    }
+//    char *ben;
+//    size_t ben_len;
+//    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ben, &ben_len) == FAILURE) {
+//        RETURN_NULL();
+//    }
+//    std::string ben_str(ben);
+//    zval *result = bitem::parse(ben_str);
+//    RETURN_ARR(Z_ARRVAL_P(result));
+    std::string ben = "d4:key15:item1e";
+    RETURN_ZVAL(bitem::parse(ben), 1, 1);
 }
-PHP_METHOD(BDict, brake)
-{
-    BDict *bdict = NULL;
-    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    bdict = intern->bdict_data;
-    if (bdict != NULL) {
-        bdict->brake();
-    }
-}
-PHP_METHOD(BDict, getCurrentSpeed)
-{
-    BDict *bdict = NULL;
-    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    bdict = intern->bdict_data;
-    if (bdict != NULL) {
-        RETURN_LONG(bdict->getCurrentSpeed());
-    }
-    RETURN_NULL();
-}
-PHP_METHOD(BDict, getCurrentGear)
-{
-    BDict *bdict = NULL;
-    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    bdict = intern->bdict_data;
-    if (bdict != NULL) {
-        RETURN_LONG(bdict->getCurrentGear());
-    }
-    RETURN_NULL();
-}
-
-static zend_function_entry bdict_methods[] = {
-    PHP_ME(BDict, __construct,          NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-    PHP_ME(BDict, shift,                NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(BDict, accelerate,           NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(BDict, brake,                NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(BDict, getCurrentSpeed,      NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(BDict, getCurrentGear,       NULL, ZEND_ACC_PUBLIC)
+static zend_function_entry bitem_methods[] = {
+    PHP_ME(bitem, __construct,          NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+    PHP_ME(bitem, get_type,             NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bitem, parse,                NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     {NULL, NULL, NULL}
 };
 
+/**** BDICT *****/
+PHP_METHOD(bdict, __construct)
+{
+    bdict *bnode = NULL;
+    bnode = new bdict();
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    intern->bdict_data = bnode;
+}
+PHP_METHOD(bdict, get_type)
+{
+    std::string result;
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    result = intern->bdict_data->get_type();
+    RETURN_STRING(result.c_str());
+}
+PHP_METHOD(bdict, get)
+{
+    char *key;
+    size_t key_len = 0;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
+            RETURN_NULL();
+    }
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    std::string _key(key);
+    RETURN_ZVAL(intern->bdict_data->get(_key), 1, 0);
+}
+PHP_METHOD(bdict, set)
+{
+    char *key;
+    size_t key_len = 0;
+    zval *zv;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "so", &key, &key_len, &zv) == FAILURE) {
+            RETURN_FALSE;
+    }
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    std::string _key(key);
+    intern->bdict_data->set(_key, zv);
+    RETURN_TRUE;
+}
+PHP_METHOD(bdict, has)
+{
+    char *key;
+    size_t key_len = 0;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
+            RETURN_NULL();
+    }
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    std::string _key(key);
+    RETURN_BOOL(intern->bdict_data->has(_key));
+}
+PHP_METHOD(bdict, del)
+{
+    char *key;
+    size_t key_len = 0;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
+            RETURN_NULL();
+    }
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    std::string _key(key);
+    RETURN_BOOL(intern->bdict_data->del(_key));
+}
+PHP_METHOD(bdict, to_array)
+{
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    RETURN_ZVAL(intern->bdict_data->to_array(), 1, 1);
+}
+static zend_function_entry bdict_methods[] = {
+    PHP_ME(bdict, __construct,          NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+    PHP_ME(bdict, get_type,             NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, get,                  NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, set,                  NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, has,                  NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, del,                  NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, to_array,             NULL, ZEND_ACC_PUBLIC)
+    {NULL, NULL, NULL}
+};
+
+/**** BSTR *****/
+PHP_METHOD(bstr, __construct)
+{
+    char *ben;
+    size_t ben_len = 0;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &ben, &ben_len) == FAILURE) {
+            RETURN_NULL();
+    }
+    bstr *bnode = NULL;
+    if (ben_len > 0) {
+        std::string tmp(ben);
+        bnode = new bstr(tmp);
+    } else {
+        bnode = new bstr();
+    }
+    bstr_object *intern = Z_BSTR_OBJ_P(getThis());
+    intern->bstr_data = bnode;
+}
+PHP_METHOD(bstr, get_type)
+{
+    std::string result;
+    bstr_object *intern = Z_BSTR_OBJ_P(getThis());
+    result = intern->bstr_data->get_type();
+    RETURN_STRING(result.c_str());
+}
+PHP_METHOD(bstr, get)
+{
+    bstr_object *intern = Z_BSTR_OBJ_P(getThis());
+    std::string result = intern->bstr_data->get();
+    RETURN_STRING(result.c_str());
+}
+PHP_METHOD(bstr, set)
+{
+    char *value;
+    size_t value_len = 0;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &value, &value_len) == FAILURE) {
+        RETURN_FALSE;
+    }
+    std::string _value(value);
+    bstr_object *intern = Z_BSTR_OBJ_P(getThis());
+    intern->bstr_data->set(_value);
+    RETURN_TRUE;
+}
+PHP_METHOD(bstr, length)
+{
+    bstr_object *intern = Z_BSTR_OBJ_P(getThis());
+    size_t result = intern->bstr_data->length();
+    RETURN_LONG(result);
+}
+PHP_METHOD(bstr, parse)
+{
+    char *ben;
+    size_t ben_len = 0;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ben, &ben_len) == FAILURE) {
+        RETURN_NULL();
+    }
+    if (!ben_len > 0) RETURN_NULL();
+    std::string tmp(ben);
+    size_t pt = 0;
+    RETURN_ZVAL(bstr::parse(tmp, pt), 1, 1);
+}
+PHP_METHOD(bstr, to_array)
+{
+    bstr_object *intern = Z_BSTR_OBJ_P(getThis());
+    RETURN_ZVAL(intern->bstr_data->to_array(), 1, 1);
+}
+PHP_METHOD(bstr, to_meta_array)
+{
+    bstr_object *intern = Z_BSTR_OBJ_P(getThis());
+    RETURN_ZVAL(intern->bstr_data->to_meta_array(), 1, 1);
+}
+static zend_function_entry bstr_methods[] = {
+    PHP_ME(bstr, __construct,           NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+    PHP_ME(bstr, get_type,              NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bstr, get,                   NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bstr, set,                   NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bstr, length,                NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bstr, parse,                 NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(bstr, to_array,              NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bstr, to_meta_array,         NULL, ZEND_ACC_PUBLIC)
+    {NULL, NULL, NULL}
+};
+
+/**** PHP ****/
 PHP_MINIT_FUNCTION(bencode)
 {
-    zend_class_entry ce;
-    INIT_CLASS_ENTRY(ce, "BDict", bdict_methods);
-    bdict_ce = zend_register_internal_class(&ce TSRMLS_CC);
-    bdict_ce->create_object = bdict_object_new;
-
-    memcpy(&bdict_object_handlers,
-            zend_get_std_object_handlers(), sizeof(zend_object_handlers));
-
-    bdict_object_handlers.offset = XtOffsetOf(bdict_object, std);
-    bdict_object_handlers.free_obj = bdict_free_storage;
-
+    BI_MINIT(bitem)
+    BI_MINIT(bdict)
+    BI_MINIT(bstr)
     return SUCCESS;
 }
 
@@ -164,6 +243,21 @@ ZEND_GET_MODULE(bencode)
 
 PHP_FUNCTION(bencode_world)
 {
-    RETURN_TRUE;
+//    zval _zv;
+//    zval *zv = &_zv;
+//    object_init_ex(zv, zend_container::bitem_ce);
+//    bitem_object *intern = zend_container::bitem_fetch_object(Z_OBJ_P(zv));
+//    intern->bitem_data = new bitem();
+//    RETURN_ZVAL(zv, 1, 1);
+//
+//    zval _outer; zval *outer = &_outer; array_init(outer);
+//    zval _inner; zval *inner = &_inner; array_init(inner);
+//    std::string _key = "hello";
+//    char *key = (char *)emalloc(_key.length());
+//    strcpy(key, _key.c_str());
+//    add_assoc_zval(outer, key, inner);
+//    efree(key);
+//    RETURN_ZVAL(outer, 0, 1);
+    php_printf("SUCCESS: %d\n", SUCCESS);
+    php_printf("FAILURE: %d\n", FAILURE);
 }
-

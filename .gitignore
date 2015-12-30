@@ -1,8 +1,26 @@
-*
+autom4te.cache/
+build/
+include/
+modules/
+.libs/
+
+acinclude.m4
+aclocal.m4
+*.lo
+*.loT
+*.la
+config.*
+configure
+configure.in
+install-sh
+libtool
+ltmain.sh
+Makefile
+Makefile.*
+missing
+mkinstalldirs
+*.php
+.deps
 
 !config.m4
-!bencode.cc
-!php_bencode.h
-!bdict.cc
-!bdict.h
 
