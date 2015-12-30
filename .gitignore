@@ -1,8 +1,8 @@
+*
+
 !config.m4
 !bencode.cc
 !php_bencode.h
 !bdict.cc
 !bdict.h
-
-*
 

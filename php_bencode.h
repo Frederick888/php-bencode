@@ -6,6 +6,9 @@
 
 extern "C" {
 #include "php.h"
+#ifdef ZTS
+#include "TSRM.h"
+#endif
 }
 
 PHP_FUNCTION(bencode_world);
