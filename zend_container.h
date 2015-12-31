@@ -8,6 +8,7 @@ extern "C" {
 #include "bitem.h"
 #include "bdict.h"
 #include "bstr.h"
+#include "bint.h"
 
 #define ZEND_CONTAINER_PRE(bclass)      \
     typedef struct {                    \
@@ -18,6 +19,7 @@ extern "C" {
 ZEND_CONTAINER_PRE(bitem)
 ZEND_CONTAINER_PRE(bdict)
 ZEND_CONTAINER_PRE(bstr)
+ZEND_CONTAINER_PRE(bint)
 
 #define ZEND_CONTAINER_INIT(bclass)                                             \
     static zend_object_handlers bclass##_object_handlers;                       \
@@ -32,6 +34,20 @@ public:
     ZEND_CONTAINER_INIT(bitem)
     ZEND_CONTAINER_INIT(bdict)
     ZEND_CONTAINER_INIT(bstr)
+    ZEND_CONTAINER_INIT(bint)
+    static std::string bnode_object_get_class_name(zval *object) {
+        size_t _class_name_len = ZSTR_LEN(Z_OBJ_P(object)->ce->name);
+        char *_class_name = (char *)emalloc(_class_name_len);
+        strcpy(_class_name, ZSTR_VAL(Z_OBJ_P(object)->ce->name));
+        std::string class_name(_class_name);
+        efree(_class_name);
+        return class_name;
+    }
+    static zend_object * bnode_object_clone(zval *object) {
+        zval _new_object; zval *new_object = &_new_object;
+        ZVAL_OBJ(new_object, Z_OBJ_P(object)->handlers->clone_obj(object));
+        return Z_OBJ_P(new_object);
+    }
 };
 
 #endif

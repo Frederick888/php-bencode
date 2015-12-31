@@ -26,8 +26,8 @@ class bstr : public bitem {
         size_t length() const;
 
         static zval * parse(const std::string &ben, size_t &pt);
-        zval * to_array() const;
-        zval * to_meta_array() const;
+        std::string encode() const;
+        zval * to_array(const bool include_meta) const;
 };
 
 #endif

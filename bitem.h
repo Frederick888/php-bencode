@@ -23,7 +23,6 @@ class bitem {
 
     public:
         bitem() {}
-        bitem(const bitem &that) {}
         bitem(const bitem *that) {}
         ~bitem() {}
 

@@ -70,6 +70,17 @@ PHP_METHOD(bdict, get)
     std::string _key(key);
     RETURN_ZVAL(intern->bdict_data->get(_key), 1, 0);
 }
+PHP_METHOD(bdict, get_copy)
+{
+    char *key;
+    size_t key_len = 0;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
+            RETURN_NULL();
+    }
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    std::string _key(key);
+    RETURN_OBJ(zend_container::bnode_object_clone(intern->bdict_data->get(_key)));
+}
 PHP_METHOD(bdict, set)
 {
     char *key;
@@ -105,33 +116,81 @@ PHP_METHOD(bdict, del)
     std::string _key(key);
     RETURN_BOOL(intern->bdict_data->del(_key));
 }
+PHP_METHOD(bdict, length)
+{
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    size_t result = intern->bdict_data->length();
+    RETURN_LONG(result);
+}
+PHP_METHOD(bdict, count)
+{
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    size_t result = intern->bdict_data->count();
+    RETURN_LONG(result);
+}
+PHP_METHOD(bdict, parse)
+{
+    char *ben;
+    size_t ben_len = 0;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ben, &ben_len) == FAILURE) {
+        RETURN_NULL();
+    }
+    if (!ben_len > 0) RETURN_NULL();
+    std::string tmp(ben);
+    size_t pt = 0;
+    RETURN_ZVAL(bdict::parse(tmp, pt), 1, 1);
+}
+PHP_METHOD(bdict, encode)
+{
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    std::string result = intern->bdict_data->encode();
+    RETURN_STRING(result.c_str());
+}
 PHP_METHOD(bdict, to_array)
 {
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    RETURN_ZVAL(intern->bdict_data->to_array(), 1, 1);
+    RETURN_ZVAL(intern->bdict_data->to_array(false), 1, 1);
+}
+PHP_METHOD(bdict, to_meta_array)
+{
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    RETURN_ZVAL(intern->bdict_data->to_array(true), 1, 1);
+}
+PHP_METHOD(bdict, __toString)
+{
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    std::string result = intern->bdict_data->encode();
+    RETURN_STRING(result.c_str());
 }
 static zend_function_entry bdict_methods[] = {
     PHP_ME(bdict, __construct,          NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(bdict, get_type,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, get,                  NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, get_copy,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, set,                  NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, has,                  NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, del,                  NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, length,               NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, count,                NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, parse,                NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, encode,               NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, to_array,             NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, to_meta_array,        NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, __toString,           NULL, ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
 };
 
 /**** BSTR *****/
 PHP_METHOD(bstr, __construct)
 {
-    char *ben;
-    size_t ben_len = 0;
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &ben, &ben_len) == FAILURE) {
+    char *value;
+    size_t value_len = 0;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &value, &value_len) == FAILURE) {
             RETURN_NULL();
     }
     bstr *bnode = NULL;
-    if (ben_len > 0) {
-        std::string tmp(ben);
+    if (value_len > 0) {
+        std::string tmp(value);
         bnode = new bstr(tmp);
     } else {
         bnode = new bstr();
@@ -182,15 +241,27 @@ PHP_METHOD(bstr, parse)
     size_t pt = 0;
     RETURN_ZVAL(bstr::parse(tmp, pt), 1, 1);
 }
+PHP_METHOD(bstr, encode)
+{
+    bstr_object *intern = Z_BSTR_OBJ_P(getThis());
+    std::string result = intern->bstr_data->encode();
+    RETURN_STRING(result.c_str());
+}
 PHP_METHOD(bstr, to_array)
 {
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
-    RETURN_ZVAL(intern->bstr_data->to_array(), 1, 1);
+    RETURN_ZVAL(intern->bstr_data->to_array(false), 1, 1);
 }
 PHP_METHOD(bstr, to_meta_array)
 {
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
-    RETURN_ZVAL(intern->bstr_data->to_meta_array(), 1, 1);
+    RETURN_ZVAL(intern->bstr_data->to_array(true), 1, 1);
+}
+PHP_METHOD(bstr, __toString)
+{
+    bstr_object *intern = Z_BSTR_OBJ_P(getThis());
+    std::string result = intern->bstr_data->encode();
+    RETURN_STRING(result.c_str());
 }
 static zend_function_entry bstr_methods[] = {
     PHP_ME(bstr, __construct,           NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -199,8 +270,103 @@ static zend_function_entry bstr_methods[] = {
     PHP_ME(bstr, set,                   NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bstr, length,                NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bstr, parse,                 NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(bstr, encode,                NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bstr, to_array,              NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bstr, to_meta_array,         NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bstr, __toString,            NULL, ZEND_ACC_PUBLIC)
+    {NULL, NULL, NULL}
+};
+
+/**** BINT *****/
+PHP_METHOD(bint, __construct)
+{
+    long value;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|l", &value) == FAILURE) {
+            RETURN_NULL();
+    }
+    bint *bnode = NULL;
+    if (ZEND_NUM_ARGS()) {
+        bnode = new bint(value);
+    } else {
+        bnode = new bint();
+    }
+    bint_object *intern = Z_BINT_OBJ_P(getThis());
+    intern->bint_data = bnode;
+}
+PHP_METHOD(bint, get_type)
+{
+    std::string result;
+    bint_object *intern = Z_BINT_OBJ_P(getThis());
+    result = intern->bint_data->get_type();
+    RETURN_STRING(result.c_str());
+}
+PHP_METHOD(bint, get)
+{
+    bint_object *intern = Z_BINT_OBJ_P(getThis());
+    long result = intern->bint_data->get();
+    RETURN_LONG(result);
+}
+PHP_METHOD(bint, set)
+{
+    long value;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &value) == FAILURE) {
+        RETURN_FALSE;
+    }
+    bint_object *intern = Z_BINT_OBJ_P(getThis());
+    intern->bint_data->set(value);
+    RETURN_TRUE;
+}
+PHP_METHOD(bint, length)
+{
+    bint_object *intern = Z_BINT_OBJ_P(getThis());
+    size_t result = intern->bint_data->length();
+    RETURN_LONG(result);
+}
+PHP_METHOD(bint, parse)
+{
+    char *ben;
+    size_t ben_len = 0;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ben, &ben_len) == FAILURE) {
+        RETURN_NULL();
+    }
+    if (!ben_len > 0) RETURN_NULL();
+    std::string tmp(ben);
+    size_t pt = 0;
+    RETURN_ZVAL(bint::parse(tmp, pt), 1, 1);
+}
+PHP_METHOD(bint, encode)
+{
+    bint_object *intern = Z_BINT_OBJ_P(getThis());
+    std::string result = intern->bint_data->encode();
+    RETURN_STRING(result.c_str());
+}
+PHP_METHOD(bint, to_array)
+{
+    bint_object *intern = Z_BINT_OBJ_P(getThis());
+    RETURN_ZVAL(intern->bint_data->to_array(false), 1, 1);
+}
+PHP_METHOD(bint, to_meta_array)
+{
+    bint_object *intern = Z_BINT_OBJ_P(getThis());
+    RETURN_ZVAL(intern->bint_data->to_array(true), 1, 1);
+}
+PHP_METHOD(bint, __toString)
+{
+    bint_object *intern = Z_BINT_OBJ_P(getThis());
+    std::string result = intern->bint_data->encode();
+    RETURN_STRING(result.c_str());
+}
+static zend_function_entry bint_methods[] = {
+    PHP_ME(bint, __construct,           NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+    PHP_ME(bint, get_type,              NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bint, get,                   NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bint, set,                   NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bint, length,                NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bint, parse,                 NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(bint, encode,                NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bint, to_array,              NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bint, to_meta_array,         NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bint, __toString,            NULL, ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
 };
 
@@ -210,6 +376,7 @@ PHP_MINIT_FUNCTION(bencode)
     BI_MINIT(bitem)
     BI_MINIT(bdict)
     BI_MINIT(bstr)
+    BI_MINIT(bint)
     return SUCCESS;
 }
 

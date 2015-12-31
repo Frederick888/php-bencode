@@ -3,6 +3,7 @@
 #include "bitem.h"
 #include "bdict.h"
 #include "bstr.h"
+#include "bint.h"
 #include "zend_container.h"
 
 std::string bstr::get_type() const {
@@ -18,7 +19,7 @@ void bstr::set(const std::string &value) {
 }
 
 size_t bstr::length() const {
-    return _value.length();
+    return (encode().length() / sizeof(char));
 }
 
 zval * bstr::parse(const std::string &ben, size_t &pt) {
@@ -41,34 +42,35 @@ zval * bstr::parse(const std::string &ben, size_t &pt) {
     return zv;
 }
 
-zval * bstr::to_array() const {
-    zval _zv;
-    zval *zv = &_zv;
-    char *tmp = (char *)emalloc(_value.length());
-    strcpy(tmp, _value.c_str());
-    ZVAL_STRING(zv, tmp);
-    efree(tmp);
-    return zv;
+std::string bstr::encode() const {
+    return bitem::numtos(_value.length()) + ":" + _value;
 }
 
-zval * bstr::to_meta_array() const {
+zval * bstr::to_array(const bool include_meta) const {
     zval _zv;
     zval *zv = &_zv;
-    array_init(zv);
-    if (_value.length() == 0) return zv;
-    char *_type = estrdup("_type");
-    char *_type_data = estrdup("bstr");
-    char *_length = estrdup("_length");
-    char *_data = estrdup("_data");
-    char *_data_data = (char *)emalloc(_value.length());
-    strcpy(_data_data, _value.c_str());
-    add_assoc_string(zv, _type, _type_data);
-    add_assoc_long(zv, _length, _value.length());
-    add_assoc_string(zv, _data, _data_data);
-    efree(_type);
-    efree(_type_data);
-    efree(_length);
-    efree(_data);
-    efree(_data_data);
+    if (include_meta) {
+        array_init(zv);
+        if (_value.length() == 0) return zv;
+        char *_type = estrdup("_type");
+        char *_type_data = estrdup("bstr");
+        char *_length = estrdup("_length");
+        char *_data = estrdup("_data");
+        char *_data_data = (char *)emalloc(_value.length());
+        strcpy(_data_data, _value.c_str());
+        add_assoc_string(zv, _type, _type_data);
+        add_assoc_long(zv, _length, length());
+        add_assoc_string(zv, _data, _data_data);
+        efree(_type);
+        efree(_type_data);
+        efree(_length);
+        efree(_data);
+        efree(_data_data);
+    } else {
+        char *tmp = (char *)emalloc(_value.length());
+        strcpy(tmp, _value.c_str());
+        ZVAL_STRING(zv, tmp);
+        efree(tmp);
+    }
     return zv;
 }
