@@ -1,28 +1,26 @@
 Introduction
 ===
-The `php-bencode` is a PHP extension which can boost the process of encoding and decoding of [Bencode](https://en.wikipedia.org/wiki/Bencode). Supported by [PHP-CPP](https://github.com/CopernicaMarketingSoftware/PHP-CPP), the project only uses about 1000 lines of codes to implement the basic functions including encoding, decoding, loading, saving and etc.
+The `php-bencode` is a PHP extension which can boost the process of encoding and decoding of [Bencode](https://en.wikipedia.org/wiki/Bencode).
+
+`php-bencode` now supports **only PHP 7** with no need of any external libraries. For PHP 5 support, please check the [php-5](https://github.com/Frederick888/php-bencode/tree/php-5) branch, which needs [PHP-CPP](https://github.com/CopernicaMarketingSoftware/PHP-CPP). (PHP 5 may be supported in the future, but it would take me a little long to get familiar with the old Zend APIs. So any PRs are welcomed.)
 
 Installation
 ===
 ***Step 1*** Install dependencies
 ```bash
 # Debian, Ubuntu (from launchpad)
-apt-get install php5-dev
+apt-get install php-dev
 # Redhat, CentOS, Fedora
 yum install php-devel
 ```
-***Step 2*** Install PHP-CPP
-```bash
-git clone https://github.com/CopernicaMarketingSoftware/PHP-CPP.git
-cd PHP-CPP
-make -j$(nproc)
-make install
-```
-***Step 3*** Build and install
+
+***Step 2*** Build and install
 ```bash
 git clone https://git.tsundere.moe/Frederick888/php-bencode.git
 cd php-bencode
-make -j$(nproc)
+phpize
+./configure --enable-bencode
+make
 make install
 ```
 
@@ -30,27 +28,31 @@ Basic Usage
 ===
 ***Example 1*** Parsing a string directly
 ```
-php > $dict = BItem::parse("d4:key1l5:hello5:worlde4:key2i99ee");
-php > print_r($dict->toMetaArray());
+php > $bnode = bitem::parse("d4:key1l5:hello5:worlde4:key2i99ee");
+php > print_r($bnode->to_meta_array());
 Array
 (
-    [_type] => BDict
+    [_type] => bdict
+    [_length] => 34
     [_data] => Array
         (
             [key1] => Array
                 (
-                    [_type] => BList
+                    [_type] => blist
+                    [_length] => 16
                     [_data] => Array
                         (
                             [0] => Array
                                 (
-                                    [_type] => BStr
+                                    [_type] => bstr
+                                    [_length] => 7
                                     [_data] => hello
                                 )
 
                             [1] => Array
                                 (
-                                    [_type] => BStr
+                                    [_type] => bstr
+                                    [_length] => 7
                                     [_data] => world
                                 )
 
@@ -60,46 +62,50 @@ Array
 
             [key2] => Array
                 (
-                    [_type] => BInt
+                    [_type] => bint
+                    [_length] => 4
                     [_data] => 99
                 )
 
         )
 
 )
-php > $dict->set('key2', new BInt(100));
-php > echo $dict;
+php > $bnode->set('key2', new bint(100));
+php > echo $bnode;
 d4:key1l5:hello5:worlde4:key2i100ee
 ```
 ***Example 2*** Loading from/saving to a file
 ```
-php > $dict = BItem::load("/path/sample.torrent");
-php > $dict->save("/path/sample_copy.torrent");
-php > echo md5_file("/path/sample.torrent") === md5_file("/path/sample_copy.torrent");
-1
+php > $bnode = bitem::load('/path/sample.dat');
+php > var_dump($bnode->save('/path/sample_copy.dat'));
+bool(true)
+php > var_dump(md5_file('/path/sample.dat') === md5_file('/path/sample_copy.dat'));
+bool(true)
 ```
 ***Example 3*** Set/delete a path
 ```
-php > $dict = new BDict();
-php > $dict->set('key\/1/0', new BStr('hello'));    // Escape the slash if you need it in a key
-php > $dict->set('key\/1/5', new BStr('world'));
-php > print_r($dict->toArray());
+php > $bnode = new bdict();
+php > $bnode->set('key1', new blist());
+php > $bnode->get('key1')->add(new bstr('hello'));
+php > $bnode->get('key1')->add(new bstr('world'));
+php > print_r($bnode->to_array());
 Array
 (
-    [key/1] => Array
+    [key1] => Array
         (
             [0] => hello
             [1] => world
         )
 
 )
-php > echo $dict->del('key2');      // inexistent key
-php > echo $dict->del('key\/1/1');
-1
-php > print_r($dict->toArray());
+php > var_dump($bnode->del('key2'));        // inexistent key
+bool(false)
+php > var_dump($bnode->get('key1')->del(1));
+bool(true)
+php > print_r($bnode->to_array());
 Array
 (
-    [key/1] => Array
+    [key1] => Array
         (
             [0] => hello
         )
