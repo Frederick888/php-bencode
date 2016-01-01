@@ -167,7 +167,7 @@ PHP_METHOD(bdict, encode)
 {
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string result = intern->bdict_data->encode();
-    RETURN_STRING(result.c_str());
+    RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(bdict, to_array)
 {
@@ -183,7 +183,7 @@ PHP_METHOD(bdict, __toString)
 {
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string result = intern->bdict_data->encode();
-    RETURN_STRING(result.c_str());
+    RETURN_STRINGL(result.c_str(), result.length());
 }
 static zend_function_entry bdict_methods[] = {
     PHP_ME(bdict, __construct,          NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -316,7 +316,7 @@ PHP_METHOD(blist, encode)
 {
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     std::string result = intern->blist_data->encode();
-    RETURN_STRING(result.c_str());
+    RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(blist, to_array)
 {
@@ -332,7 +332,7 @@ PHP_METHOD(blist, __toString)
 {
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     std::string result = intern->blist_data->encode();
-    RETURN_STRING(result.c_str());
+    RETURN_STRINGL(result.c_str(), result.length());
 }
 static zend_function_entry blist_methods[] = {
     PHP_ME(blist, __construct,          NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -419,7 +419,7 @@ PHP_METHOD(bstr, encode)
 {
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
     std::string result = intern->bstr_data->encode();
-    RETURN_STRING(result.c_str());
+    RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(bstr, to_array)
 {
@@ -435,7 +435,7 @@ PHP_METHOD(bstr, __toString)
 {
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
     std::string result = intern->bstr_data->encode();
-    RETURN_STRING(result.c_str());
+    RETURN_STRINGL(result.c_str(), result.length());
 }
 static zend_function_entry bstr_methods[] = {
     PHP_ME(bstr, __construct,           NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
@@ -513,7 +513,7 @@ PHP_METHOD(bint, encode)
 {
     bint_object *intern = Z_BINT_OBJ_P(getThis());
     std::string result = intern->bint_data->encode();
-    RETURN_STRING(result.c_str());
+    RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(bint, to_array)
 {
@@ -529,7 +529,7 @@ PHP_METHOD(bint, __toString)
 {
     bint_object *intern = Z_BINT_OBJ_P(getThis());
     std::string result = intern->bint_data->encode();
-    RETURN_STRING(result.c_str());
+    RETURN_STRINGL(result.c_str(), result.length());
 }
 static zend_function_entry bint_methods[] = {
     PHP_ME(bint, __construct,           NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
