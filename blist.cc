@@ -57,7 +57,7 @@ bool blist::has(const size_t &key) const {
 void blist::add(zval *value) {
     std::string class_name = zend_container::bnode_object_get_class_name(value);
     zend_object *clone_object = NULL;
-    if (class_name == "blist" || class_name == "blist" ||
+    if (class_name == "bdict" || class_name == "blist" ||
             class_name == "bstr" || class_name == "bint") {
         clone_object = zend_container::bnode_object_clone(value);
     } else {
@@ -71,7 +71,7 @@ void blist::add(zval *value) {
 void blist::set(const size_t &key, zval *value) {
     std::string class_name = zend_container::bnode_object_get_class_name(value);
     zend_object *clone_object = NULL;
-    if (class_name == "blist" || class_name == "blist" ||
+    if (class_name == "bdict" || class_name == "blist" ||
             class_name == "bstr" || class_name == "bint") {
         clone_object = zend_container::bnode_object_clone(value);
     } else {
