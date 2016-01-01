@@ -172,11 +172,160 @@ static zend_function_entry bdict_methods[] = {
     PHP_ME(bdict, del,                  NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, length,               NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, count,                NULL, ZEND_ACC_PUBLIC)
-    PHP_ME(bdict, parse,                NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, parse,                NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(bdict, encode,               NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, to_array,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, to_meta_array,        NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, __toString,           NULL, ZEND_ACC_PUBLIC)
+    {NULL, NULL, NULL}
+};
+
+/**** BLIST *****/
+PHP_METHOD(blist, __construct)
+{
+    blist *bnode = NULL;
+    bnode = new blist();
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    intern->blist_data = bnode;
+}
+PHP_METHOD(blist, get_type)
+{
+    std::string result;
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    result = intern->blist_data->get_type();
+    RETURN_STRING(result.c_str());
+}
+PHP_METHOD(blist, get)
+{
+    long key;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &key) == FAILURE) {
+            RETURN_NULL();
+    }
+    if (key < 0) {
+        RETURN_NULL();
+    }
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    RETURN_ZVAL(intern->blist_data->get(key), 1, 0);
+}
+PHP_METHOD(blist, get_copy)
+{
+    long key;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &key) == FAILURE) {
+            RETURN_NULL();
+    }
+    if (key < 0) {
+        RETURN_NULL();
+    }
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    RETURN_OBJ(zend_container::bnode_object_clone(intern->blist_data->get(key)));
+}
+PHP_METHOD(blist, add)
+{
+    zval *zv;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "o", &zv) == FAILURE) {
+            RETURN_FALSE;
+    }
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    intern->blist_data->add(zv);
+    RETURN_TRUE;
+}
+PHP_METHOD(blist, set)
+{
+    long key;
+    zval *zv;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lo", &key, &zv) == FAILURE) {
+            RETURN_FALSE;
+    }
+    if (key < 0) {
+        RETURN_FALSE;
+    }
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    intern->blist_data->set(key, zv);
+    RETURN_TRUE;
+}
+PHP_METHOD(blist, has)
+{
+    long key;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &key) == FAILURE) {
+            RETURN_NULL();
+    }
+    if (key < 0) {
+        RETURN_FALSE;
+    }
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    RETURN_BOOL(intern->blist_data->has(key));
+}
+PHP_METHOD(blist, del)
+{
+    long key;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &key) == FAILURE) {
+            RETURN_NULL();
+    }
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    RETURN_BOOL(intern->blist_data->del(key));
+}
+PHP_METHOD(blist, length)
+{
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    size_t result = intern->blist_data->length();
+    RETURN_LONG(result);
+}
+PHP_METHOD(blist, count)
+{
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    size_t result = intern->blist_data->count();
+    RETURN_LONG(result);
+}
+PHP_METHOD(blist, parse)
+{
+    char *ben;
+    size_t ben_len = 0;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ben, &ben_len) == FAILURE) {
+        RETURN_NULL();
+    }
+    if (!ben_len > 0) RETURN_NULL();
+    std::string tmp(ben);
+    size_t pt = 0;
+    RETURN_ZVAL(blist::parse(tmp, pt), 1, 1);
+}
+PHP_METHOD(blist, encode)
+{
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    std::string result = intern->blist_data->encode();
+    RETURN_STRING(result.c_str());
+}
+PHP_METHOD(blist, to_array)
+{
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    RETURN_ZVAL(intern->blist_data->to_array(false), 1, 1);
+}
+PHP_METHOD(blist, to_meta_array)
+{
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    RETURN_ZVAL(intern->blist_data->to_array(true), 1, 1);
+}
+PHP_METHOD(blist, __toString)
+{
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    std::string result = intern->blist_data->encode();
+    RETURN_STRING(result.c_str());
+}
+static zend_function_entry blist_methods[] = {
+    PHP_ME(blist, __construct,          NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+    PHP_ME(blist, get_type,             NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, get,                  NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, get_copy,             NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, add,                  NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, set,                  NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, has,                  NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, del,                  NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, length,               NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, count,                NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, parse,                NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(blist, encode,               NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, to_array,             NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, to_meta_array,        NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, __toString,           NULL, ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
 };
 
@@ -375,13 +524,14 @@ PHP_MINIT_FUNCTION(bencode)
 {
     BI_MINIT(bitem)
     BI_MINIT(bdict)
+    BI_MINIT(blist)
     BI_MINIT(bstr)
     BI_MINIT(bint)
     return SUCCESS;
 }
 
 static zend_function_entry bencode_functions[] = {
-    PHP_FE(bencode_world, NULL)
+    PHP_FE(bencode_hello, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -408,23 +558,7 @@ ZEND_GET_MODULE(bencode)
 }
 #endif
 
-PHP_FUNCTION(bencode_world)
+PHP_FUNCTION(bencode_hello)
 {
-//    zval _zv;
-//    zval *zv = &_zv;
-//    object_init_ex(zv, zend_container::bitem_ce);
-//    bitem_object *intern = zend_container::bitem_fetch_object(Z_OBJ_P(zv));
-//    intern->bitem_data = new bitem();
-//    RETURN_ZVAL(zv, 1, 1);
-//
-//    zval _outer; zval *outer = &_outer; array_init(outer);
-//    zval _inner; zval *inner = &_inner; array_init(inner);
-//    std::string _key = "hello";
-//    char *key = (char *)emalloc(_key.length());
-//    strcpy(key, _key.c_str());
-//    add_assoc_zval(outer, key, inner);
-//    efree(key);
-//    RETURN_ZVAL(outer, 0, 1);
-    php_printf("SUCCESS: %d\n", SUCCESS);
-    php_printf("FAILURE: %d\n", FAILURE);
+    php_printf("Hello Bencode!\n");
 }

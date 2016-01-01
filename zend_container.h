@@ -7,6 +7,7 @@ extern "C" {
 
 #include "bitem.h"
 #include "bdict.h"
+#include "blist.h"
 #include "bstr.h"
 #include "bint.h"
 
@@ -18,6 +19,7 @@ extern "C" {
 
 ZEND_CONTAINER_PRE(bitem)
 ZEND_CONTAINER_PRE(bdict)
+ZEND_CONTAINER_PRE(blist)
 ZEND_CONTAINER_PRE(bstr)
 ZEND_CONTAINER_PRE(bint)
 
@@ -33,6 +35,7 @@ class zend_container {
 public:
     ZEND_CONTAINER_INIT(bitem)
     ZEND_CONTAINER_INIT(bdict)
+    ZEND_CONTAINER_INIT(blist)
     ZEND_CONTAINER_INIT(bstr)
     ZEND_CONTAINER_INIT(bint)
     static std::string bnode_object_get_class_name(zval *object) {

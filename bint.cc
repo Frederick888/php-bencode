@@ -2,6 +2,7 @@
 #include <cstring>
 #include "bitem.h"
 #include "bdict.h"
+#include "blist.h"
 #include "bstr.h"
 #include "bint.h"
 #include "zend_container.h"

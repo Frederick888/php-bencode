@@ -11,7 +11,7 @@ extern "C" {
 #endif
 }
 
-PHP_FUNCTION(bencode_world);
+PHP_FUNCTION(bencode_hello);
 
 extern zend_module_entry bencode_module_entry;
 #define phpext_bencode_ptr &bencode_module_entry

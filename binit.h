@@ -51,6 +51,8 @@
 BI_PRELUDE(bitem)
 #define Z_BDICT_OBJ_P(zv) zend_container::bdict_fetch_object(Z_OBJ_P(zv))
 BI_PRELUDE(bdict)
+#define Z_BLIST_OBJ_P(zv) zend_container::blist_fetch_object(Z_OBJ_P(zv))
+BI_PRELUDE(blist)
 #define Z_BSTR_OBJ_P(zv) zend_container::bstr_fetch_object(Z_OBJ_P(zv))
 BI_PRELUDE(bstr)
 #define Z_BINT_OBJ_P(zv) zend_container::bint_fetch_object(Z_OBJ_P(zv))

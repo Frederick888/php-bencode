@@ -8,5 +8,5 @@ if test "$PHP_BENCODE" != "no"; then
     PHP_REQUIRE_CXX()
     PHP_SUBST(BENCODE_SHARED_LIBADD)
     PHP_ADD_LIBRARY(stdc++, 1, BENCODE_SHARED_LIBADD)
-    PHP_NEW_EXTENSION(bencode, bencode.cc bitem.cc bdict.cc bstr.cc bint.cc, $ext_shared)
+    PHP_NEW_EXTENSION(bencode, bencode.cc bitem.cc bdict.cc blist.cc bstr.cc bint.cc, $ext_shared)
 fi
