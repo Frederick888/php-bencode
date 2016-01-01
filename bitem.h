@@ -29,6 +29,8 @@ class bitem {
         virtual std::string get_type() const;
         static zval * parse(const std::string &ben);
         virtual std::string encode() const = 0;
+        static zval * load(const std::string &file_path);
+        void save(const std::string &file_path) const;
 };
 
 #endif

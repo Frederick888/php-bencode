@@ -102,6 +102,7 @@ zval * bdict::parse(const std::string &ben, size_t &pt) {
     object_init_ex(zv, zend_container::bdict_ce);
     bdict_object *intern = zend_container::bdict_fetch_object(Z_OBJ_P(zv));
     intern->bdict_data = new bdict();
+    ++pt;
 
     while (ben[pt] != 'e') {
         size_t start = pt;
@@ -111,17 +112,17 @@ zval * bdict::parse(const std::string &ben, size_t &pt) {
         std::string key = ben.substr(pt, std::stoull(key_len));
         pt += std::stoull(key_len);
         if (ben[pt] == 'd') {
-            zval *bnode = bdict::parse(ben, pt);
-            zend_hash_str_add(intern->bdict_data->_data, key.c_str(), key.length(), bnode);
+            zval bnode = *bdict::parse(ben, pt);
+            zend_hash_str_add(intern->bdict_data->_data, key.c_str(), key.length(), &bnode);
         } else if (ben[pt] == 'l') {
-            zval *bnode = blist::parse(ben, pt);
-            zend_hash_str_add(intern->bdict_data->_data, key.c_str(), key.length(), bnode);
+            zval bnode = *blist::parse(ben, pt);
+            zend_hash_str_add(intern->bdict_data->_data, key.c_str(), key.length(), &bnode);
         } else if (ben[pt] >= '0' && ben[pt] <= '9') {
-            zval *bnode = bstr::parse(ben, pt);
-            zend_hash_str_add(intern->bdict_data->_data, key.c_str(), key.length(), bnode);
+            zval bnode = *bstr::parse(ben, pt);
+            zend_hash_str_add(intern->bdict_data->_data, key.c_str(), key.length(), &bnode);
         } else if (ben[pt] == 'i') {
-            zval *bnode = bint::parse(ben, pt);
-            zend_hash_str_add(intern->bdict_data->_data, key.c_str(), key.length(), bnode);
+            zval bnode = *bint::parse(ben, pt);
+            zend_hash_str_add(intern->bdict_data->_data, key.c_str(), key.length(), &bnode);
         } else {
             zend_throw_exception(
                     zend_container::bdict_ce,

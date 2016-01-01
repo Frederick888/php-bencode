@@ -129,17 +129,17 @@ zval * blist::parse(const std::string &ben, size_t &pt) {
 
     while (ben[pt] != 'e') {
         if (ben[pt] == 'd') {
-            zval *bnode = bdict::parse(ben, pt);
-            zend_hash_next_index_insert(intern->blist_data->_data, bnode);
+            zval bnode = *bdict::parse(ben, pt);
+            zend_hash_next_index_insert(intern->blist_data->_data, &bnode);
         } else if (ben[pt] == 'l') {
-            zval *bnode = blist::parse(ben, pt);
-            zend_hash_next_index_insert(intern->blist_data->_data, bnode);
+            zval bnode = *blist::parse(ben, pt);
+            zend_hash_next_index_insert(intern->blist_data->_data, &bnode);
         } else if (ben[pt] >= '0' && ben[pt] <= '9') {
-            zval *bnode = bstr::parse(ben, pt);
-            zend_hash_next_index_insert(intern->blist_data->_data, bnode);
+            zval bnode = *bstr::parse(ben, pt);
+            zend_hash_next_index_insert(intern->blist_data->_data, &bnode);
         } else if (ben[pt] == 'i') {
-            zval *bnode = bint::parse(ben, pt);
-            zend_hash_next_index_insert(intern->blist_data->_data, bnode);
+            zval bnode = *bint::parse(ben, pt);
+            zend_hash_next_index_insert(intern->blist_data->_data, &bnode);
         } else {
             zend_throw_exception(
                     zend_container::blist_ce,

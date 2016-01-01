@@ -13,20 +13,57 @@ PHP_METHOD(bitem, __construct)
 }
 PHP_METHOD(bitem, parse)
 {
-//    char *ben;
-//    size_t ben_len;
-//    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ben, &ben_len) == FAILURE) {
-//        RETURN_NULL();
-//    }
-//    std::string ben_str(ben);
-//    zval *result = bitem::parse(ben_str);
-//    RETURN_ARR(Z_ARRVAL_P(result));
-    std::string ben = "d4:key15:item1e";
-    RETURN_ZVAL(bitem::parse(ben), 1, 1);
+    char *ben;
+    size_t ben_len;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ben, &ben_len) == FAILURE) {
+        RETURN_NULL();
+    }
+    std::string ben_str(ben);
+    RETURN_ZVAL(bitem::parse(ben_str), 1, 1);
+}
+PHP_METHOD(bitem, load)
+{
+    char *file_path;
+    size_t file_path_len;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &file_path, &file_path_len) == FAILURE) {
+        RETURN_NULL();
+    }
+    std::string file_path_str(file_path);
+    RETURN_ZVAL(bitem::load(file_path_str), 1, 1);
+}
+PHP_METHOD(bitem, save)
+{
+    char *file_path;
+    size_t file_path_len;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &file_path, &file_path_len) == FAILURE) {
+        RETURN_NULL();
+    }
+    std::string file_path_str(file_path);
+    std::string class_name = zend_container::bnode_object_get_class_name(getThis());
+    if (class_name == "bdict") {
+        bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+        intern->bdict_data->save(file_path_str);
+        RETURN_TRUE;
+    } else if (class_name == "blist") {
+        blist_object *intern = Z_BLIST_OBJ_P(getThis());
+        intern->blist_data->save(file_path_str);
+        RETURN_TRUE;
+    } else if (class_name == "bstr") {
+        bstr_object *intern = Z_BSTR_OBJ_P(getThis());
+        intern->bstr_data->save(file_path_str);
+        RETURN_TRUE;
+    } else if (class_name == "bint") {
+        bint_object *intern = Z_BINT_OBJ_P(getThis());
+        intern->bint_data->save(file_path_str);
+        RETURN_TRUE;
+    }
+    RETURN_FALSE;
 }
 static zend_function_entry bitem_methods[] = {
     PHP_ME(bitem, __construct,          NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(bitem, parse,                NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(bitem, load,                 NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(bitem, save,                 NULL, ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
 };
 
@@ -160,6 +197,7 @@ static zend_function_entry bdict_methods[] = {
     PHP_ME(bdict, count,                NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, parse,                NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(bdict, encode,               NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bitem, save,                 NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, to_array,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, to_meta_array,        NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, __toString,           NULL, ZEND_ACC_PUBLIC)
@@ -309,6 +347,7 @@ static zend_function_entry blist_methods[] = {
     PHP_ME(blist, count,                NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, parse,                NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(blist, encode,               NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bitem, save,                 NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, to_array,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, to_meta_array,        NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, __toString,           NULL, ZEND_ACC_PUBLIC)
@@ -406,6 +445,7 @@ static zend_function_entry bstr_methods[] = {
     PHP_ME(bstr, length,                NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bstr, parse,                 NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(bstr, encode,                NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bitem, save,                 NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bstr, to_array,              NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bstr, to_meta_array,         NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bstr, __toString,            NULL, ZEND_ACC_PUBLIC)
@@ -499,6 +539,7 @@ static zend_function_entry bint_methods[] = {
     PHP_ME(bint, length,                NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bint, parse,                 NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(bint, encode,                NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bitem, save,                 NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bint, to_array,              NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bint, to_meta_array,         NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bint, __toString,            NULL, ZEND_ACC_PUBLIC)
