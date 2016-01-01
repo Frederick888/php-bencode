@@ -23,4 +23,5 @@ mkinstalldirs
 .deps
 
 !config.m4
+!php_bencode_doc.php
 
