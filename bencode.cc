@@ -7,22 +7,9 @@
 /**** BITEM *****/
 PHP_METHOD(bitem, __construct)
 {
-    bitem *bnode = NULL;
-/*
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &maxGear) == FAILURE) {
-        RETURN_NULL();
-    }
-*/
-    bnode = new bitem();
-    bitem_object *intern = Z_BITEM_OBJ_P(getThis());
-    intern->bitem_data = bnode;
-}
-PHP_METHOD(bitem, get_type)
-{
-    std::string result;
-    bitem_object *intern = Z_BITEM_OBJ_P(getThis());
-    result = intern->bitem_data->get_type();
-    RETURN_STRING(result.c_str());
+    // block instantiating bitem
+    // TODO: find a programmatic way to do this
+    RETURN_NULL();
 }
 PHP_METHOD(bitem, parse)
 {
@@ -39,7 +26,6 @@ PHP_METHOD(bitem, parse)
 }
 static zend_function_entry bitem_methods[] = {
     PHP_ME(bitem, __construct,          NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-    PHP_ME(bitem, get_type,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bitem, parse,                NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     {NULL, NULL, NULL}
 };
@@ -522,7 +508,16 @@ static zend_function_entry bint_methods[] = {
 /**** PHP ****/
 PHP_MINIT_FUNCTION(bencode)
 {
-    BI_MINIT(bitem)
+    do {
+        zend_class_entry ce;
+        INIT_CLASS_ENTRY(ce, "bitem", bitem_methods);
+        ce.ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
+        ce.ce_flags |= ZEND_ACC_IMPLICIT_ABSTRACT_CLASS;
+        zend_container::bitem_ce = zend_register_internal_class(&ce TSRMLS_CC);
+        memcpy(&zend_container::bitem_object_handlers,
+                zend_get_std_object_handlers(), sizeof(zend_object_handlers));
+        zend_container::bitem_object_handlers.offset = XtOffsetOf(bitem_object, std);
+    } while (0);
     BI_MINIT(bdict)
     BI_MINIT(blist)
     BI_MINIT(bstr)
