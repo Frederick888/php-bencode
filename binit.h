@@ -40,8 +40,7 @@
     zend_class_entry ce;                                                                                        \
     if (ini_ns) INIT_CLASS_ENTRY(ce, "bencode\\"#bclass, bclass##_methods)                                      \
     else INIT_CLASS_ENTRY(ce, #bclass, bclass##_methods);                                                       \
-    ce.parent = zend_container::bitem_ce;                                                                       \
-    zend_container::bclass##_ce = zend_register_internal_class(&ce TSRMLS_CC);                                  \
+    zend_container::bclass##_ce = zend_register_internal_class_ex(&ce, zend_container::bitem_ce TSRMLS_CC);     \
     zend_container::bclass##_ce->create_object = zend_container::bclass##_object_new;                           \
     memcpy(&zend_container::bclass##_object_handlers,                                                           \
             zend_get_std_object_handlers(), sizeof(zend_object_handlers));                                      \
