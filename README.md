@@ -24,6 +24,15 @@ make
 make install
 ```
 
+***Step 3*** Enable `php-bencode`
+
+Add this to your `php.ini`:
+```ini
+extension=bencode.so
+; optional: register classes in "bencode" namespace
+bencode.namespace=1
+```
+
 Basic Usage
 ===
 ***Example 1*** Parsing a string directly
@@ -117,4 +126,5 @@ TODO
 1. code cleaning
 2. set/get by node paths
 3. search through a Bencode tree
-4. registration in a given namespace
+4. ~~registration in a given namespace~~
+5. PHP 5.6 support
