@@ -6,11 +6,14 @@
 
 extern "C" {
 #include "php.h"
+#include "php_ini.h"
 #ifdef ZTS
 #include "TSRM.h"
 #endif
 }
 
+PHP_MINIT_FUNCTION(bencode);
+PHP_MSHUTDOWN_FUNCTION(bencode);
 PHP_FUNCTION(bencode_hello);
 
 extern zend_module_entry bencode_module_entry;

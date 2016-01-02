@@ -547,11 +547,23 @@ static zend_function_entry bint_methods[] = {
 };
 
 /**** PHP ****/
+PHP_INI_BEGIN()
+PHP_INI_ENTRY("bencode.namespace", "0", PHP_INI_SYSTEM, NULL)
+PHP_INI_END()
+
 PHP_MINIT_FUNCTION(bencode)
 {
+    REGISTER_INI_ENTRIES();
+
+    char *ini_ns_key = zend_container::get_cstring("bencode.namespace");
+    zend_bool ini_ns = zend_ini_long(ini_ns_key, strlen(ini_ns_key), 0);
+    efree(ini_ns_key);
     do {
         zend_class_entry ce;
-        INIT_CLASS_ENTRY(ce, "bitem", bitem_methods);
+        if (ini_ns)
+            INIT_CLASS_ENTRY(ce, "bencode\\bitem", bitem_methods)
+        else
+            INIT_CLASS_ENTRY(ce, "bitem", bitem_methods);
         ce.ce_flags |= ZEND_ACC_EXPLICIT_ABSTRACT_CLASS;
         ce.ce_flags |= ZEND_ACC_IMPLICIT_ABSTRACT_CLASS;
         zend_container::bitem_ce = zend_register_internal_class(&ce TSRMLS_CC);
@@ -563,6 +575,12 @@ PHP_MINIT_FUNCTION(bencode)
     BI_MINIT(blist)
     BI_MINIT(bstr)
     BI_MINIT(bint)
+    return SUCCESS;
+}
+
+PHP_MSHUTDOWN_FUNCTION(bencode)
+{
+    UNREGISTER_INI_ENTRIES();
     return SUCCESS;
 }
 
@@ -578,7 +596,7 @@ zend_module_entry bencode_module_entry = {
     PHP_BENCODE_EXTNAME,
     bencode_functions,          //FUNCTIONS
     PHP_MINIT(bencode),         //PHP_MINIT
-    NULL,                       //PHP_MSHUTDOWN(bencode),
+    PHP_MSHUTDOWN(bencode),     //PHP_MSHUTDOWN(bencode),
     NULL,                       //PHP_RINIT(bencode),
     NULL,                       //PHP_RSHUTDOWN
     NULL,                       //PHP_MINFO
@@ -596,5 +614,6 @@ ZEND_GET_MODULE(bencode)
 
 PHP_FUNCTION(bencode_hello)
 {
-    php_printf("Hello Bencode!\n");
+    php_printf("hello bencode!\n");
+    RETURN_TRUE;
 }
