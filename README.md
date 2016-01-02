@@ -112,3 +112,9 @@ Array
 
 )
 ```
+TODO
+===
+1. code cleaning
+2. set/get by node paths
+3. search through a Bencode tree
+4. registration in a given namespace
