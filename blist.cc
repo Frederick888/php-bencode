@@ -18,12 +18,12 @@ blist::blist(const blist *that) : bitem() {
     for(zend_hash_internal_pointer_reset(that->_data);
             zend_hash_has_more_elements(that->_data) == SUCCESS;
             zend_hash_move_forward(that->_data)) {
-        zval temp;
-        ZVAL_OBJ(&temp, zend_container::bnode_object_clone(zend_hash_get_current_data(that->_data)));
+        zval tmp;
+        ZVAL_OBJ(&tmp, zend_container::bnode_object_clone(zend_hash_get_current_data(that->_data)));
         zend_string *_str_index;
         zend_ulong _num_index;
         zend_hash_get_current_key(that->_data, &_str_index, &_num_index);
-        zend_hash_index_add(_data, _num_index, &temp);
+        zend_hash_index_add(_data, _num_index, &tmp);
     }
 }
 
@@ -63,9 +63,9 @@ void blist::add(zval *value) {
     } else {
         return;
     }
-    zval temp;
-    ZVAL_OBJ(&temp, clone_object);
-    zend_hash_next_index_insert(_data, &temp);
+    zval tmp;
+    ZVAL_OBJ(&tmp, clone_object);
+    zend_hash_next_index_insert(_data, &tmp);
 }
 
 void blist::set(const size_t &key, zval *value) {
@@ -77,12 +77,12 @@ void blist::set(const size_t &key, zval *value) {
     } else {
         return;
     }
-    zval temp;
-    ZVAL_OBJ(&temp, clone_object);
+    zval tmp;
+    ZVAL_OBJ(&tmp, clone_object);
     if (zend_hash_index_exists(_data, key)) {
-        zend_hash_index_update(_data, key, &temp);
+        zend_hash_index_update(_data, key, &tmp);
     } else {
-        zend_hash_next_index_insert(_data, &temp);
+        zend_hash_next_index_insert(_data, &tmp);
     }
 }
 

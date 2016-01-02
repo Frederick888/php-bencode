@@ -14,7 +14,6 @@ extern "C" {
 
 PHP_MINIT_FUNCTION(bencode);
 PHP_MSHUTDOWN_FUNCTION(bencode);
-PHP_FUNCTION(bencode_hello);
 
 extern zend_module_entry bencode_module_entry;
 #define phpext_bencode_ptr &bencode_module_entry

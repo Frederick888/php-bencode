@@ -555,7 +555,7 @@ PHP_MINIT_FUNCTION(bencode)
 {
     REGISTER_INI_ENTRIES();
 
-    char *ini_ns_key = zend_container::get_cstring("bencode.namespace");
+    char *ini_ns_key = estrdup("bencode.namespace");
     zend_bool ini_ns = zend_ini_long(ini_ns_key, strlen(ini_ns_key), 0);
     efree(ini_ns_key);
     do {
@@ -584,17 +584,12 @@ PHP_MSHUTDOWN_FUNCTION(bencode)
     return SUCCESS;
 }
 
-static zend_function_entry bencode_functions[] = {
-    PHP_FE(bencode_hello, NULL)
-    {NULL, NULL, NULL}
-};
-
 zend_module_entry bencode_module_entry = {
 #if ZEND_MODULE_API_NO >= 20010901
     STANDARD_MODULE_HEADER,
 #endif
     PHP_BENCODE_EXTNAME,
-    bencode_functions,          //FUNCTIONS
+    NULL,                       //FUNCTIONS
     PHP_MINIT(bencode),         //PHP_MINIT
     PHP_MSHUTDOWN(bencode),     //PHP_MSHUTDOWN(bencode),
     NULL,                       //PHP_RINIT(bencode),
@@ -611,9 +606,3 @@ extern "C" {
 ZEND_GET_MODULE(bencode)
 }
 #endif
-
-PHP_FUNCTION(bencode_hello)
-{
-    php_printf("hello bencode!\n");
-    RETURN_TRUE;
-}

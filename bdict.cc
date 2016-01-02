@@ -18,12 +18,12 @@ bdict::bdict(const bdict *that) : bitem() {
     for(zend_hash_internal_pointer_reset(that->_data);
             zend_hash_has_more_elements(that->_data) == SUCCESS;
             zend_hash_move_forward(that->_data)) {
-        zval temp;
-        ZVAL_OBJ(&temp, zend_container::bnode_object_clone(zend_hash_get_current_data(that->_data)));
+        zval tmp;
+        ZVAL_OBJ(&tmp, zend_container::bnode_object_clone(zend_hash_get_current_data(that->_data)));
         zend_string *_str_index;
         zend_ulong _num_index;
         zend_hash_get_current_key(that->_data, &_str_index, &_num_index);
-        zend_hash_add(_data, _str_index, &temp);
+        zend_hash_add(_data, _str_index, &tmp);
     }
 }
 
@@ -55,9 +55,9 @@ bool bdict::has(const std::string &key) const {
 }
 
 void bdict::set(const std::string &key, zval *value) {
-    //zval temp;
-    //temp = *value;
-    //zval_copy_ctor(&temp);
+    //zval tmp;
+    //tmp = *value;
+    //zval_copy_ctor(&tmp);
     std::string class_name = zend_container::bnode_object_get_class_name(value);
     zend_object *clone_object = NULL;
     if (class_name == "bdict" || class_name == "blist" ||
@@ -66,12 +66,12 @@ void bdict::set(const std::string &key, zval *value) {
     } else {
         return;
     }
-    zval temp;
-    ZVAL_OBJ(&temp, clone_object);
+    zval tmp;
+    ZVAL_OBJ(&tmp, clone_object);
     if (zend_hash_str_exists(_data, key.c_str(), key.length())) {
-        zend_hash_str_update(_data, key.c_str(), key.length(), &temp);
+        zend_hash_str_update(_data, key.c_str(), key.length(), &tmp);
     } else {
-        zend_hash_str_add(_data, key.c_str(), key.length(), &temp);
+        zend_hash_str_add(_data, key.c_str(), key.length(), &tmp);
     }
 }
 
