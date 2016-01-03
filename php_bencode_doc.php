@@ -76,7 +76,7 @@ class bdict extends bitem
 
     /**
      * @param string $key The key of the object to get
-     * @return bdict|blist|bstr|bint|null $value The object
+     * @return bdict|blist|bstr|bint|bool $value The object
      *
      * This function will return a reference of the node
      * If you need a copy instead, please use get_copy()
@@ -87,7 +87,7 @@ class bdict extends bitem
 
     /**
      * @param string $key The key of the object to get
-     * @return bdict|blist|bstr|bint|null $value The object
+     * @return bdict|blist|bstr|bint|bool $value The object
      */
     function get_copy($key)
     {
@@ -109,6 +109,67 @@ class bdict extends bitem
     {
     }
 
+    /**
+     * @param string $path The path of the object to set
+     * @param bdict|blist|bstr|bint $value The object
+     * @return bool
+     *
+     * the path is a series of slash split keys
+     * for example,
+     *      set('key1/0', new bint(1))
+     * will do
+     *      (bdict)[ "key1"(bstr) => (blist)[ 0 => 1(bint) ] ]
+     * and if you want to use a slash in key, use
+     *      \/
+     * instead, this could be sometimes confusing, pay attention to it
+     *
+     * what's more, if any parent of the object in the given path does not exist,
+     * it will be automatically created
+     * the type of the created parent determines on the format of the key
+     * for example,
+     *      (bdict)[ ]
+     *          ⟱
+     *      set_path(key1/0', new bint(1))
+     *          ⟱
+     *      (bdict)[ "key1"(bstr) => (blist)[ 0 => 1(bint) ] ]
+     *
+     *      (bdict)[ ]
+     *          ⟱
+     *      set_path('key1/index0', new bint(1))
+     *          ⟱
+     *      (bdict)[ "key1"(bstr) => (bdict)[ "index0"(bstr) => 1(bint) ] ]
+     * so be careful if you want a bdict whose keys are integer-only strings
+     */
+    function set_path($path, $value)
+    {
+    }
+
+    /**
+     * @param string $path The path of the object to get
+     * @return bdict|blist|bstr|bint|bool $value The object
+     *
+     * This function will return a reference of the node
+     * If you need a copy instead, please use get_path_copy()
+     */
+    function get_path($path)
+    {
+    }
+
+    /**
+     * @param string $path The path of the object to get
+     * @return bdict|blist|bstr|bint|bool $value The object
+     */
+    function get_path_copy($path)
+    {
+    }
+
+    /**
+     * @param string $path The key of the object to delete
+     * @return bool Deleted, true; not found, false
+     */
+    function del_path($path)
+    {
+    }
 
     /**
      * @return int Return the length of encoded content
@@ -249,6 +310,43 @@ class blist extends bitem
      * @return bool Deleted, true; not found, false
      */
     function del($key)
+    {
+    }
+
+    /**
+     * @param string $path The path of the object to set
+     * @param bdict|blist|bstr|bint $value The object
+     * @return bool
+     * @see bdict::set_path()
+     */
+    function set_path($path, $value)
+    {
+    }
+
+    /**
+     * @param string $path The path of the object to get
+     * @return bdict|blist|bstr|bint|bool $value The object
+     *
+     * This function will return a reference of the node
+     * If you need a copy instead, please use get_path_copy()
+     */
+    function get_path($path)
+    {
+    }
+
+    /**
+     * @param string $path The path of the object to get
+     * @return bdict|blist|bstr|bint|bool $value The object
+     */
+    function get_path_copy($path)
+    {
+    }
+
+    /**
+     * @param string $path The key of the object to delete
+     * @return bool Deleted, true; not found, false
+     */
+    function del_path($path)
     {
     }
 
