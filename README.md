@@ -92,6 +92,8 @@ php > var_dump(md5_file('/path/sample.dat') === md5_file('/path/sample_copy.dat'
 bool(true)
 ```
 ***Example 3*** Set/delete a path
+
+*it may be a better choice to use set_path/get_path/del_path instead, check phpdoc*
 ```
 php > $bnode = new bdict();
 php > $bnode->set('key1', new blist());
@@ -124,7 +126,7 @@ Array
 TODO
 ===
 1. code cleaning
-2. set/get by node paths
+2. ~~set/get by node paths~~
 3. search through a Bencode tree
 4. ~~registration in a given namespace~~
 5. PHP 5.6 support
