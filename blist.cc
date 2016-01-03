@@ -105,8 +105,9 @@ bool blist::del(const size_t &key) {
 
 zval * blist::get_path(const std::string &key, size_t &pt) const {
     std::string current_key = bitem::get_current_key(key, pt);
-    if (!bitem::is_ull(current_key))
-        return bitem::throw_general_exception("Invalid key for blist, only positive integer is allowed");
+    if (!bitem::is_ull(current_key)) {
+        return bitem::get_zval_bool(false);
+    }
     size_t current_key_long = std::stoull(current_key);
 
     if (!zend_hash_index_exists(_data, current_key_long)) {
@@ -183,6 +184,31 @@ void blist::set_path(const std::string &key, size_t &pt, zval *value) {
                 ZVAL_OBJ(&zv, zo);
                 zend_hash_next_index_insert(_data, &zv);
             }
+        }
+    }
+}
+
+bool blist::del_path(const std::string &key, size_t &pt) {
+    std::string current_key = bitem::get_current_key(key, pt);
+    if (!bitem::is_ull(current_key)) {
+        return false;
+    }
+    size_t current_key_long = std::stoull(current_key);
+
+    if (!zend_hash_index_exists(_data, current_key_long)) {
+        return false;
+    }
+    if (pt >= key.length()) {
+        return del(current_key_long);
+    } else {
+        zval *subnode = zend_hash_index_find(_data, current_key_long);
+        std::string class_name = zend_container::bnode_object_get_class_name(subnode);
+        if (class_name == "bdict") {
+            return zend_container::bdict_fetch_object(Z_OBJ_P(subnode))->bdict_data->del_path(key, pt);
+        } else if (class_name == "blist") {
+            return zend_container::blist_fetch_object(Z_OBJ_P(subnode))->blist_data->del_path(key, pt);
+        } else {
+            return false;
         }
     }
 }

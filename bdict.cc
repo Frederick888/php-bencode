@@ -155,6 +155,26 @@ void bdict::set_path(const std::string &key, size_t &pt, zval *value) {
     }
 }
 
+bool bdict::del_path(const std::string &key, size_t &pt) {
+    std::string current_key = bitem::get_current_key(key, pt);
+    if (!zend_hash_str_exists(_data, current_key.c_str(), current_key.length())) {
+        return false;
+    }
+    if (pt >= key.length()) {
+        return del(current_key);
+    } else {
+        zval *subnode = zend_hash_str_find(_data, current_key.c_str(), current_key.length());
+        std::string class_name = zend_container::bnode_object_get_class_name(subnode);
+        if (class_name == "bdict") {
+            return zend_container::bdict_fetch_object(Z_OBJ_P(subnode))->bdict_data->del_path(key, pt);
+        } else if (class_name == "blist") {
+            return zend_container::blist_fetch_object(Z_OBJ_P(subnode))->blist_data->del_path(key, pt);
+        } else {
+            return false;
+        }
+    }
+}
+
 size_t bdict::length() const {
     return (encode().length() / sizeof(char));
 }
