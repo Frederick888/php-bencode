@@ -38,10 +38,7 @@ std::string bdict::get_type() const {
 
 zval * bdict::get(const std::string &key) const {
     if (!zend_hash_str_exists(_data, key.c_str(), key.length())) {
-        zval _zv;
-        zval *zv = &_zv;
-        ZVAL_BOOL(zv, 0);
-        return zv;
+        return bitem::get_zval_bool(false);
     }
     return zend_hash_str_find(_data, key.c_str(), key.length());
 }
@@ -94,10 +91,7 @@ zval * bdict::get_path(const std::string &key, size_t &pt) const {
         escape = current_key.find("\\/");
     }
     if (!zend_hash_str_exists(_data, current_key.c_str(), current_key.length())) {
-        zval _zv;
-        zval *zv = &_zv;
-        ZVAL_BOOL(zv, 0);
-        return zv;
+        return bitem::get_zval_bool(false);
     }
     if (pt >= key.length()) {
         return zend_hash_str_find(_data, current_key.c_str(), current_key.length());
@@ -109,10 +103,7 @@ zval * bdict::get_path(const std::string &key, size_t &pt) const {
         } else if (class_name == "blist") {
             return zend_container::blist_fetch_object(Z_OBJ_P(subnode))->blist_data->get_path(key, pt);
         } else {
-            zval _zv;
-            zval *zv = &_zv;
-            ZVAL_BOOL(zv, 0);
-            return zv;
+            return bitem::get_zval_bool(false);
         }
     }
 }

@@ -13,6 +13,8 @@ extern "C" {
 class bitem {
     protected:
         static zval * throw_general_exception(const std::string message);
+        static zval * get_zval_bool(const bool value);
+
     public:
         bitem() {}
         bitem(const bitem *that) {}

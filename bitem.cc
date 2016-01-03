@@ -8,9 +8,13 @@
 
 zval * bitem::throw_general_exception(const std::string message) {
     zend_throw_exception(NULL, message.c_str(), 1);
+    return bitem::get_zval_bool(false);
+}
+
+zval * bitem::get_zval_bool(const bool value) {
     zval _zv;
     zval *zv = &_zv;
-    ZVAL_BOOL(zv, 0);
+    ZVAL_BOOL(zv, value);
     return zv;
 }
 

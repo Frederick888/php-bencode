@@ -38,10 +38,7 @@ std::string blist::get_type() const {
 
 zval * blist::get(const size_t &key) const {
     if (!zend_hash_index_exists(_data, key)) {
-        zval _zv;
-        zval *zv = &_zv;
-        ZVAL_BOOL(zv, 0);
-        return zv;
+        return bitem::get_zval_bool(false);
     }
     return zend_hash_index_find(_data, key);
 }
@@ -125,10 +122,7 @@ zval * blist::get_path(const std::string &key, size_t &pt) const {
     }
 
     if (!zend_hash_index_exists(_data, current_key_long)) {
-        zval _zv;
-        zval *zv = &_zv;
-        ZVAL_BOOL(zv, 0);
-        return zv;
+        return bitem::get_zval_bool(false);
     }
     if (pt >= key.length()) {
         return zend_hash_index_find(_data, current_key_long);
@@ -140,10 +134,7 @@ zval * blist::get_path(const std::string &key, size_t &pt) const {
         } else if (class_name == "blist") {
             return zend_container::blist_fetch_object(Z_OBJ_P(subnode))->blist_data->get_path(key, pt);
         } else {
-            zval _zv;
-            zval *zv = &_zv;
-            ZVAL_BOOL(zv, 0);
-            return zv;
+            return bitem::get_zval_bool(false);
         }
     }
 }
