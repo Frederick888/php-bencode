@@ -24,16 +24,17 @@ size_t bstr::length() const {
 }
 
 zval * bstr::parse(const std::string &ben, size_t &pt) {
-    if (ben[pt] < '0' || ben[pt] > '9')
+    if (!isdigit(ben[pt]))
         return bitem::throw_general_exception("Error parsing bstr");
     const size_t start = pt;
-    while (ben[pt] >= '0' && ben[pt] <= '9') ++pt;
+    while (isdigit(ben[pt])) ++pt;
     std::string len = ben.substr(start, pt - start);
     ++pt;
 
     zval _zv;
     zval *zv = &_zv;
-    object_init_ex(zv, zend_container::bstr_ce);
+    zend_object *zo = zend_container::bstr_object_new(zend_container::bstr_ce);
+    ZVAL_OBJ(zv, zo);
     bstr_object *intern = zend_container::bstr_fetch_object(Z_OBJ_P(zv));
     intern->bstr_data = new bstr(ben.substr(pt, std::stoull(len)));
     pt += std::stoull(len);

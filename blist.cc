@@ -105,15 +105,9 @@ bool blist::del(const size_t &key) {
 
 zval * blist::get_path(const std::string &key, size_t &pt) const {
     std::string current_key = bitem::get_current_key(key, pt);
-    size_t current_key_long;
-    try {
-        current_key_long = std::stoull(current_key);
-    } catch (int e) {
+    if (!bitem::is_ull(current_key))
         return bitem::throw_general_exception("Invalid key for blist, only positive integer is allowed");
-    }
-    if (std::to_string(current_key_long) != current_key) {
-        return bitem::throw_general_exception("Invalid key for blist, only positive integer is allowed");
-    }
+    size_t current_key_long = std::stoull(current_key);
 
     if (!zend_hash_index_exists(_data, current_key_long)) {
         return bitem::get_zval_bool(false);
@@ -207,7 +201,8 @@ zval * blist::parse(const std::string &ben, size_t &pt) {
     ++pt;
     zval _zv;
     zval *zv = &_zv;
-    object_init_ex(zv, zend_container::blist_ce);
+    zend_object *zo = zend_container::blist_object_new(zend_container::blist_ce);
+    ZVAL_OBJ(zv, zo);
     blist_object *intern = zend_container::blist_fetch_object(Z_OBJ_P(zv));
     intern->blist_data = new blist();
 
@@ -218,7 +213,7 @@ zval * blist::parse(const std::string &ben, size_t &pt) {
         } else if (ben[pt] == 'l') {
             zval bnode = *blist::parse(ben, pt);
             zend_hash_next_index_insert(intern->blist_data->_data, &bnode);
-        } else if (ben[pt] >= '0' && ben[pt] <= '9') {
+        } else if (isdigit(ben[pt])) {
             zval bnode = *bstr::parse(ben, pt);
             zend_hash_next_index_insert(intern->blist_data->_data, &bnode);
         } else if (ben[pt] == 'i') {

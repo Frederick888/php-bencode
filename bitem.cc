@@ -48,7 +48,7 @@ zval * bitem::parse(const std::string &ben) {
         return bdict::parse(ben, pt);
     } else if (ben[0] == 'l') {
         return blist::parse(ben, pt);
-    } else if (ben[0] >= '0' && ben[0] <= '9') {
+    } else if (isdigit(ben[0])) {
         return bstr::parse(ben, pt);
     } else if (ben[0] == 'i') {
         return bint::parse(ben, pt);

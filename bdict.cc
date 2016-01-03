@@ -168,14 +168,15 @@ zval * bdict::parse(const std::string &ben, size_t &pt) {
         return bitem::throw_general_exception("Error parsing bdict");
     zval _zv;
     zval *zv = &_zv;
-    object_init_ex(zv, zend_container::bdict_ce);
+    zend_object *zo = zend_container::bdict_object_new(zend_container::bdict_ce);
+    ZVAL_OBJ(zv, zo);
     bdict_object *intern = zend_container::bdict_fetch_object(Z_OBJ_P(zv));
     intern->bdict_data = new bdict();
     ++pt;
 
     while (ben[pt] != 'e') {
         size_t start = pt;
-        while (ben[pt] >= '0' && ben[pt] <= '9') ++pt;
+        while (isdigit(ben[pt])) ++pt;
         std::string key_len = ben.substr(start, pt - start);
         ++pt;
         std::string key = ben.substr(pt, std::stoull(key_len));
@@ -186,7 +187,7 @@ zval * bdict::parse(const std::string &ben, size_t &pt) {
         } else if (ben[pt] == 'l') {
             zval bnode = *blist::parse(ben, pt);
             zend_hash_str_add(intern->bdict_data->_data, key.c_str(), key.length(), &bnode);
-        } else if (ben[pt] >= '0' && ben[pt] <= '9') {
+        } else if (isdigit(ben[pt])) {
             zval bnode = *bstr::parse(ben, pt);
             zend_hash_str_add(intern->bdict_data->_data, key.c_str(), key.length(), &bnode);
         } else if (ben[pt] == 'i') {
