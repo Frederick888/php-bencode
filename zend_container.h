@@ -39,12 +39,19 @@ public:
     ZEND_CONTAINER_INIT(bstr)
     ZEND_CONTAINER_INIT(bint)
     static std::string bnode_object_get_class_name(zval *object) {
+        char *ini_ns_key = estrdup("bencode.namespace");
+        zend_bool ini_ns = zend_ini_long(ini_ns_key, strlen(ini_ns_key), 0);
+        efree(ini_ns_key);
         size_t _class_name_len = ZSTR_LEN(Z_OBJ_P(object)->ce->name);
         char *_class_name = (char *)emalloc(_class_name_len);
         strcpy(_class_name, ZSTR_VAL(Z_OBJ_P(object)->ce->name));
         std::string class_name(_class_name);
         efree(_class_name);
-        return class_name;
+        if (ini_ns) {
+            return class_name.substr(8);
+        } else {
+            return class_name;
+        }
     }
     static zend_object * bnode_object_clone(zval *object) {
         zval _new_object; zval *new_object = &_new_object;
