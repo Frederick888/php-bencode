@@ -141,6 +141,20 @@ PHP_METHOD(bdict, set)
     intern->bdict_data->set(_key, zv);
     RETURN_TRUE;
 }
+PHP_METHOD(bdict, set_path)
+{
+    char *key;
+    size_t key_len = 0;
+    zval *zv;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "so", &key, &key_len, &zv) == FAILURE) {
+            RETURN_FALSE;
+    }
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    size_t pt = 0;
+    std::string _key(key);
+    intern->bdict_data->set_path(_key, pt, zv);
+    RETURN_TRUE;
+}
 PHP_METHOD(bdict, has)
 {
     char *key;
@@ -217,6 +231,7 @@ static zend_function_entry bdict_methods[] = {
     PHP_ME(bdict, get_copy,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, get_path_copy,        NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, set,                  NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, set_path,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, has,                  NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, del,                  NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, length,               NULL, ZEND_ACC_PUBLIC)
@@ -301,6 +316,20 @@ PHP_METHOD(blist, add)
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     intern->blist_data->add(zv);
+    RETURN_TRUE;
+}
+PHP_METHOD(blist, set_path)
+{
+    char *key;
+    long key_len;
+    zval *zv;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lo", &key, &key_len, &zv) == FAILURE) {
+            RETURN_FALSE;
+    }
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    std::string _key(key);
+    size_t pt = 0;
+    intern->blist_data->set_path(_key, pt, zv);
     RETURN_TRUE;
 }
 PHP_METHOD(blist, set)
@@ -393,6 +422,7 @@ static zend_function_entry blist_methods[] = {
     PHP_ME(blist, get_path_copy,        NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, add,                  NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, set,                  NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, set_path,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, has,                  NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, del,                  NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, length,               NULL, ZEND_ACC_PUBLIC)

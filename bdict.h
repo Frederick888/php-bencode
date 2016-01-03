@@ -23,6 +23,7 @@ class bdict : public bitem {
         void set(const std::string &key, zval *value);
         bool del(const std::string &key);
         zval * get_path(const std::string &key, size_t &pt) const;
+        void set_path(const std::string &key, size_t &pt, zval *value);
         size_t length() const;
         size_t count() const;
 

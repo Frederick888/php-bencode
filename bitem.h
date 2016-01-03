@@ -14,6 +14,8 @@ class bitem {
     protected:
         static zval * throw_general_exception(const std::string message);
         static zval * get_zval_bool(const bool value);
+        static std::string get_current_key(const std::string &path, size_t &pt);
+        static bool is_ull(const std::string &s);
 
     public:
         bitem() {}

@@ -18,6 +18,26 @@ zval * bitem::get_zval_bool(const bool value) {
     return zv;
 }
 
+std::string bitem::get_current_key(const std::string &path, size_t &pt) {
+    size_t start = pt;
+    while (!(path[pt] == '/' && path[pt - 1] != '\\') && pt < path.length()) ++pt;
+    std::string current_key = path.substr(start, pt - start);
+    ++pt;
+    size_t escape = current_key.find("\\/");
+    while (escape >= 0 && escape < current_key.length()) {
+        current_key.replace(escape, 2, "/");
+        escape = current_key.find("\\/");
+    }
+    return current_key;
+}
+
+bool bitem::is_ull(const std::string &s) {
+    if(s.empty() || !isdigit(s[0])) return false;
+    char *p;
+    strtoull(s.c_str(), &p, 10);
+    return (*p == 0);
+}
+
 std::string bitem::get_type() const {
     return "bitem";
 }

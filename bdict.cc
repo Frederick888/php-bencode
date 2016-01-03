@@ -81,15 +81,7 @@ bool bdict::del(const std::string &key) {
 }
 
 zval * bdict::get_path(const std::string &key, size_t &pt) const {
-    size_t start = pt;
-    while (!(key[pt] == '/' && key[pt - 1] != '\\') && pt < key.length()) ++pt;
-    std::string current_key = key.substr(start, pt - start);
-    ++pt;
-    size_t escape = current_key.find("\\/");
-    while (escape >= 0 && escape < current_key.length()) {
-        current_key.replace(escape, 2, "/");
-        escape = current_key.find("\\/");
-    }
+    std::string current_key = bitem::get_current_key(key, pt);
     if (!zend_hash_str_exists(_data, current_key.c_str(), current_key.length())) {
         return bitem::get_zval_bool(false);
     }
@@ -104,6 +96,61 @@ zval * bdict::get_path(const std::string &key, size_t &pt) const {
             return zend_container::blist_fetch_object(Z_OBJ_P(subnode))->blist_data->get_path(key, pt);
         } else {
             return bitem::get_zval_bool(false);
+        }
+    }
+}
+
+void bdict::set_path(const std::string &key, size_t &pt, zval *value) {
+    std::string class_name = zend_container::bnode_object_get_class_name(value);
+    if (!(class_name == "bdict" || class_name == "blist" ||
+            class_name == "bstr" || class_name == "bint")) {
+        bitem::throw_general_exception("Unsupported node given");
+        return;
+    }
+    std::string current_key = bitem::get_current_key(key, pt);
+    if (zend_hash_str_exists(_data, current_key.c_str(), current_key.length())) {
+        zval *subnode = zend_hash_str_find(_data, current_key.c_str(), current_key.length());
+        std::string sub_class_name = zend_container::bnode_object_get_class_name(subnode);
+        if (sub_class_name == "bstr" || sub_class_name == "bint") {
+            if (pt >= key.length()) {
+                zend_object *clone_object = zend_container::bnode_object_clone(value);
+                zval tmp;
+                ZVAL_OBJ(&tmp, clone_object);
+                zend_hash_str_update(_data, current_key.c_str(), current_key.length(), &tmp);
+            } else {
+                bitem::throw_general_exception("bstr and bint cannot have sub-nodes");
+                return;
+            }
+        } else if (sub_class_name == "bdict") {
+            zend_container::bdict_fetch_object(Z_OBJ_P(subnode))->bdict_data->set_path(key, pt, value);
+        } else if (sub_class_name == "blist") {
+            zend_container::blist_fetch_object(Z_OBJ_P(subnode))->blist_data->set_path(key, pt, value);
+        }
+    } else {
+        if (pt >= key.length()) {
+            zend_object *clone_object = zend_container::bnode_object_clone(value);
+            zval tmp;
+            ZVAL_OBJ(&tmp, clone_object);
+            zend_hash_str_add(_data, current_key.c_str(), current_key.length(), &tmp);
+        } else {
+            size_t backup_pt = pt;
+            std::string next_key = bitem::get_current_key(key, pt);
+            pt = backup_pt;
+            if (bitem::is_ull(next_key)) {
+                zend_object *zo = zend_container::blist_object_new(zend_container::blist_ce);
+                zend_container::blist_fetch_object(zo)->blist_data = new blist();
+                zend_container::blist_fetch_object(zo)->blist_data->set_path(key, pt, value);
+                zval zv;
+                ZVAL_OBJ(&zv, zo);
+                zend_hash_str_add(_data, current_key.c_str(), current_key.length(), &zv);
+            } else {
+                zend_object *zo = zend_container::bdict_object_new(zend_container::bdict_ce);
+                zend_container::bdict_fetch_object(zo)->bdict_data = new bdict();
+                zend_container::bdict_fetch_object(zo)->bdict_data->set_path(key, pt, value);
+                zval zv;
+                ZVAL_OBJ(&zv, zo);
+                zend_hash_str_add(_data, current_key.c_str(), current_key.length(), &zv);
+            }
         }
     }
 }
