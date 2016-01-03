@@ -23,6 +23,7 @@ class blist : public bitem {
         void add(zval *value);
         void set(const size_t &key, zval *value);
         bool del(const size_t &key);
+        zval * get_path(const std::string &key, size_t &pt) const;
         size_t length() const;
         size_t count() const;
 

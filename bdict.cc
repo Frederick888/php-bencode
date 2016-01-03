@@ -83,6 +83,40 @@ bool bdict::del(const std::string &key) {
     }
 }
 
+zval * bdict::get_path(const std::string &key, size_t &pt) const {
+    size_t start = pt;
+    while (!(key[pt] == '/' && key[pt - 1] != '\\') && pt < key.length()) ++pt;
+    std::string current_key = key.substr(start, pt - start);
+    ++pt;
+    size_t escape = current_key.find("\\/");
+    while (escape >= 0 && escape < current_key.length()) {
+        current_key.replace(escape, 2, "/");
+        escape = current_key.find("\\/");
+    }
+    if (!zend_hash_str_exists(_data, current_key.c_str(), current_key.length())) {
+        zval _zv;
+        zval *zv = &_zv;
+        ZVAL_BOOL(zv, 0);
+        return zv;
+    }
+    if (pt >= key.length()) {
+        return zend_hash_str_find(_data, current_key.c_str(), current_key.length());
+    } else {
+        zval *subnode = zend_hash_str_find(_data, current_key.c_str(), current_key.length());
+        std::string class_name = zend_container::bnode_object_get_class_name(subnode);
+        if (class_name == "bdict") {
+            return zend_container::bdict_fetch_object(Z_OBJ_P(subnode))->bdict_data->get_path(key, pt);
+        } else if (class_name == "blist") {
+            return zend_container::blist_fetch_object(Z_OBJ_P(subnode))->blist_data->get_path(key, pt);
+        } else {
+            zval _zv;
+            zval *zv = &_zv;
+            ZVAL_BOOL(zv, 0);
+            return zv;
+        }
+    }
+}
+
 size_t bdict::length() const {
     return (encode().length() / sizeof(char));
 }
@@ -93,10 +127,7 @@ size_t bdict::count() const {
 
 zval * bdict::parse(const std::string &ben, size_t &pt) {
     if (ben[pt] != 'd')
-        zend_throw_exception(
-                zend_container::bdict_ce,
-                "Error parsing bdict",
-                1);
+        return bitem::throw_general_exception("Error parsing bdict");
     zval _zv;
     zval *zv = &_zv;
     object_init_ex(zv, zend_container::bdict_ce);
@@ -124,10 +155,7 @@ zval * bdict::parse(const std::string &ben, size_t &pt) {
             zval bnode = *bint::parse(ben, pt);
             zend_hash_str_add(intern->bdict_data->_data, key.c_str(), key.length(), &bnode);
         } else {
-            zend_throw_exception(
-                    zend_container::bdict_ce,
-                    "Error parsing bdict",
-                    1);
+            return bitem::throw_general_exception("Error parsing bdict");
         }
     }
     ++pt;
@@ -146,7 +174,7 @@ std::string bdict::encode() const {
         std::string class_name = zend_container::bnode_object_get_class_name(value);
         std::string _str_index(ZSTR_VAL(str_index));
 
-        result += bitem::numtos(_str_index.length()) + ":" + _str_index;
+        result += std::to_string(_str_index.length()) + ":" + _str_index;
         if (class_name == "bdict") {
             result += (zend_container::bdict_fetch_object(Z_OBJ_P(value)))->bdict_data->encode();
         } else if (class_name == "blist") {

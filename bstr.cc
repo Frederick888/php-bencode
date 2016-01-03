@@ -25,10 +25,7 @@ size_t bstr::length() const {
 
 zval * bstr::parse(const std::string &ben, size_t &pt) {
     if (ben[pt] < '0' || ben[pt] > '9')
-        zend_throw_exception(
-                zend_container::bstr_ce,
-                "Error parsing bstr",
-                1);
+        return bitem::throw_general_exception("Error parsing bstr");
     const size_t start = pt;
     while (ben[pt] >= '0' && ben[pt] <= '9') ++pt;
     std::string len = ben.substr(start, pt - start);
@@ -44,7 +41,7 @@ zval * bstr::parse(const std::string &ben, size_t &pt) {
 }
 
 std::string bstr::encode() const {
-    return bitem::numtos(_value.length()) + ":" + _value;
+    return std::to_string(_value.length()) + ":" + _value;
 }
 
 zval * bstr::to_array(const bool include_meta) const {

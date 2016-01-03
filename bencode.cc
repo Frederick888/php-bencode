@@ -93,6 +93,18 @@ PHP_METHOD(bdict, get)
     std::string _key(key);
     RETURN_ZVAL(intern->bdict_data->get(_key), 1, 0);
 }
+PHP_METHOD(bdict, get_path)
+{
+    char *key;
+    size_t key_len = 0;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
+            RETURN_NULL();
+    }
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    std::string _key(key);
+    size_t pt = 0;
+    RETURN_ZVAL(intern->bdict_data->get_path(_key, pt), 1, 0);
+}
 PHP_METHOD(bdict, get_copy)
 {
     char *key;
@@ -103,6 +115,18 @@ PHP_METHOD(bdict, get_copy)
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key);
     RETURN_OBJ(zend_container::bnode_object_clone(intern->bdict_data->get(_key)));
+}
+PHP_METHOD(bdict, get_path_copy)
+{
+    char *key;
+    size_t key_len = 0;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
+            RETURN_NULL();
+    }
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    std::string _key(key);
+    size_t pt = 0;
+    RETURN_OBJ(zend_container::bnode_object_clone(intern->bdict_data->get_path(_key, pt)));
 }
 PHP_METHOD(bdict, set)
 {
@@ -189,7 +213,9 @@ static zend_function_entry bdict_methods[] = {
     PHP_ME(bdict, __construct,          NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(bdict, get_type,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, get,                  NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, get_path,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, get_copy,             NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, get_path_copy,        NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, set,                  NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, has,                  NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, del,                  NULL, ZEND_ACC_PUBLIC)
@@ -231,6 +257,18 @@ PHP_METHOD(blist, get)
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     RETURN_ZVAL(intern->blist_data->get(key), 1, 0);
 }
+PHP_METHOD(blist, get_path)
+{
+    char *key;
+    size_t key_len;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
+            RETURN_NULL();
+    }
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    std::string _key(key);
+    size_t pt = 0;
+    RETURN_ZVAL(intern->blist_data->get_path(_key, pt), 1, 0);
+}
 PHP_METHOD(blist, get_copy)
 {
     long key;
@@ -242,6 +280,18 @@ PHP_METHOD(blist, get_copy)
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     RETURN_OBJ(zend_container::bnode_object_clone(intern->blist_data->get(key)));
+}
+PHP_METHOD(blist, get_path_copy)
+{
+    char *key;
+    size_t key_len;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
+            RETURN_NULL();
+    }
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    std::string _key(key);
+    size_t pt = 0;
+    RETURN_OBJ(zend_container::bnode_object_clone(intern->blist_data->get_path(_key, pt)));
 }
 PHP_METHOD(blist, add)
 {
@@ -338,7 +388,9 @@ static zend_function_entry blist_methods[] = {
     PHP_ME(blist, __construct,          NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(blist, get_type,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, get,                  NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, get_path,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, get_copy,             NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, get_path_copy,        NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, add,                  NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, set,                  NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, has,                  NULL, ZEND_ACC_PUBLIC)

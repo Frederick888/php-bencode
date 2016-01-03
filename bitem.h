@@ -12,15 +12,7 @@ extern "C" {
 
 class bitem {
     protected:
-        template<typename T>
-        static std::string numtos(const T &value) {
-            std::string result;
-            std::stringstream ss;
-            ss << value;
-            ss >> result;
-            return result;
-        }
-
+        static zval * throw_general_exception(const std::string message);
     public:
         bitem() {}
         bitem(const bitem *that) {}

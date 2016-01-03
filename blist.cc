@@ -106,6 +106,48 @@ bool blist::del(const size_t &key) {
     }
 }
 
+zval * blist::get_path(const std::string &key, size_t &pt) const {
+    size_t start = pt;
+    while (!(key[pt] == '/' && key[pt - 1] != '\\') && pt < key.length()) ++pt;
+    std::string current_key = key.substr(start, pt - start);
+    ++pt;
+    size_t escape = current_key.find("\\/");
+    while (escape >= 0 && escape < current_key.length())
+        current_key.replace(escape, 2, "/");
+    size_t current_key_long;
+    try {
+        current_key_long = std::stoull(current_key);
+    } catch (int e) {
+        return bitem::throw_general_exception("Invalid key for blist, only positive integer is allowed");
+    }
+    if (std::to_string(current_key_long) != current_key) {
+        return bitem::throw_general_exception("Invalid key for blist, only positive integer is allowed");
+    }
+
+    if (!zend_hash_index_exists(_data, current_key_long)) {
+        zval _zv;
+        zval *zv = &_zv;
+        ZVAL_BOOL(zv, 0);
+        return zv;
+    }
+    if (pt >= key.length()) {
+        return zend_hash_index_find(_data, current_key_long);
+    } else {
+        zval *subnode = zend_hash_index_find(_data, current_key_long);
+        std::string class_name = zend_container::bnode_object_get_class_name(subnode);
+        if (class_name == "bdict") {
+            return zend_container::bdict_fetch_object(Z_OBJ_P(subnode))->bdict_data->get_path(key, pt);
+        } else if (class_name == "blist") {
+            return zend_container::blist_fetch_object(Z_OBJ_P(subnode))->blist_data->get_path(key, pt);
+        } else {
+            zval _zv;
+            zval *zv = &_zv;
+            ZVAL_BOOL(zv, 0);
+            return zv;
+        }
+    }
+}
+
 size_t blist::length() const {
     return (encode().length() / sizeof(char));
 }
@@ -116,10 +158,7 @@ size_t blist::count() const {
 
 zval * blist::parse(const std::string &ben, size_t &pt) {
     if (ben[pt] != 'l')
-        zend_throw_exception(
-                zend_container::blist_ce,
-                "Error parsing blist",
-                1);
+        return bitem::throw_general_exception("Error parsing blist");
     ++pt;
     zval _zv;
     zval *zv = &_zv;
@@ -141,10 +180,7 @@ zval * blist::parse(const std::string &ben, size_t &pt) {
             zval bnode = *bint::parse(ben, pt);
             zend_hash_next_index_insert(intern->blist_data->_data, &bnode);
         } else {
-            zend_throw_exception(
-                    zend_container::blist_ce,
-                    "Error parsing blist",
-                    1);
+            return bitem::throw_general_exception("Error parsing blist");
         }
     }
     ++pt;

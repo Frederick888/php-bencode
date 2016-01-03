@@ -6,6 +6,14 @@
 #include "bint.h"
 #include "zend_container.h"
 
+zval * bitem::throw_general_exception(const std::string message) {
+    zend_throw_exception(NULL, message.c_str(), 1);
+    zval _zv;
+    zval *zv = &_zv;
+    ZVAL_BOOL(zv, 0);
+    return zv;
+}
+
 std::string bitem::get_type() const {
     return "bitem";
 }
@@ -21,20 +29,14 @@ zval * bitem::parse(const std::string &ben) {
     } else if (ben[0] == 'i') {
         return bint::parse(ben, pt);
     } else {
-        zend_throw_exception(
-                zend_container::bitem_ce,
-                "Error parsing bitem",
-                1);
+        return bitem::throw_general_exception("Error parsing bitem");
     }
 }
 
 zval * bitem::load(const std::string &file_path) {
     std::ifstream ben_file(file_path);
     if (!ben_file.is_open()) {
-        zend_throw_exception(
-                zend_container::bitem_ce,
-                "Error opening file",
-                1);
+        return bitem::throw_general_exception("Error opening file");
     }
     std::string ben((std::istreambuf_iterator<char>(ben_file)),
             (std::istreambuf_iterator<char>()));
@@ -47,10 +49,8 @@ zval * bitem::load(const std::string &file_path) {
 void bitem::save(const std::string &file_path) const {
     std::ofstream ben_file(file_path);
     if (!ben_file.is_open()) {
-        zend_throw_exception(
-                zend_container::bitem_ce,
-                "Error opening file",
-                1);
+        bitem::throw_general_exception("Error opening file");
+        return;
     }
     ben_file << encode();
     ben_file.close();

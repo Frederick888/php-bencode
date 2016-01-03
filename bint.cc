@@ -26,10 +26,7 @@ size_t bint::length() const {
 
 zval * bint::parse(const std::string &ben, size_t &pt) {
     if (ben[pt] != 'i')
-        zend_throw_exception(
-                zend_container::bint_ce,
-                "Error parsing bint",
-                1);
+        return bitem::throw_general_exception("Error parsing bint");
     ++pt;
     std::string strint = "";
     while (ben[pt] != 'e') strint += ben[pt++];
@@ -45,7 +42,7 @@ zval * bint::parse(const std::string &ben, size_t &pt) {
 }
 
 std::string bint::encode() const {
-    return "i" + bitem::numtos(_value) + "e";
+    return "i" + std::to_string(_value) + "e";
 }
 
 zval * bint::to_array(const bool include_meta) const {

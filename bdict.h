@@ -22,6 +22,7 @@ class bdict : public bitem {
         bool has(const std::string &key) const;
         void set(const std::string &key, zval *value);
         bool del(const std::string &key);
+        zval * get_path(const std::string &key, size_t &pt) const;
         size_t length() const;
         size_t count() const;
 
