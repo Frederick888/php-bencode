@@ -30,7 +30,7 @@ zval * bint::parse(const std::string &ben, size_t &pt) {
     ++pt;
     std::string strint = "";
     while (ben[pt] != 'e') strint += ben[pt++];
-    long result = std::stoull(strint);
+    long result = std::stoll(strint);
     ++pt;
 
     zval _zv;
