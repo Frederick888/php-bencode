@@ -71,3 +71,7 @@ zval * bstr::to_array(const bool include_meta) const {
     }
     return zv;
 }
+
+zval * bstr::search(const std::string &needle, const std::string &mode, const std::string path) const {
+    return nullptr;
+}

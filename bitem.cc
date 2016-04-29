@@ -31,6 +31,22 @@ std::string bitem::get_current_key(const std::string &path, size_t &pt) {
     return current_key;
 }
 
+std::string bitem::escape_key(const std::string &key) {
+    std::string result = "";
+    size_t pt = 0;
+    size_t to_esc = std::min(key.find('/', pt), key.find('\\', pt));
+    while (to_esc < key.length()) {
+        result += key.substr(pt, to_esc - pt);
+        if (key[to_esc] == '/')
+            result += "\\/";
+        else if (key[to_esc] == '\\')
+            result += "\\\\";
+        pt = to_esc + 1;
+        to_esc = std::min(key.find('/', pt), key.find('\\', pt));
+    }
+    return result;
+}
+
 bool bitem::is_ull(const std::string &s) {
     if(s.empty() || !isdigit(s[0])) return false;
     char *p;
