@@ -219,6 +219,18 @@ PHP_METHOD(bdict, encode)
     std::string result = intern->bdict_data->encode();
     RETURN_STRINGL(result.c_str(), result.length());
 }
+PHP_METHOD(bdict, search)
+{
+    char *needle;
+    size_t needle_len = 0;
+    long mode;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sl", &needle, &needle_len, mode) == FAILURE) {
+        RETURN_NULL();
+    }
+    std::string tmp(needle);
+    bdict_object *intern = Z_BDICT_OBJ_P(getThis());
+    RETURN_ZVAL(intern->bdict_data->search(tmp, mode, ""), 1, 1);
+}
 PHP_METHOD(bdict, to_array)
 {
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
@@ -422,6 +434,18 @@ PHP_METHOD(blist, encode)
     std::string result = intern->blist_data->encode();
     RETURN_STRINGL(result.c_str(), result.length());
 }
+PHP_METHOD(blist, search)
+{
+    char *needle;
+    size_t needle_len = 0;
+    long mode;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sl", &needle, &needle_len, mode) == FAILURE) {
+        RETURN_NULL();
+    }
+    std::string tmp(needle);
+    blist_object *intern = Z_BLIST_OBJ_P(getThis());
+    RETURN_ZVAL(intern->blist_data->search(tmp, mode, ""), 1, 1);
+}
 PHP_METHOD(blist, to_array)
 {
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
@@ -529,6 +553,10 @@ PHP_METHOD(bstr, encode)
     std::string result = intern->bstr_data->encode();
     RETURN_STRINGL(result.c_str(), result.length());
 }
+PHP_METHOD(bstr, search)
+{
+    RETURN_NULL();
+}
 PHP_METHOD(bstr, to_array)
 {
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
@@ -622,6 +650,10 @@ PHP_METHOD(bint, encode)
     bint_object *intern = Z_BINT_OBJ_P(getThis());
     std::string result = intern->bint_data->encode();
     RETURN_STRINGL(result.c_str(), result.length());
+}
+PHP_METHOD(bint, search)
+{
+    RETURN_NULL();
 }
 PHP_METHOD(bint, to_array)
 {
