@@ -302,11 +302,14 @@ zval * bdict::to_array(const bool include_meta) const {
     return zv;
 }
 
-zval * bdict::search(const std::string &needle, const std::string &mode, const std::string path) const {
-    bool modek = (mode.find('k') == std::string::npos) ? false : true;
-    bool modev = (mode.find('v') == std::string::npos) ? false : true;
-    if (!(modek || modev))
+zval * bdict::search(const std::string &needle, const long &mode, const std::string path) const {
+    if (mode < 0 || mode > 1)
         bitem::throw_general_exception("Illegal search mode");
+    bool modek = false, modev = false;
+    if (mode == 0)
+        modek = true;
+    else
+        modev = true;
 
     zval _zv;
     zval *zv = &_zv;

@@ -28,7 +28,7 @@ class bint : public bitem {
         static zval * parse(const std::string &ben, size_t &pt);
         std::string encode() const;
         zval * to_array(const bool include_meta) const;
-        zval * search(const std::string &needle, const std::string &mode, const std::string path) const;
+        zval * search(const std::string &needle, const long &mode, const std::string path) const;
 };
 
 #endif

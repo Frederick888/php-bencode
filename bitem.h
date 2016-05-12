@@ -28,7 +28,8 @@ class bitem {
         virtual std::string encode() const = 0;
         static zval * load(const std::string &file_path);
         void save(const std::string &file_path) const;
-        virtual zval * search(const std::string &needle, const std::string &mode, const std::string path) const = 0;
+        // mode 0: search in keys; mode 1: search in values
+        virtual zval * search(const std::string &needle, const long &mode, const std::string path) const = 0;
 };
 
 #endif
