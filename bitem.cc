@@ -104,3 +104,7 @@ void bitem::save(const std::string &file_path) const {
     ben_file << encode();
     ben_file.close();
 }
+
+zval * bitem::search(const std::string &needle, const long &mode, const std::string path) const {
+    return nullptr;
+}

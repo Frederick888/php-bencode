@@ -42,11 +42,7 @@ public:
         char *ini_ns_key = estrdup("bencode.namespace");
         zend_bool ini_ns = zend_ini_long(ini_ns_key, strlen(ini_ns_key), 0);
         efree(ini_ns_key);
-        size_t _class_name_len = ZSTR_LEN(Z_OBJ_P(object)->ce->name);
-        char *_class_name = (char *)emalloc(_class_name_len + 1);
-        strcpy(_class_name, ZSTR_VAL(Z_OBJ_P(object)->ce->name));
-        std::string class_name(_class_name);
-        efree(_class_name);
+        std::string class_name(ZSTR_VAL(Z_OBJ_P(object)->ce->name));
         if (ini_ns) {
             return class_name.substr(8);
         } else {
