@@ -44,13 +44,22 @@ std::string bitem::escape_key(const std::string &key) {
         pt = to_esc + 1;
         to_esc = std::min(key.find('/', pt), key.find('\\', pt));
     }
-    return result;
+    return result + key.substr(pt);
 }
 
 bool bitem::is_ull(const std::string &s) {
     if(s.empty() || !isdigit(s[0])) return false;
     char *p;
     strtoull(s.c_str(), &p, 10);
+    return (*p == 0);
+}
+
+bool bitem::is_ll(const std::string &s) {
+    if(s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;
+
+    char *p;
+    strtoll(s.c_str(), &p, 10);
+
     return (*p == 0);
 }
 

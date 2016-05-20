@@ -17,6 +17,7 @@ class bitem {
         static std::string get_current_key(const std::string &path, size_t &pt);
         static std::string escape_key(const std::string &key);
         static bool is_ull(const std::string &s);
+        static bool is_ll(const std::string &s);
 
     public:
         bitem() {}

@@ -224,7 +224,7 @@ PHP_METHOD(bdict, search)
     char *needle;
     size_t needle_len = 0;
     long mode;
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sl", &needle, &needle_len, mode) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sl", &needle, &needle_len, &mode) == FAILURE) {
         RETURN_NULL();
     }
     std::string tmp(needle);
@@ -264,6 +264,7 @@ static zend_function_entry bdict_methods[] = {
     PHP_ME(bdict, parse,                NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(bdict, encode,               NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bitem, save,                 NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, search,               NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, to_array,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, to_meta_array,        NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, __toString,           NULL, ZEND_ACC_PUBLIC)
@@ -439,7 +440,7 @@ PHP_METHOD(blist, search)
     char *needle;
     size_t needle_len = 0;
     long mode;
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sl", &needle, &needle_len, mode) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sl", &needle, &needle_len, &mode) == FAILURE) {
         RETURN_NULL();
     }
     std::string tmp(needle);
@@ -480,6 +481,7 @@ static zend_function_entry blist_methods[] = {
     PHP_ME(blist, parse,                NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(blist, encode,               NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bitem, save,                 NULL, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, search,               NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, to_array,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, to_meta_array,        NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, __toString,           NULL, ZEND_ACC_PUBLIC)
