@@ -260,7 +260,7 @@ zval * bdict::to_array(const bool include_meta) const {
         zend_hash_get_current_key(_data, &str_index, &num_index);
         zval *value = zend_hash_get_current_data(_data);
         std::string class_name = zend_container::bnode_object_get_class_name(value);
-        char *_str_index = (char *)emalloc(ZSTR_LEN(str_index));
+        char *_str_index = (char *)emalloc(ZSTR_LEN(str_index) + 1);
         strcpy(_str_index, ZSTR_VAL(str_index));
         if (class_name == "bdict") {
             bdict_object *bnode = zend_container::bdict_fetch_object(Z_OBJ_P(value));

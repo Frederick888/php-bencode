@@ -43,7 +43,7 @@ public:
         zend_bool ini_ns = zend_ini_long(ini_ns_key, strlen(ini_ns_key), 0);
         efree(ini_ns_key);
         size_t _class_name_len = ZSTR_LEN(Z_OBJ_P(object)->ce->name);
-        char *_class_name = (char *)emalloc(_class_name_len);
+        char *_class_name = (char *)emalloc(_class_name_len + 1);
         strcpy(_class_name, ZSTR_VAL(Z_OBJ_P(object)->ce->name));
         std::string class_name(_class_name);
         efree(_class_name);
@@ -59,7 +59,7 @@ public:
         return Z_OBJ_P(new_object);
     }
     static char * get_cstring(std::string cppstring) {
-        char *result = (char *)emalloc(cppstring.length());
+        char *result = (char *)emalloc(cppstring.length() + 1);
         strcpy(result, cppstring.c_str());
         return result;
     }
