@@ -327,7 +327,7 @@ zval * bdict::search(const std::string &needle, const long &mode, const std::str
         std::string current_path = (path == "" ? "" : path + "/") + bitem::escape_key(str_index);
 
         if (modek && str_index.find(needle) != std::string::npos) {
-            add_next_index_string(zv, (current_path + bitem::escape_key(str_index)).c_str());
+            add_next_index_string(zv, current_path.c_str());
             continue;
         }
 
