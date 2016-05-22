@@ -62,6 +62,18 @@ bool bitem::is_ll(const std::string &s) {
     return (*p == 0);
 }
 
+void bitem::zend_hash_append_strings(HashTable *target, HashTable *source) {
+    for(zend_hash_internal_pointer_reset(source);
+            zend_hash_has_more_elements(source) == SUCCESS;
+            zend_hash_move_forward(source)) {
+        zend_string *_str_index;
+        zend_ulong num_index;
+        zend_hash_get_current_key(source, &_str_index, &num_index);
+        zval *value = zend_hash_get_current_data(source);
+        zend_hash_next_index_insert(target, value);
+    }
+}
+
 std::string bitem::get_type() const {
     return "bitem";
 }

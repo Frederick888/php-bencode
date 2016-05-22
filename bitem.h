@@ -18,6 +18,7 @@ class bitem {
         static std::string escape_key(const std::string &key);
         static bool is_ull(const std::string &s);
         static bool is_ll(const std::string &s);
+        static void zend_hash_append_strings(HashTable *target, HashTable *source);
 
     public:
         bitem() {}

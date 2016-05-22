@@ -344,10 +344,10 @@ zval * blist::search(const std::string &needle, const long &mode, const std::str
 
         if (class_name == "bdict") {
             zval *next_result = (zend_container::bdict_fetch_object(Z_OBJ_P(value)))->bdict_data->search(needle, mode, current_path);
-            zend_hash_merge(Z_ARRVAL_P(zv), Z_ARRVAL_P(next_result), (copy_ctor_func_t) zval_add_ref, false);
+            zend_hash_append_strings(Z_ARRVAL_P(zv), Z_ARRVAL_P(next_result));
         } else if (class_name == "blist") {
             zval *next_result = (zend_container::blist_fetch_object(Z_OBJ_P(value)))->blist_data->search(needle, mode, current_path);
-            zend_hash_merge(Z_ARRVAL_P(zv), Z_ARRVAL_P(next_result), (copy_ctor_func_t) zval_add_ref, false);
+            zend_hash_append_strings(Z_ARRVAL_P(zv), Z_ARRVAL_P(next_result));
         } else if (modev && class_name == "bstr") {
             if ((zend_container::bstr_fetch_object(Z_OBJ_P(value)))->bstr_data->_value.find(needle) != std::string::npos)
                 add_next_index_string(zv, current_path.c_str());
