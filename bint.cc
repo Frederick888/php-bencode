@@ -33,8 +33,7 @@ zval * bint::parse(const std::string &ben, size_t &pt) {
     long result = std::stoll(strint);
     ++pt;
 
-    zval _zv;
-    zval *zv = &_zv;
+    zval *zv = new zval();
     zend_object *zo = zend_container::bint_object_new(zend_container::bint_ce);
     ZVAL_OBJ(zv, zo);
     bint_object *intern = zend_container::bint_fetch_object(Z_OBJ_P(zv));
@@ -47,8 +46,7 @@ std::string bint::encode() const {
 }
 
 zval * bint::to_array(const bool include_meta) const {
-    zval _zv;
-    zval *zv = &_zv;
+    zval *zv = new zval();
     if (include_meta) {
         array_init(zv);
         char *_type = estrdup("_type");

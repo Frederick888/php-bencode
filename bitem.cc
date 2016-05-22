@@ -12,8 +12,7 @@ zval * bitem::throw_general_exception(const std::string message) {
 }
 
 zval * bitem::get_zval_bool(const bool value) {
-    zval _zv;
-    zval *zv = &_zv;
+    zval *zv = new zval();
     ZVAL_BOOL(zv, value);
     return zv;
 }
@@ -90,8 +89,7 @@ zval * bitem::load(const std::string &file_path) {
     std::string ben((std::istreambuf_iterator<char>(ben_file)),
             (std::istreambuf_iterator<char>()));
     ben_file.close();
-    zval _result = *parse(ben);
-    zval *result = &_result;
+    zval *result = parse(ben);
     return result;
 }
 

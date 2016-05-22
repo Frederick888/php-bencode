@@ -31,8 +31,7 @@ zval * bstr::parse(const std::string &ben, size_t &pt) {
     std::string len = ben.substr(start, pt - start);
     ++pt;
 
-    zval _zv;
-    zval *zv = &_zv;
+    zval *zv = new zval();
     zend_object *zo = zend_container::bstr_object_new(zend_container::bstr_ce);
     ZVAL_OBJ(zv, zo);
     bstr_object *intern = zend_container::bstr_fetch_object(Z_OBJ_P(zv));
@@ -46,8 +45,7 @@ std::string bstr::encode() const {
 }
 
 zval * bstr::to_array(const bool include_meta) const {
-    zval _zv;
-    zval *zv = &_zv;
+    zval *zv = new zval();
     if (include_meta) {
         array_init(zv);
         if (_value.length() == 0) return zv;

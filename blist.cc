@@ -225,8 +225,7 @@ zval * blist::parse(const std::string &ben, size_t &pt) {
     if (ben[pt] != 'l')
         return bitem::throw_general_exception("Error parsing blist");
     ++pt;
-    zval _zv;
-    zval *zv = &_zv;
+    zval *zv = new zval();
     zend_object *zo = zend_container::blist_object_new(zend_container::blist_ce);
     ZVAL_OBJ(zv, zo);
     blist_object *intern = zend_container::blist_fetch_object(Z_OBJ_P(zv));
@@ -275,8 +274,7 @@ std::string blist::encode() const {
 }
 
 zval * blist::to_array(const bool include_meta) const {
-    zval _zv;
-    zval *zv = &_zv;
+    zval *zv = new zval();
     array_init(zv);
 
     for(zend_hash_internal_pointer_reset(_data);
@@ -308,8 +306,7 @@ zval * blist::to_array(const bool include_meta) const {
         char *_type_data = estrdup("blist");
         char *_length = estrdup("_length");
         char *_data = estrdup("_data");
-        zval _zv_outer;
-        zval *zv_outer = &_zv_outer;
+        zval *zv_outer = new zval();
         array_init(zv_outer);
         add_assoc_string(zv_outer, _type, _type_data);
         add_assoc_long(zv_outer, _length, length());
@@ -332,8 +329,7 @@ zval * blist::search(const std::string &needle, const long &mode, const std::str
     else
         modev = true;
 
-    zval _zv;
-    zval *zv = &_zv;
+    zval *zv = new zval();
     array_init(zv);
 
     for(zend_hash_internal_pointer_reset(_data);
