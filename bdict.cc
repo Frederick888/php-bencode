@@ -324,7 +324,6 @@ zval * bdict::search(const std::string &needle, const long &mode, const std::str
 
         if (modek && str_index.find(needle) != std::string::npos) {
             add_next_index_string(zv, current_path.c_str());
-            continue;
         }
 
         if (class_name == "bdict") {
