@@ -54,11 +54,6 @@ public:
         ZVAL_OBJ(new_object, Z_OBJ_P(object)->handlers->clone_obj(object));
         return Z_OBJ_P(new_object);
     }
-    static char * get_cstring(std::string cppstring) {
-        char *result = (char *)emalloc(cppstring.length() + 1);
-        strcpy(result, cppstring.c_str());
-        return result;
-    }
 };
 
 #endif
