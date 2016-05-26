@@ -202,6 +202,15 @@ class bdict extends bitem
     }
 
     /**
+     * @param string|int $needle
+     * @param int $mode 0: search keys; 1: search values
+     * @return string[] paths of the matching entries
+     */
+    function search($needle, $mode)
+    {
+    }
+
+    /**
      * @return array Return the array without meta
      *
      * convert the Bencode to a simple PHP array
@@ -377,6 +386,16 @@ class blist extends bitem
      * @return string
      */
     function encode()
+    {
+    }
+
+    /**
+     * @param string|int $needle
+     * @param int $mode
+     * @return string[]
+     * @see bdict::search()
+     */
+    function search($needle, $mode)
     {
     }
 
