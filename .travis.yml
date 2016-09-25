@@ -19,9 +19,6 @@ before_install:
     - export CXX=g++-5
     - export NO_INTERACTION=1
 
-install:
-    - sudo apt-get -y install build-essential autoconf php-dev
-
 script:
     - phpize
     - ./configure --enable-bencode
