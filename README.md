@@ -1,3 +1,7 @@
+Code Status
+===
+[![Build Status](https://travis-ci.org/Frederick888/php-bencode.svg?branch=master)](https://travis-ci.org/Frederick888/php-bencode)
+
 Introduction
 ===
 The `php-bencode` is a PHP extension which can boost the process of encoding and decoding of [Bencode](https://en.wikipedia.org/wiki/Bencode).
