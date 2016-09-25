@@ -18,12 +18,12 @@ blist::blist(const blist *that) : bitem() {
     for(zend_hash_internal_pointer_reset(that->_data);
             zend_hash_has_more_elements(that->_data) == SUCCESS;
             zend_hash_move_forward(that->_data)) {
-        zval tmp;
-        ZVAL_OBJ(&tmp, zend_container::bnode_object_clone(zend_hash_get_current_data(that->_data)));
+        zval *tmp = new zval();
+        ZVAL_OBJ(tmp, zend_container::bnode_object_clone(zend_hash_get_current_data(that->_data)));
         zend_string *_str_index;
         zend_ulong _num_index;
         zend_hash_get_current_key(that->_data, &_str_index, &_num_index);
-        zend_hash_index_add(_data, _num_index, &tmp);
+        zend_hash_index_add(_data, _num_index, tmp);
     }
 }
 
@@ -60,9 +60,9 @@ void blist::add(zval *value) {
     } else {
         return;
     }
-    zval tmp;
-    ZVAL_OBJ(&tmp, clone_object);
-    zend_hash_next_index_insert(_data, &tmp);
+    zval *tmp = new zval();
+    ZVAL_OBJ(tmp, clone_object);
+    zend_hash_next_index_insert(_data, tmp);
 }
 
 void blist::set(const size_t &key, zval *value) {
@@ -74,12 +74,12 @@ void blist::set(const size_t &key, zval *value) {
     } else {
         return;
     }
-    zval tmp;
-    ZVAL_OBJ(&tmp, clone_object);
+    zval *tmp = new zval();
+    ZVAL_OBJ(tmp, clone_object);
     if (zend_hash_index_exists(_data, key)) {
-        zend_hash_index_update(_data, key, &tmp);
+        zend_hash_index_update(_data, key, tmp);
     } else {
-        zend_hash_next_index_insert(_data, &tmp);
+        zend_hash_next_index_insert(_data, tmp);
     }
 }
 
@@ -91,9 +91,9 @@ bool blist::del(const size_t &key) {
                 if (zend_hash_index_exists(_data, i)) {
                     zend_hash_index_del(_data, i);
                 }
-                zval copy_next;
-                ZVAL_OBJ(&copy_next, zend_container::bnode_object_clone(zend_hash_index_find(_data, i + 1)));
-                zend_hash_index_update(_data, i, &copy_next);
+                zval *copy_next = new zval();
+                ZVAL_OBJ(copy_next, zend_container::bnode_object_clone(zend_hash_index_find(_data, i + 1)));
+                zend_hash_index_update(_data, i, copy_next);
             }
             zend_hash_index_del(_data, constant_count);
         }
@@ -147,9 +147,9 @@ void blist::set_path(const std::string &key, size_t &pt, zval *value) {
         if (sub_class_name == "bstr" || sub_class_name == "bint") {
             if (pt >= key.length()) {
                 zend_object *clone_object = zend_container::bnode_object_clone(value);
-                zval tmp;
-                ZVAL_OBJ(&tmp, clone_object);
-                zend_hash_index_update(_data, current_key_long, &tmp);
+                zval *tmp = new zval();
+                ZVAL_OBJ(tmp, clone_object);
+                zend_hash_index_update(_data, current_key_long, tmp);
             } else {
                 bitem::throw_general_exception("bstr and bint cannot have sub-nodes");
                 return;
@@ -162,9 +162,9 @@ void blist::set_path(const std::string &key, size_t &pt, zval *value) {
     } else {
         if (pt >= key.length()) {
             zend_object *clone_object = zend_container::bnode_object_clone(value);
-            zval tmp;
-            ZVAL_OBJ(&tmp, clone_object);
-            zend_hash_next_index_insert(_data, &tmp);
+            zval *tmp = new zval();
+            ZVAL_OBJ(tmp, clone_object);
+            zend_hash_next_index_insert(_data, tmp);
         } else {
             size_t backup_pt = pt;
             std::string next_key = bitem::get_current_key(key, pt);
@@ -173,16 +173,16 @@ void blist::set_path(const std::string &key, size_t &pt, zval *value) {
                 zend_object *zo = zend_container::blist_object_new(zend_container::blist_ce);
                 zend_container::blist_fetch_object(zo)->blist_data = new blist();
                 zend_container::blist_fetch_object(zo)->blist_data->set_path(key, pt, value);
-                zval zv;
-                ZVAL_OBJ(&zv, zo);
-                zend_hash_next_index_insert(_data, &zv);
+                zval *zv = new zval();
+                ZVAL_OBJ(zv, zo);
+                zend_hash_next_index_insert(_data, zv);
             } else {
                 zend_object *zo = zend_container::bdict_object_new(zend_container::bdict_ce);
                 zend_container::bdict_fetch_object(zo)->bdict_data = new bdict();
                 zend_container::bdict_fetch_object(zo)->bdict_data->set_path(key, pt, value);
-                zval zv;
-                ZVAL_OBJ(&zv, zo);
-                zend_hash_next_index_insert(_data, &zv);
+                zval *zv = new zval();
+                ZVAL_OBJ(zv, zo);
+                zend_hash_next_index_insert(_data, zv);
             }
         }
     }
@@ -233,17 +233,17 @@ zval * blist::parse(const std::string &ben, size_t &pt) {
 
     while (ben[pt] != 'e') {
         if (ben[pt] == 'd') {
-            zval bnode = *bdict::parse(ben, pt);
-            zend_hash_next_index_insert(intern->blist_data->_data, &bnode);
+            zval *bnode = bdict::parse(ben, pt);
+            zend_hash_next_index_insert(intern->blist_data->_data, bnode);
         } else if (ben[pt] == 'l') {
-            zval bnode = *blist::parse(ben, pt);
-            zend_hash_next_index_insert(intern->blist_data->_data, &bnode);
+            zval *bnode = blist::parse(ben, pt);
+            zend_hash_next_index_insert(intern->blist_data->_data, bnode);
         } else if (isdigit(ben[pt])) {
-            zval bnode = *bstr::parse(ben, pt);
-            zend_hash_next_index_insert(intern->blist_data->_data, &bnode);
+            zval *bnode = bstr::parse(ben, pt);
+            zend_hash_next_index_insert(intern->blist_data->_data, bnode);
         } else if (ben[pt] == 'i') {
-            zval bnode = *bint::parse(ben, pt);
-            zend_hash_next_index_insert(intern->blist_data->_data, &bnode);
+            zval *bnode = bint::parse(ben, pt);
+            zend_hash_next_index_insert(intern->blist_data->_data, bnode);
         } else {
             return bitem::throw_general_exception("Error parsing blist");
         }
@@ -284,20 +284,20 @@ zval * blist::to_array(const bool include_meta) const {
         std::string class_name = zend_container::bnode_object_get_class_name(value);
         if (class_name == "bdict") {
             bdict_object *bnode = zend_container::bdict_fetch_object(Z_OBJ_P(value));
-            zval subarray = *bnode->bdict_data->to_array(include_meta);
-            add_next_index_zval(zv, &subarray);
+            zval *subarray = bnode->bdict_data->to_array(include_meta);
+            add_next_index_zval(zv, subarray);
         } else if (class_name == "blist") {
             blist_object *bnode = zend_container::blist_fetch_object(Z_OBJ_P(value));
-            zval subarray = *bnode->blist_data->to_array(include_meta);
-            add_next_index_zval(zv, &subarray);
+            zval *subarray = bnode->blist_data->to_array(include_meta);
+            add_next_index_zval(zv, subarray);
         } else if (class_name == "bstr") {
             bstr_object *bnode = zend_container::bstr_fetch_object(Z_OBJ_P(value));
-            zval subarray = *bnode->bstr_data->to_array(include_meta);
-            add_next_index_zval(zv, &subarray);
+            zval *subarray = bnode->bstr_data->to_array(include_meta);
+            add_next_index_zval(zv, subarray);
         } else if (class_name == "bint") {
             bint_object *bnode = zend_container::bint_fetch_object(Z_OBJ_P(value));
-            zval subarray = *bnode->bint_data->to_array(include_meta);
-            add_next_index_zval(zv, &subarray);
+            zval *subarray = bnode->bint_data->to_array(include_meta);
+            add_next_index_zval(zv, subarray);
         }
     }
 

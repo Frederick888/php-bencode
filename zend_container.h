@@ -50,7 +50,7 @@ public:
         }
     }
     static zend_object * bnode_object_clone(zval *object) {
-        zval _new_object; zval *new_object = &_new_object;
+        zval *new_object = new zval();
         ZVAL_OBJ(new_object, Z_OBJ_P(object)->handlers->clone_obj(object));
         return Z_OBJ_P(new_object);
     }
