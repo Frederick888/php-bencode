@@ -1,0 +1,29 @@
+sudo: required
+
+language: cpp
+
+addons:
+    apt:
+        sources:
+            - sourceline: 'ppa:ondrej/php'
+            - sourceline: 'ppa:ubuntu-toolchain-r/test'
+        packages:
+            - php-dev
+            - autoconf
+            - build-essential
+            - gcc-5
+            - g++-5
+
+before_install:
+    - export CC=gcc-5
+    - export CXX=g++-5
+    - export NO_INTERACTION=1
+
+install:
+    - sudo apt-get -y install build-essential autoconf php-dev
+
+script:
+    - phpize
+    - ./configure --enable-bencode
+    - make -j$(nproc)
+    - make test
