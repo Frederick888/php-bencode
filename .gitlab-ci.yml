@@ -1,9 +1,9 @@
 image: php:latest
 
 before_script:
-    - export NO_INTERACTION=1
-    - apt-get -y update
-    - apt-get -y install autoconf build-essential gcc g++
+  - export NO_INTERACTION=1
+  - apt-get -y update
+  - apt-get -y install autoconf build-essential gcc g++
 
 build:
   stage: build
