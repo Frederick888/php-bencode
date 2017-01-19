@@ -1,0 +1,25 @@
+image: php:latest
+
+before_script:
+    - export NO_INTERACTION=1
+    - apt-get -y update
+    - apt-get -y install autoconf build-essential gcc g++
+
+build:
+  stage: build
+  script:
+    - phpize
+    - ./configure --enable-bencode
+    - make -j$(nproc)
+  artifacts:
+    name: "${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}"
+    paths:
+      - modules/bencode.so
+  cache:
+    untracked: true
+
+test:
+  stage: test
+  script:
+    - make test
+
