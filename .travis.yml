@@ -1,19 +1,20 @@
 dist: trusty
 sudo: required
 
-language: cpp
+language: php
 
 addons:
     apt:
         sources:
-            - sourceline: 'ppa:ondrej/php'
             - sourceline: 'ppa:ubuntu-toolchain-r/test'
         packages:
-            - php7.1-dev
             - autoconf
             - build-essential
             - gcc-5
             - g++-5
+
+php:
+  - '7.1'
 
 before_install:
     - export CC=gcc-5
@@ -23,7 +24,7 @@ before_install:
 script:
     - dpkg -l | grep php
     - ls /usr/bin | grep php
-    - phpize7.1
+    - phpize
     - ./configure --enable-bencode
     - make -j$(nproc)
     - make test
