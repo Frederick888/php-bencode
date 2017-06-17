@@ -280,9 +280,8 @@ PHP_METHOD(blist, __construct)
 }
 PHP_METHOD(blist, get_type)
 {
-    std::string result;
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    result = intern->blist_data->get_type();
+    std::string result = intern->blist_data->get_type();
     RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(blist, get)
@@ -507,9 +506,8 @@ PHP_METHOD(bstr, __construct)
 }
 PHP_METHOD(bstr, get_type)
 {
-    std::string result;
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
-    result = intern->bstr_data->get_type();
+    std::string result = intern->bstr_data->get_type();
     RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(bstr, get)
@@ -607,9 +605,8 @@ PHP_METHOD(bint, __construct)
 }
 PHP_METHOD(bint, get_type)
 {
-    std::string result;
     bint_object *intern = Z_BINT_OBJ_P(getThis());
-    result = intern->bint_data->get_type();
+    std::string result = intern->bint_data->get_type();
     RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(bint, get)
