@@ -22,8 +22,6 @@ before_install:
     - export NO_INTERACTION=1
 
 script:
-    - dpkg -l | grep php
-    - ls /usr/bin | grep php
     - phpize
     - ./configure --enable-bencode
     - make -j$(nproc)
