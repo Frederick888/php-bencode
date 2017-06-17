@@ -23,7 +23,7 @@ std::string bitem::get_current_key(const std::string &path, size_t &pt) {
     std::string current_key = path.substr(start, pt - start);
     ++pt;
     size_t escape = current_key.find("\\/");
-    while (escape >= 0 && escape < current_key.length()) {
+    while (escape < current_key.length()) {
         current_key.replace(escape, 2, "/");
         escape = current_key.find("\\/");
     }
