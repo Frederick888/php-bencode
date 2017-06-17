@@ -79,7 +79,7 @@ PHP_METHOD(bdict, get_type)
 {
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string result = intern->bdict_data->get_type();
-    RETURN_STRING(result.c_str());
+    RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(bdict, get)
 {
@@ -283,7 +283,7 @@ PHP_METHOD(blist, get_type)
     std::string result;
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     result = intern->blist_data->get_type();
-    RETURN_STRING(result.c_str());
+    RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(blist, get)
 {
@@ -510,13 +510,13 @@ PHP_METHOD(bstr, get_type)
     std::string result;
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
     result = intern->bstr_data->get_type();
-    RETURN_STRING(result.c_str());
+    RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(bstr, get)
 {
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
     std::string result = intern->bstr_data->get();
-    RETURN_STRING(result.c_str());
+    RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(bstr, set)
 {
@@ -610,7 +610,7 @@ PHP_METHOD(bint, get_type)
     std::string result;
     bint_object *intern = Z_BINT_OBJ_P(getThis());
     result = intern->bint_data->get_type();
-    RETURN_STRING(result.c_str());
+    RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(bint, get)
 {
