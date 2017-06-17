@@ -9,7 +9,7 @@ addons:
             - sourceline: 'ppa:ondrej/php'
             - sourceline: 'ppa:ubuntu-toolchain-r/test'
         packages:
-            - php-dev
+            - php7.1-dev
             - autoconf
             - build-essential
             - gcc-5
