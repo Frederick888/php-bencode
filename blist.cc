@@ -282,39 +282,31 @@ zval * blist::to_array(const bool include_meta) const {
             zend_hash_move_forward(_data)) {
         zval *value = zend_hash_get_current_data(_data);
         std::string class_name = zend_container::bnode_object_get_class_name(value);
+        zval *subarray = nullptr;
         if (class_name == "bdict") {
             bdict_object *bnode = zend_container::bdict_fetch_object(Z_OBJ_P(value));
-            zval *subarray = bnode->bdict_data->to_array(include_meta);
-            add_next_index_zval(zv, subarray);
+            subarray = bnode->bdict_data->to_array(include_meta);
         } else if (class_name == "blist") {
             blist_object *bnode = zend_container::blist_fetch_object(Z_OBJ_P(value));
-            zval *subarray = bnode->blist_data->to_array(include_meta);
-            add_next_index_zval(zv, subarray);
+            subarray = bnode->blist_data->to_array(include_meta);
         } else if (class_name == "bstr") {
             bstr_object *bnode = zend_container::bstr_fetch_object(Z_OBJ_P(value));
-            zval *subarray = bnode->bstr_data->to_array(include_meta);
-            add_next_index_zval(zv, subarray);
+            subarray = bnode->bstr_data->to_array(include_meta);
         } else if (class_name == "bint") {
             bint_object *bnode = zend_container::bint_fetch_object(Z_OBJ_P(value));
-            zval *subarray = bnode->bint_data->to_array(include_meta);
+            subarray = bnode->bint_data->to_array(include_meta);
+        }
+        if (subarray != nullptr) {
             add_next_index_zval(zv, subarray);
         }
     }
 
     if (include_meta) {
-        char *_type = estrdup("_type");
-        char *_type_data = estrdup("blist");
-        char *_length = estrdup("_length");
-        char *_data = estrdup("_data");
         zval *zv_outer = new zval();
         array_init(zv_outer);
-        add_assoc_string(zv_outer, _type, _type_data);
-        add_assoc_long(zv_outer, _length, length());
-        add_assoc_zval(zv_outer, _data, zv);
-        efree(_type);
-        efree(_type_data);
-        efree(_length);
-        efree(_data);
+        add_assoc_string(zv_outer, (char *) "_type", (char *) "blist");
+        add_assoc_long(zv_outer, (char *) "_length", length());
+        add_assoc_zval(zv_outer, (char *) "_data", zv);
         return zv_outer;
     }
     return zv;

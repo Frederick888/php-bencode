@@ -46,28 +46,17 @@ std::string bstr::encode() const {
 
 zval * bstr::to_array(const bool include_meta) const {
     zval *zv = new zval();
+    char *_data = (char *)emalloc(_value.length() + 1);
+    memcpy(_data, _value.c_str(), _value.length());
     if (include_meta) {
         array_init(zv);
         if (_value.length() == 0) return zv;
-        char *_type = estrdup("_type");
-        char *_type_data = estrdup("bstr");
-        char *_length = estrdup("_length");
-        char *_data = estrdup("_data");
-        char *_data_data = (char*)emalloc(_value.length() + 1);
-        memcpy(_data_data, _value.c_str(), _value.length());
-        add_assoc_string(zv, _type, _type_data);
-        add_assoc_long(zv, _length, length());
-        add_assoc_stringl(zv, _data, _data_data, _value.length());
-        efree(_type);
-        efree(_type_data);
-        efree(_length);
-        efree(_data);
-        efree(_data_data);
+        add_assoc_string(zv, (char *) "_type", (char *) "bstr");
+        add_assoc_long(zv, (char *) "_length", length());
+        add_assoc_stringl(zv, (char *) "_data", _data, _value.length());
     } else {
-        char *_data_data = (char *)emalloc(_value.length() + 1);
-        memcpy(_data_data, _value.c_str(), _value.length());
-        ZVAL_STRINGL(zv, _data_data, _value.length());
-        efree(_data_data);
+        ZVAL_STRINGL(zv, _data, _value.length());
     }
+    efree(_data);
     return zv;
 }
