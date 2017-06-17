@@ -28,15 +28,15 @@ zval * bstr::parse(const std::string &ben, size_t &pt) {
         return bitem::throw_general_exception("Error parsing bstr");
     const size_t start = pt;
     while (isdigit(ben[pt])) ++pt;
-    std::string len = ben.substr(start, pt - start);
+    size_t len = std::stoull(ben.substr(start, pt - start));
     ++pt;
 
     zval *zv = new zval();
     zend_object *zo = zend_container::bstr_object_new(zend_container::bstr_ce);
     ZVAL_OBJ(zv, zo);
     bstr_object *intern = zend_container::bstr_fetch_object(Z_OBJ_P(zv));
-    intern->bstr_data = new bstr(ben.substr(pt, std::stoull(len)));
-    pt += std::stoull(len);
+    intern->bstr_data = new bstr(ben.substr(pt, len));
+    pt += len;
     return zv;
 }
 

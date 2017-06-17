@@ -27,10 +27,9 @@ size_t bint::length() const {
 zval * bint::parse(const std::string &ben, size_t &pt) {
     if (ben[pt] != 'i')
         return bitem::throw_general_exception("Error parsing bint");
-    ++pt;
-    std::string strint = "";
-    while (ben[pt] != 'e') strint += ben[pt++];
-    long result = std::stoll(strint);
+    size_t start = ++pt;
+    while (ben[pt] != 'e') ++pt;
+    long result = std::stoll(ben.substr(start, pt - start));
     ++pt;
 
     zval *zv = new zval();
