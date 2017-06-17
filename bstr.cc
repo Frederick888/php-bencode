@@ -54,7 +54,7 @@ zval * bstr::to_array(const bool include_meta) const {
         char *_length = estrdup("_length");
         char *_data = estrdup("_data");
         char *_data_data = (char*)emalloc(_value.length() + 1);
-        strcpy(_data_data, _value.c_str());
+        memcpy(_data_data, _value.c_str(), _value.length());
         add_assoc_string(zv, _type, _type_data);
         add_assoc_long(zv, _length, length());
         add_assoc_stringl(zv, _data, _data_data, _value.length());
@@ -65,7 +65,7 @@ zval * bstr::to_array(const bool include_meta) const {
         efree(_data_data);
     } else {
         char *_data_data = (char *)emalloc(_value.length() + 1);
-        strcpy(_data_data, _value.c_str());
+        memcpy(_data_data, _value.c_str(), _value.length());
         ZVAL_STRINGL(zv, _data_data, _value.length());
         efree(_data_data);
     }

@@ -256,23 +256,23 @@ zval * bdict::to_array(const bool include_meta) const {
         zval *value = zend_hash_get_current_data(_data);
         std::string class_name = zend_container::bnode_object_get_class_name(value);
         char *str_index = (char *)emalloc(ZSTR_LEN(_str_index) + 1);
-        strcpy(str_index, ZSTR_VAL(_str_index));
+        memcpy(str_index, ZSTR_VAL(_str_index), ZSTR_LEN(_str_index));
         if (class_name == "bdict") {
             bdict_object *bnode = zend_container::bdict_fetch_object(Z_OBJ_P(value));
             zval *subarray = bnode->bdict_data->to_array(include_meta);
-            add_assoc_zval(zv, str_index, subarray);
+            add_assoc_zval_ex(zv, str_index, ZSTR_LEN(_str_index), subarray);
         } else if (class_name == "blist") {
             blist_object *bnode = zend_container::blist_fetch_object(Z_OBJ_P(value));
             zval *subarray = bnode->blist_data->to_array(include_meta);
-            add_assoc_zval(zv, str_index, subarray);
+            add_assoc_zval_ex(zv, str_index, ZSTR_LEN(_str_index), subarray);
         } else if (class_name == "bstr") {
             bstr_object *bnode = zend_container::bstr_fetch_object(Z_OBJ_P(value));
             zval *subarray = bnode->bstr_data->to_array(include_meta);
-            add_assoc_zval(zv, str_index, subarray);
+            add_assoc_zval_ex(zv, str_index, ZSTR_LEN(_str_index), subarray);
         } else if (class_name == "bint") {
             bint_object *bnode = zend_container::bint_fetch_object(Z_OBJ_P(value));
             zval *subarray = bnode->bint_data->to_array(include_meta);
-            add_assoc_zval(zv, str_index, subarray);
+            add_assoc_zval_ex(zv, str_index, ZSTR_LEN(_str_index), subarray);
         }
         efree(str_index);
     }
