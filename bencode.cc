@@ -18,7 +18,7 @@ PHP_METHOD(bitem, parse)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ben, &ben_len) == FAILURE) {
         RETURN_NULL();
     }
-    std::string ben_str(ben);
+    std::string ben_str(ben, ben_len);
     RETURN_ZVAL(bitem::parse(ben_str), 1, 1);
 }
 PHP_METHOD(bitem, load)
@@ -28,7 +28,7 @@ PHP_METHOD(bitem, load)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &file_path, &file_path_len) == FAILURE) {
         RETURN_NULL();
     }
-    std::string file_path_str(file_path);
+    std::string file_path_str(file_path, file_path_len);
     RETURN_ZVAL(bitem::load(file_path_str), 1, 1);
 }
 PHP_METHOD(bitem, save)
@@ -38,7 +38,7 @@ PHP_METHOD(bitem, save)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &file_path, &file_path_len) == FAILURE) {
         RETURN_NULL();
     }
-    std::string file_path_str(file_path);
+    std::string file_path_str(file_path, file_path_len);
     std::string class_name = zend_container::bnode_object_get_class_name(getThis());
     if (class_name == "bdict") {
         bdict_object *intern = Z_BDICT_OBJ_P(getThis());
@@ -77,9 +77,8 @@ PHP_METHOD(bdict, __construct)
 }
 PHP_METHOD(bdict, get_type)
 {
-    std::string result;
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    result = intern->bdict_data->get_type();
+    std::string result = intern->bdict_data->get_type();
     RETURN_STRING(result.c_str());
 }
 PHP_METHOD(bdict, get)
@@ -90,7 +89,7 @@ PHP_METHOD(bdict, get)
             RETURN_NULL();
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    std::string _key(key);
+    std::string _key(key, key_len);
     RETURN_ZVAL(intern->bdict_data->get(_key), 1, 0);
 }
 PHP_METHOD(bdict, get_path)
@@ -101,7 +100,7 @@ PHP_METHOD(bdict, get_path)
             RETURN_NULL();
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    std::string _key(key);
+    std::string _key(key, key_len);
     size_t pt = 0;
     RETURN_ZVAL(intern->bdict_data->get_path(_key, pt), 1, 0);
 }
@@ -113,7 +112,7 @@ PHP_METHOD(bdict, get_copy)
             RETURN_NULL();
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    std::string _key(key);
+    std::string _key(key, key_len);
     RETURN_OBJ(zend_container::bnode_object_clone(intern->bdict_data->get(_key)));
 }
 PHP_METHOD(bdict, get_path_copy)
@@ -124,7 +123,7 @@ PHP_METHOD(bdict, get_path_copy)
             RETURN_NULL();
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    std::string _key(key);
+    std::string _key(key, key_len);
     size_t pt = 0;
     RETURN_OBJ(zend_container::bnode_object_clone(intern->bdict_data->get_path(_key, pt)));
 }
@@ -137,7 +136,7 @@ PHP_METHOD(bdict, set)
             RETURN_FALSE;
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    std::string _key(key);
+    std::string _key(key, key_len);
     intern->bdict_data->set(_key, zv);
     RETURN_TRUE;
 }
@@ -151,7 +150,7 @@ PHP_METHOD(bdict, set_path)
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     size_t pt = 0;
-    std::string _key(key);
+    std::string _key(key, key_len);
     intern->bdict_data->set_path(_key, pt, zv);
     RETURN_TRUE;
 }
@@ -163,7 +162,7 @@ PHP_METHOD(bdict, has)
             RETURN_NULL();
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    std::string _key(key);
+    std::string _key(key, key_len);
     RETURN_BOOL(intern->bdict_data->has(_key));
 }
 PHP_METHOD(bdict, del)
@@ -174,7 +173,7 @@ PHP_METHOD(bdict, del)
             RETURN_NULL();
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    std::string _key(key);
+    std::string _key(key, key_len);
     RETURN_BOOL(intern->bdict_data->del(_key));
 }
 PHP_METHOD(bdict, del_path)
@@ -185,7 +184,7 @@ PHP_METHOD(bdict, del_path)
             RETURN_NULL();
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    std::string _key(key);
+    std::string _key(key, key_len);
     size_t pt = 0;
     RETURN_BOOL(intern->bdict_data->del_path(_key, pt));
 }
@@ -209,7 +208,7 @@ PHP_METHOD(bdict, parse)
         RETURN_NULL();
     }
     if (!ben_len > 0) RETURN_NULL();
-    std::string tmp(ben);
+    std::string tmp(ben, ben_len);
     size_t pt = 0;
     RETURN_ZVAL(bdict::parse(tmp, pt), 1, 1);
 }
@@ -227,7 +226,7 @@ PHP_METHOD(bdict, search)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sl", &needle, &needle_len, &mode) == FAILURE) {
         RETURN_NULL();
     }
-    std::string tmp(needle);
+    std::string tmp(needle, needle_len);
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     RETURN_ZVAL(intern->bdict_data->search(tmp, mode, ""), 1, 1);
 }
@@ -306,7 +305,7 @@ PHP_METHOD(blist, get_path)
             RETURN_NULL();
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    std::string _key(key);
+    std::string _key(key, key_len);
     size_t pt = 0;
     RETURN_ZVAL(intern->blist_data->get_path(_key, pt), 1, 0);
 }
@@ -330,7 +329,7 @@ PHP_METHOD(blist, get_path_copy)
             RETURN_NULL();
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    std::string _key(key);
+    std::string _key(key, key_len);
     size_t pt = 0;
     RETURN_OBJ(zend_container::bnode_object_clone(intern->blist_data->get_path(_key, pt)));
 }
@@ -353,7 +352,7 @@ PHP_METHOD(blist, set_path)
             RETURN_FALSE;
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    std::string _key(key);
+    std::string _key(key, key_len);
     size_t pt = 0;
     intern->blist_data->set_path(_key, pt, zv);
     RETURN_TRUE;
@@ -401,7 +400,7 @@ PHP_METHOD(blist, del_path)
             RETURN_NULL();
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    std::string _key(key);
+    std::string _key(key, key_len);
     size_t pt = 0;
     RETURN_BOOL(intern->blist_data->del_path(_key, pt));
 }
@@ -425,7 +424,7 @@ PHP_METHOD(blist, parse)
         RETURN_NULL();
     }
     if (!ben_len > 0) RETURN_NULL();
-    std::string tmp(ben);
+    std::string tmp(ben, ben_len);
     size_t pt = 0;
     RETURN_ZVAL(blist::parse(tmp, pt), 1, 1);
 }
@@ -443,7 +442,7 @@ PHP_METHOD(blist, search)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sl", &needle, &needle_len, &mode) == FAILURE) {
         RETURN_NULL();
     }
-    std::string tmp(needle);
+    std::string tmp(needle, needle_len);
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     RETURN_ZVAL(intern->blist_data->search(tmp, mode, ""), 1, 1);
 }
@@ -498,7 +497,7 @@ PHP_METHOD(bstr, __construct)
     }
     bstr *bnode = NULL;
     if (value_len > 0) {
-        std::string tmp(value);
+        std::string tmp(value, value_len);
         bnode = new bstr(tmp);
     } else {
         bnode = new bstr();
@@ -526,7 +525,7 @@ PHP_METHOD(bstr, set)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &value, &value_len) == FAILURE) {
         RETURN_FALSE;
     }
-    std::string _value(value);
+    std::string _value(value, value_len);
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
     intern->bstr_data->set(_value);
     RETURN_TRUE;
@@ -643,7 +642,7 @@ PHP_METHOD(bint, parse)
         RETURN_NULL();
     }
     if (!ben_len > 0) RETURN_NULL();
-    std::string tmp(ben);
+    std::string tmp(ben, ben_len);
     size_t pt = 0;
     RETURN_ZVAL(bint::parse(tmp, pt), 1, 1);
 }
