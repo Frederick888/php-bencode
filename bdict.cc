@@ -227,7 +227,7 @@ std::string bdict::encode() const {
         zend_hash_get_current_key(_data, &_str_index, &num_index);
         zval *value = zend_hash_get_current_data(_data);
         std::string class_name = zend_container::bnode_object_get_class_name(value);
-        std::string str_index(ZSTR_VAL(_str_index));
+        std::string str_index(ZSTR_VAL(_str_index), ZSTR_LEN(_str_index));
 
         result += std::to_string(str_index.length()) + ":" + str_index;
         if (class_name == "bdict") {
