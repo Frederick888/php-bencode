@@ -57,7 +57,7 @@ zval * bstr::to_array(const bool include_meta) const {
         strcpy(_data_data, _value.c_str());
         add_assoc_string(zv, _type, _type_data);
         add_assoc_long(zv, _length, length());
-        add_assoc_string(zv, _data, _data_data);
+        add_assoc_stringl(zv, _data, _data_data, _value.length());
         efree(_type);
         efree(_type_data);
         efree(_length);

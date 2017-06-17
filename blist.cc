@@ -350,10 +350,10 @@ zval * blist::search(const std::string &needle, const long &mode, const std::str
             zend_hash_append_strings(Z_ARRVAL_P(zv), Z_ARRVAL_P(next_result));
         } else if (modev && class_name == "bstr") {
             if ((zend_container::bstr_fetch_object(Z_OBJ_P(value)))->bstr_data->_value.find(needle) != std::string::npos)
-                add_next_index_string(zv, current_path.c_str());
+                add_next_index_stringl(zv, current_path.c_str(), current_path.length());
         } else if (modev && bitem::is_ll(needle) && class_name == "bint") {
             if ((zend_container::bint_fetch_object(Z_OBJ_P(value)))->bint_data->_value == std::stoll(needle))
-                add_next_index_string(zv, current_path.c_str());
+                add_next_index_stringl(zv, current_path.c_str(), current_path.length());
         }
     }
 
