@@ -66,7 +66,7 @@ zval * bstr::to_array(const bool include_meta) const {
     } else {
         char *_data_data = (char *)emalloc(_value.length() + 1);
         strcpy(_data_data, _value.c_str());
-        ZVAL_STRING(zv, _data_data);
+        ZVAL_STRINGL(zv, _data_data, _value.length());
         efree(_data_data);
     }
     return zv;
