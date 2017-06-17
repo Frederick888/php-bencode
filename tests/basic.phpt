@@ -1,5 +1,5 @@
 --TEST--
-PHP Bencode - Path Test
+PHP Bencode - Basic Test
 --FILE--
 <?php
 error_reporting(E_ALL);
