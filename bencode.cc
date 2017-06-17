@@ -207,7 +207,7 @@ PHP_METHOD(bdict, parse)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ben, &ben_len) == FAILURE) {
         RETURN_NULL();
     }
-    if (!ben_len > 0) RETURN_NULL();
+    if (!ben_len) RETURN_NULL();
     std::string tmp(ben, ben_len);
     size_t pt = 0;
     RETURN_ZVAL(bdict::parse(tmp, pt), 1, 1);
@@ -423,7 +423,7 @@ PHP_METHOD(blist, parse)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ben, &ben_len) == FAILURE) {
         RETURN_NULL();
     }
-    if (!ben_len > 0) RETURN_NULL();
+    if (!ben_len) RETURN_NULL();
     std::string tmp(ben, ben_len);
     size_t pt = 0;
     RETURN_ZVAL(blist::parse(tmp, pt), 1, 1);
@@ -543,7 +543,7 @@ PHP_METHOD(bstr, parse)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ben, &ben_len) == FAILURE) {
         RETURN_NULL();
     }
-    if (!ben_len > 0) RETURN_NULL();
+    if (!ben_len) RETURN_NULL();
     std::string tmp(ben);
     size_t pt = 0;
     RETURN_ZVAL(bstr::parse(tmp, pt), 1, 1);
@@ -641,7 +641,7 @@ PHP_METHOD(bint, parse)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ben, &ben_len) == FAILURE) {
         RETURN_NULL();
     }
-    if (!ben_len > 0) RETURN_NULL();
+    if (!ben_len) RETURN_NULL();
     std::string tmp(ben, ben_len);
     size_t pt = 0;
     RETURN_ZVAL(bint::parse(tmp, pt), 1, 1);
