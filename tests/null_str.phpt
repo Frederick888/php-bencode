@@ -4,10 +4,13 @@ PHP Bencode - Strings with Null
 <?php
 error_reporting(E_ALL);
 
+$key = "hello\0world";
+$val = "foo\0bar";
+
 $bdict = new bdict();
-$bdict->set('hello', new bstr("foo\0bar"));
-echo strlen($bdict->get('hello')->get()) . "\n";
-echo bin2hex($bdict->get('hello')->get());
+$bdict->set($key, new bstr($val));
+echo strlen($bdict->get($key)->get()) . "\n";
+echo bin2hex($bdict->get($key)->get());
 
 exit(0);
 ?>
