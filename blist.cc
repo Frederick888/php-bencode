@@ -20,10 +20,10 @@ blist::blist(const blist *that) : bitem() {
             zend_hash_move_forward(that->_data)) {
         zval *tmp = new zval();
         ZVAL_OBJ(tmp, zend_container::bnode_object_clone(zend_hash_get_current_data(that->_data)));
-        zend_string *_str_index;
-        zend_ulong _num_index;
-        zend_hash_get_current_key(that->_data, &_str_index, &_num_index);
-        zend_hash_index_add(_data, _num_index, tmp);
+        zend_string *str_index;
+        zend_ulong num_index;
+        zend_hash_get_current_key(that->_data, &str_index, &num_index);
+        zend_hash_index_add(_data, num_index, tmp);
     }
 }
 
@@ -327,9 +327,9 @@ zval * blist::search(const std::string &needle, const long &mode, const std::str
     for(zend_hash_internal_pointer_reset(_data);
             zend_hash_has_more_elements(_data) == SUCCESS;
             zend_hash_move_forward(_data)) {
-        zend_string *_str_index;
+        zend_string *str_index;
         zend_ulong num_index;
-        zend_hash_get_current_key(_data, &_str_index, &num_index);
+        zend_hash_get_current_key(_data, &str_index, &num_index);
         zval *value = zend_hash_get_current_data(_data);
         std::string class_name = zend_container::bnode_object_get_class_name(value);
         std::string current_path = (path == "" ? "" : path + "/") + std::to_string(num_index);
