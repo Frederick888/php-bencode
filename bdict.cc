@@ -305,7 +305,7 @@ zval * bdict::search(const std::string &needle, const long &mode, const std::str
         zend_hash_get_current_key(_data, &_str_index, &num_index);
         zval *value = zend_hash_get_current_data(_data);
         std::string class_name = zend_container::bnode_object_get_class_name(value);
-        std::string str_index(ZSTR_VAL(_str_index));
+        std::string str_index(ZSTR_VAL(_str_index), ZSTR_LEN(_str_index));
         std::string current_path = (path == "" ? "" : path + "/") + bitem::escape_key(str_index);
 
         if (modek && str_index.find(needle) != std::string::npos) {
