@@ -250,13 +250,11 @@ zval * bdict::to_array(const bool include_meta) const {
     for(zend_hash_internal_pointer_reset(_data);
             zend_hash_has_more_elements(_data) == SUCCESS;
             zend_hash_move_forward(_data)) {
-        zend_string *_str_index;
+        zend_string *str_index;
         zend_ulong num_index;
-        zend_hash_get_current_key(_data, &_str_index, &num_index);
+        zend_hash_get_current_key(_data, &str_index, &num_index);
         zval *value = zend_hash_get_current_data(_data);
         std::string class_name = zend_container::bnode_object_get_class_name(value);
-        char *str_index = (char *)emalloc(ZSTR_LEN(_str_index) + 1);
-        memcpy(str_index, ZSTR_VAL(_str_index), ZSTR_LEN(_str_index));
         zval *subarray = nullptr;
         if (class_name == "bdict") {
             bdict_object *bnode = zend_container::bdict_fetch_object(Z_OBJ_P(value));
@@ -272,9 +270,8 @@ zval * bdict::to_array(const bool include_meta) const {
             subarray = bnode->bint_data->to_array(include_meta);
         }
         if (subarray != nullptr) {
-            add_assoc_zval_ex(zv, str_index, ZSTR_LEN(_str_index), subarray);
+            zend_hash_add(Z_ARR_P(zv), str_index, subarray);
         }
-        efree(str_index);
     }
 
     if (include_meta) {
