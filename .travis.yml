@@ -12,6 +12,7 @@ addons:
             - build-essential
             - gcc-5
             - g++-5
+            - valgrind
 
 php:
   - '7.1'
@@ -25,4 +26,4 @@ script:
     - phpize
     - ./configure --enable-bencode
     - make -j$(nproc)
-    - make test
+    - make test TESTS="-m"

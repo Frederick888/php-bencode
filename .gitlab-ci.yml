@@ -3,7 +3,7 @@ image: php:latest
 before_script:
   - export NO_INTERACTION=1
   - apt-get -y update
-  - apt-get -y install autoconf build-essential gcc g++
+  - apt-get -y install autoconf build-essential gcc g++ valgrind
 
 build:
   stage: build
@@ -11,7 +11,7 @@ build:
     - phpize
     - ./configure --enable-bencode
     - make -j$(nproc)
-    - make test
+    - make test TESTS="-m"
   artifacts:
     name: "${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}"
     expire_in: 2 weeks
