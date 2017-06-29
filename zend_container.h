@@ -53,7 +53,7 @@ public:
         return Z_OBJ_P(new_object);
     }
     static bitem * fetch_bnode_object_data(zend_object *obj) {
-        return (bitem *)(*((size_t *)((char *)obj - sizeof(size_t))));
+        return (bitem *)(*((uintptr_t *)((char *)obj - sizeof(uintptr_t))));
     }
 };
 
