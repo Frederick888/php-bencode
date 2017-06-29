@@ -61,7 +61,7 @@ zval * bint::search(const std::string &needle, const long &mode, const std::stri
     zval *zv = new zval();
     array_init(zv);
 
-    if (mode == 0 && bitem::is_ll(needle) && _value == std::stoll(needle))
+    if (mode == 1 && bitem::is_ll(needle) && _value == std::stoll(needle))
         add_next_index_stringl(zv, path.c_str(), path.length());
 
     return zv;

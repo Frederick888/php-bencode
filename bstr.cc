@@ -65,7 +65,7 @@ zval * bstr::search(const std::string &needle, const long &mode, const std::stri
     zval *zv = new zval();
     array_init(zv);
 
-    if (mode == 0 && _value.find(needle) != std::string::npos)
+    if (mode == 1 && _value.find(needle) != std::string::npos)
         add_next_index_stringl(zv, path.c_str(), path.length());
 
     return zv;
