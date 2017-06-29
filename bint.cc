@@ -48,9 +48,9 @@ zval * bint::to_array(const bool include_meta) const {
     zval *zv = new zval();
     if (include_meta) {
         array_init(zv);
-        add_assoc_string(zv, (char *) "_type", (char *) "bint");
-        add_assoc_long(zv, (char *) "_length", length());
-        add_assoc_long(zv, (char *) "_data", _value);
+        add_assoc_string(zv, (char *)"_type", (char *)"bint");
+        add_assoc_long(zv, (char *)"_length", length());
+        add_assoc_long(zv, (char *)"_data", _value);
     } else {
         ZVAL_LONG(zv, _value);
     }

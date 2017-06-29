@@ -304,9 +304,9 @@ zval * blist::to_array(const bool include_meta) const {
     if (include_meta) {
         zval *zv_outer = new zval();
         array_init(zv_outer);
-        add_assoc_string(zv_outer, (char *) "_type", (char *) "blist");
-        add_assoc_long(zv_outer, (char *) "_length", length());
-        add_assoc_zval(zv_outer, (char *) "_data", zv);
+        add_assoc_string(zv_outer, (char *)"_type", (char *)"blist");
+        add_assoc_long(zv_outer, (char *)"_length", length());
+        add_assoc_zval(zv_outer, (char *)"_data", zv);
         return zv_outer;
     }
     return zv;

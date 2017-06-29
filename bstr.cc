@@ -51,9 +51,9 @@ zval * bstr::to_array(const bool include_meta) const {
     if (include_meta) {
         array_init(zv);
         if (_value.length() == 0) return zv;
-        add_assoc_string(zv, (char *) "_type", (char *) "bstr");
-        add_assoc_long(zv, (char *) "_length", length());
-        add_assoc_stringl(zv, (char *) "_data", _data, _value.length());
+        add_assoc_string(zv, (char *)"_type", (char *)"bstr");
+        add_assoc_long(zv, (char *)"_length", length());
+        add_assoc_stringl(zv, (char *)"_data", _data, _value.length());
     } else {
         ZVAL_STRINGL(zv, _data, _value.length());
     }
