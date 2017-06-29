@@ -60,3 +60,13 @@ zval * bstr::to_array(const bool include_meta) const {
     efree(_data);
     return zv;
 }
+
+zval * bstr::search(const std::string &needle, const long &mode, const std::string path) const {
+    zval *zv = new zval();
+    array_init(zv);
+
+    if (mode == 0 && _value.find(needle) != std::string::npos)
+        add_next_index_stringl(zv, path.c_str(), path.length());
+
+    return zv;
+}

@@ -56,3 +56,13 @@ zval * bint::to_array(const bool include_meta) const {
     }
     return zv;
 }
+
+zval * bint::search(const std::string &needle, const long &mode, const std::string path) const {
+    zval *zv = new zval();
+    array_init(zv);
+
+    if (mode == 0 && bitem::is_ll(needle) && _value == std::stoll(needle))
+        add_next_index_stringl(zv, path.c_str(), path.length());
+
+    return zv;
+}
