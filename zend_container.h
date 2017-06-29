@@ -52,7 +52,7 @@ public:
         ZVAL_OBJ(new_object, Z_OBJ_P(object)->handlers->clone_obj(object));
         return Z_OBJ_P(new_object);
     }
-    static inline bitem * fetch_bnode_object_data(zend_object *obj) {
+    static inline bitem * bnode_fetch_object_data(zend_object *obj) {
         return (bitem *)(*((uintptr_t *)((char *)obj - sizeof(uintptr_t))));
     }
 };

@@ -229,7 +229,7 @@ std::string bdict::encode() const {
         std::string str_index(ZSTR_VAL(_str_index), ZSTR_LEN(_str_index));
 
         result += std::to_string(str_index.length()) + ":" + str_index
-            + zend_container::fetch_bnode_object_data(Z_OBJ_P(value))->encode();
+            + zend_container::bnode_fetch_object_data(Z_OBJ_P(value))->encode();
     }
     return result + "e";
 }
@@ -245,7 +245,7 @@ zval * bdict::to_array(const bool include_meta) const {
         zend_ulong num_index;
         zend_hash_get_current_key(_data, &str_index, &num_index);
         zval *value = zend_hash_get_current_data(_data);
-        zval *subarray = zend_container::fetch_bnode_object_data(Z_OBJ_P(value))->to_array(include_meta);
+        zval *subarray = zend_container::bnode_fetch_object_data(Z_OBJ_P(value))->to_array(include_meta);
         zend_hash_add(Z_ARR_P(zv), str_index, subarray);
     }
 
@@ -281,7 +281,7 @@ zval * bdict::search(const std::string &needle, const long &mode, const std::str
             add_next_index_stringl(zv, current_path.c_str(), current_path.length());
         }
 
-        zval *next_result = zend_container::fetch_bnode_object_data(Z_OBJ_P(value))->search(needle, mode, current_path);
+        zval *next_result = zend_container::bnode_fetch_object_data(Z_OBJ_P(value))->search(needle, mode, current_path);
         zend_hash_append_strings(Z_ARRVAL_P(zv), Z_ARRVAL_P(next_result));
     }
 

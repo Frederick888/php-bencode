@@ -258,7 +258,7 @@ std::string blist::encode() const {
             zend_hash_has_more_elements(_data) == SUCCESS;
             zend_hash_move_forward(_data)) {
         zval *value = zend_hash_get_current_data(_data);
-        result += zend_container::fetch_bnode_object_data(Z_OBJ_P(value))->encode();
+        result += zend_container::bnode_fetch_object_data(Z_OBJ_P(value))->encode();
     }
     return result + "e";
 }
@@ -271,7 +271,7 @@ zval * blist::to_array(const bool include_meta) const {
             zend_hash_has_more_elements(_data) == SUCCESS;
             zend_hash_move_forward(_data)) {
         zval *value = zend_hash_get_current_data(_data);
-        zval *subarray = zend_container::fetch_bnode_object_data(Z_OBJ_P(value))->to_array(include_meta);
+        zval *subarray = zend_container::bnode_fetch_object_data(Z_OBJ_P(value))->to_array(include_meta);
         add_next_index_zval(zv, subarray);
     }
 
@@ -302,7 +302,7 @@ zval * blist::search(const std::string &needle, const long &mode, const std::str
         zval *value = zend_hash_get_current_data(_data);
         std::string current_path = (path == "" ? "" : path + "/") + std::to_string(num_index);
 
-        zval *next_result = zend_container::fetch_bnode_object_data(Z_OBJ_P(value))->search(needle, mode, current_path);
+        zval *next_result = zend_container::bnode_fetch_object_data(Z_OBJ_P(value))->search(needle, mode, current_path);
         zend_hash_append_strings(Z_ARRVAL_P(zv), Z_ARRVAL_P(next_result));
     }
 
