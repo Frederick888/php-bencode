@@ -13,7 +13,7 @@
     void zend_container::bclass##_free_storage(zend_object *object TSRMLS_DC)           \
     {                                                                                   \
         bclass##_object *intern = zend_container::bclass##_fetch_object(object);        \
-        delete intern->bclass##_data;                                                   \
+        delete intern->bnode_data;                                                      \
         zend_object_std_dtor(&intern->std TSRMLS_CC);                                   \
     }                                                                                   \
     zend_object * zend_container::bclass##_object_new(zend_class_entry *ce TSRMLS_DC)   \
@@ -31,8 +31,8 @@
         bclass##_object *old_object = zend_container::bclass##_fetch_object(Z_OBJ_P(object));                   \
         zend_object *new_zend_object = zend_container::bclass##_object_new(zend_container::bclass##_ce);        \
         bclass##_object *new_object = zend_container::bclass##_fetch_object(new_zend_object);                   \
-        bclass *new_object_data = new bclass(old_object->bclass##_data);                                        \
-        new_object->bclass##_data = new_object_data;                                                            \
+        bclass *new_object_data = new bclass(old_object->bnode_data);                                           \
+        new_object->bnode_data = new_object_data;                                                               \
         return &new_object->std;                                                                                \
     }
 

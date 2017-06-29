@@ -42,19 +42,19 @@ PHP_METHOD(bitem, save)
     std::string class_name = zend_container::bnode_object_get_class_name(getThis());
     if (class_name == "bdict") {
         bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-        intern->bdict_data->save(file_path_str);
+        intern->bnode_data->save(file_path_str);
         RETURN_TRUE;
     } else if (class_name == "blist") {
         blist_object *intern = Z_BLIST_OBJ_P(getThis());
-        intern->blist_data->save(file_path_str);
+        intern->bnode_data->save(file_path_str);
         RETURN_TRUE;
     } else if (class_name == "bstr") {
         bstr_object *intern = Z_BSTR_OBJ_P(getThis());
-        intern->bstr_data->save(file_path_str);
+        intern->bnode_data->save(file_path_str);
         RETURN_TRUE;
     } else if (class_name == "bint") {
         bint_object *intern = Z_BINT_OBJ_P(getThis());
-        intern->bint_data->save(file_path_str);
+        intern->bnode_data->save(file_path_str);
         RETURN_TRUE;
     }
     RETURN_FALSE;
@@ -73,12 +73,12 @@ PHP_METHOD(bdict, __construct)
     bdict *bnode = NULL;
     bnode = new bdict();
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    intern->bdict_data = bnode;
+    intern->bnode_data = bnode;
 }
 PHP_METHOD(bdict, get_type)
 {
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    std::string result = intern->bdict_data->get_type();
+    std::string result = intern->bnode_data->get_type();
     RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(bdict, get)
@@ -90,7 +90,7 @@ PHP_METHOD(bdict, get)
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key, key_len);
-    RETURN_ZVAL(intern->bdict_data->get(_key), 1, 0);
+    RETURN_ZVAL(intern->bnode_data->get(_key), 1, 0);
 }
 PHP_METHOD(bdict, get_path)
 {
@@ -102,7 +102,7 @@ PHP_METHOD(bdict, get_path)
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key, key_len);
     size_t pt = 0;
-    RETURN_ZVAL(intern->bdict_data->get_path(_key, pt), 1, 0);
+    RETURN_ZVAL(intern->bnode_data->get_path(_key, pt), 1, 0);
 }
 PHP_METHOD(bdict, get_copy)
 {
@@ -113,7 +113,7 @@ PHP_METHOD(bdict, get_copy)
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key, key_len);
-    RETURN_OBJ(zend_container::bnode_object_clone(intern->bdict_data->get(_key)));
+    RETURN_OBJ(zend_container::bnode_object_clone(intern->bnode_data->get(_key)));
 }
 PHP_METHOD(bdict, get_path_copy)
 {
@@ -125,7 +125,7 @@ PHP_METHOD(bdict, get_path_copy)
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key, key_len);
     size_t pt = 0;
-    RETURN_OBJ(zend_container::bnode_object_clone(intern->bdict_data->get_path(_key, pt)));
+    RETURN_OBJ(zend_container::bnode_object_clone(intern->bnode_data->get_path(_key, pt)));
 }
 PHP_METHOD(bdict, set)
 {
@@ -137,7 +137,7 @@ PHP_METHOD(bdict, set)
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key, key_len);
-    intern->bdict_data->set(_key, zv);
+    intern->bnode_data->set(_key, zv);
     RETURN_TRUE;
 }
 PHP_METHOD(bdict, set_path)
@@ -151,7 +151,7 @@ PHP_METHOD(bdict, set_path)
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     size_t pt = 0;
     std::string _key(key, key_len);
-    intern->bdict_data->set_path(_key, pt, zv);
+    intern->bnode_data->set_path(_key, pt, zv);
     RETURN_TRUE;
 }
 PHP_METHOD(bdict, has)
@@ -163,7 +163,7 @@ PHP_METHOD(bdict, has)
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key, key_len);
-    RETURN_BOOL(intern->bdict_data->has(_key));
+    RETURN_BOOL(intern->bnode_data->has(_key));
 }
 PHP_METHOD(bdict, del)
 {
@@ -174,7 +174,7 @@ PHP_METHOD(bdict, del)
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key, key_len);
-    RETURN_BOOL(intern->bdict_data->del(_key));
+    RETURN_BOOL(intern->bnode_data->del(_key));
 }
 PHP_METHOD(bdict, del_path)
 {
@@ -186,18 +186,18 @@ PHP_METHOD(bdict, del_path)
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key, key_len);
     size_t pt = 0;
-    RETURN_BOOL(intern->bdict_data->del_path(_key, pt));
+    RETURN_BOOL(intern->bnode_data->del_path(_key, pt));
 }
 PHP_METHOD(bdict, length)
 {
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    size_t result = intern->bdict_data->length();
+    size_t result = intern->bnode_data->length();
     RETURN_LONG(result);
 }
 PHP_METHOD(bdict, count)
 {
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    size_t result = intern->bdict_data->count();
+    size_t result = intern->bnode_data->count();
     RETURN_LONG(result);
 }
 PHP_METHOD(bdict, parse)
@@ -215,7 +215,7 @@ PHP_METHOD(bdict, parse)
 PHP_METHOD(bdict, encode)
 {
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    std::string result = intern->bdict_data->encode();
+    std::string result = intern->bnode_data->encode();
     RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(bdict, search)
@@ -228,22 +228,22 @@ PHP_METHOD(bdict, search)
     }
     std::string tmp(needle, needle_len);
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    RETURN_ZVAL(intern->bdict_data->search(tmp, mode, ""), 1, 1);
+    RETURN_ZVAL(intern->bnode_data->search(tmp, mode, ""), 1, 1);
 }
 PHP_METHOD(bdict, to_array)
 {
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    RETURN_ZVAL(intern->bdict_data->to_array(false), 1, 1);
+    RETURN_ZVAL(intern->bnode_data->to_array(false), 1, 1);
 }
 PHP_METHOD(bdict, to_meta_array)
 {
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    RETURN_ZVAL(intern->bdict_data->to_array(true), 1, 1);
+    RETURN_ZVAL(intern->bnode_data->to_array(true), 1, 1);
 }
 PHP_METHOD(bdict, __toString)
 {
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    std::string result = intern->bdict_data->encode();
+    std::string result = intern->bnode_data->encode();
     RETURN_STRINGL(result.c_str(), result.length());
 }
 static zend_function_entry bdict_methods[] = {
@@ -276,12 +276,12 @@ PHP_METHOD(blist, __construct)
     blist *bnode = NULL;
     bnode = new blist();
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    intern->blist_data = bnode;
+    intern->bnode_data = bnode;
 }
 PHP_METHOD(blist, get_type)
 {
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    std::string result = intern->blist_data->get_type();
+    std::string result = intern->bnode_data->get_type();
     RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(blist, get)
@@ -294,7 +294,7 @@ PHP_METHOD(blist, get)
         RETURN_NULL();
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    RETURN_ZVAL(intern->blist_data->get(key), 1, 0);
+    RETURN_ZVAL(intern->bnode_data->get(key), 1, 0);
 }
 PHP_METHOD(blist, get_path)
 {
@@ -306,7 +306,7 @@ PHP_METHOD(blist, get_path)
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     std::string _key(key, key_len);
     size_t pt = 0;
-    RETURN_ZVAL(intern->blist_data->get_path(_key, pt), 1, 0);
+    RETURN_ZVAL(intern->bnode_data->get_path(_key, pt), 1, 0);
 }
 PHP_METHOD(blist, get_copy)
 {
@@ -318,7 +318,7 @@ PHP_METHOD(blist, get_copy)
         RETURN_NULL();
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    RETURN_OBJ(zend_container::bnode_object_clone(intern->blist_data->get(key)));
+    RETURN_OBJ(zend_container::bnode_object_clone(intern->bnode_data->get(key)));
 }
 PHP_METHOD(blist, get_path_copy)
 {
@@ -330,7 +330,7 @@ PHP_METHOD(blist, get_path_copy)
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     std::string _key(key, key_len);
     size_t pt = 0;
-    RETURN_OBJ(zend_container::bnode_object_clone(intern->blist_data->get_path(_key, pt)));
+    RETURN_OBJ(zend_container::bnode_object_clone(intern->bnode_data->get_path(_key, pt)));
 }
 PHP_METHOD(blist, add)
 {
@@ -339,7 +339,7 @@ PHP_METHOD(blist, add)
             RETURN_FALSE;
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    intern->blist_data->add(zv);
+    intern->bnode_data->add(zv);
     RETURN_TRUE;
 }
 PHP_METHOD(blist, set_path)
@@ -353,7 +353,7 @@ PHP_METHOD(blist, set_path)
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     std::string _key(key, key_len);
     size_t pt = 0;
-    intern->blist_data->set_path(_key, pt, zv);
+    intern->bnode_data->set_path(_key, pt, zv);
     RETURN_TRUE;
 }
 PHP_METHOD(blist, set)
@@ -367,7 +367,7 @@ PHP_METHOD(blist, set)
         RETURN_FALSE;
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    intern->blist_data->set(key, zv);
+    intern->bnode_data->set(key, zv);
     RETURN_TRUE;
 }
 PHP_METHOD(blist, has)
@@ -380,7 +380,7 @@ PHP_METHOD(blist, has)
         RETURN_FALSE;
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    RETURN_BOOL(intern->blist_data->has(key));
+    RETURN_BOOL(intern->bnode_data->has(key));
 }
 PHP_METHOD(blist, del)
 {
@@ -389,7 +389,7 @@ PHP_METHOD(blist, del)
             RETURN_NULL();
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    RETURN_BOOL(intern->blist_data->del(key));
+    RETURN_BOOL(intern->bnode_data->del(key));
 }
 PHP_METHOD(blist, del_path)
 {
@@ -401,18 +401,18 @@ PHP_METHOD(blist, del_path)
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     std::string _key(key, key_len);
     size_t pt = 0;
-    RETURN_BOOL(intern->blist_data->del_path(_key, pt));
+    RETURN_BOOL(intern->bnode_data->del_path(_key, pt));
 }
 PHP_METHOD(blist, length)
 {
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    size_t result = intern->blist_data->length();
+    size_t result = intern->bnode_data->length();
     RETURN_LONG(result);
 }
 PHP_METHOD(blist, count)
 {
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    size_t result = intern->blist_data->count();
+    size_t result = intern->bnode_data->count();
     RETURN_LONG(result);
 }
 PHP_METHOD(blist, parse)
@@ -430,7 +430,7 @@ PHP_METHOD(blist, parse)
 PHP_METHOD(blist, encode)
 {
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    std::string result = intern->blist_data->encode();
+    std::string result = intern->bnode_data->encode();
     RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(blist, search)
@@ -443,22 +443,22 @@ PHP_METHOD(blist, search)
     }
     std::string tmp(needle, needle_len);
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    RETURN_ZVAL(intern->blist_data->search(tmp, mode, ""), 1, 1);
+    RETURN_ZVAL(intern->bnode_data->search(tmp, mode, ""), 1, 1);
 }
 PHP_METHOD(blist, to_array)
 {
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    RETURN_ZVAL(intern->blist_data->to_array(false), 1, 1);
+    RETURN_ZVAL(intern->bnode_data->to_array(false), 1, 1);
 }
 PHP_METHOD(blist, to_meta_array)
 {
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    RETURN_ZVAL(intern->blist_data->to_array(true), 1, 1);
+    RETURN_ZVAL(intern->bnode_data->to_array(true), 1, 1);
 }
 PHP_METHOD(blist, __toString)
 {
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    std::string result = intern->blist_data->encode();
+    std::string result = intern->bnode_data->encode();
     RETURN_STRINGL(result.c_str(), result.length());
 }
 static zend_function_entry blist_methods[] = {
@@ -502,18 +502,18 @@ PHP_METHOD(bstr, __construct)
         bnode = new bstr();
     }
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
-    intern->bstr_data = bnode;
+    intern->bnode_data = bnode;
 }
 PHP_METHOD(bstr, get_type)
 {
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
-    std::string result = intern->bstr_data->get_type();
+    std::string result = intern->bnode_data->get_type();
     RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(bstr, get)
 {
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
-    std::string result = intern->bstr_data->get();
+    std::string result = intern->bnode_data->get();
     RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(bstr, set)
@@ -525,13 +525,13 @@ PHP_METHOD(bstr, set)
     }
     std::string _value(value, value_len);
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
-    intern->bstr_data->set(_value);
+    intern->bnode_data->set(_value);
     RETURN_TRUE;
 }
 PHP_METHOD(bstr, length)
 {
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
-    size_t result = intern->bstr_data->length();
+    size_t result = intern->bnode_data->length();
     RETURN_LONG(result);
 }
 PHP_METHOD(bstr, parse)
@@ -549,7 +549,7 @@ PHP_METHOD(bstr, parse)
 PHP_METHOD(bstr, encode)
 {
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
-    std::string result = intern->bstr_data->encode();
+    std::string result = intern->bnode_data->encode();
     RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(bstr, search)
@@ -559,17 +559,17 @@ PHP_METHOD(bstr, search)
 PHP_METHOD(bstr, to_array)
 {
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
-    RETURN_ZVAL(intern->bstr_data->to_array(false), 1, 1);
+    RETURN_ZVAL(intern->bnode_data->to_array(false), 1, 1);
 }
 PHP_METHOD(bstr, to_meta_array)
 {
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
-    RETURN_ZVAL(intern->bstr_data->to_array(true), 1, 1);
+    RETURN_ZVAL(intern->bnode_data->to_array(true), 1, 1);
 }
 PHP_METHOD(bstr, __toString)
 {
     bstr_object *intern = Z_BSTR_OBJ_P(getThis());
-    std::string result = intern->bstr_data->encode();
+    std::string result = intern->bnode_data->encode();
     RETURN_STRINGL(result.c_str(), result.length());
 }
 static zend_function_entry bstr_methods[] = {
@@ -601,18 +601,18 @@ PHP_METHOD(bint, __construct)
         bnode = new bint();
     }
     bint_object *intern = Z_BINT_OBJ_P(getThis());
-    intern->bint_data = bnode;
+    intern->bnode_data = bnode;
 }
 PHP_METHOD(bint, get_type)
 {
     bint_object *intern = Z_BINT_OBJ_P(getThis());
-    std::string result = intern->bint_data->get_type();
+    std::string result = intern->bnode_data->get_type();
     RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(bint, get)
 {
     bint_object *intern = Z_BINT_OBJ_P(getThis());
-    long result = intern->bint_data->get();
+    long result = intern->bnode_data->get();
     RETURN_LONG(result);
 }
 PHP_METHOD(bint, set)
@@ -622,13 +622,13 @@ PHP_METHOD(bint, set)
         RETURN_FALSE;
     }
     bint_object *intern = Z_BINT_OBJ_P(getThis());
-    intern->bint_data->set(value);
+    intern->bnode_data->set(value);
     RETURN_TRUE;
 }
 PHP_METHOD(bint, length)
 {
     bint_object *intern = Z_BINT_OBJ_P(getThis());
-    size_t result = intern->bint_data->length();
+    size_t result = intern->bnode_data->length();
     RETURN_LONG(result);
 }
 PHP_METHOD(bint, parse)
@@ -646,7 +646,7 @@ PHP_METHOD(bint, parse)
 PHP_METHOD(bint, encode)
 {
     bint_object *intern = Z_BINT_OBJ_P(getThis());
-    std::string result = intern->bint_data->encode();
+    std::string result = intern->bnode_data->encode();
     RETURN_STRINGL(result.c_str(), result.length());
 }
 PHP_METHOD(bint, search)
@@ -656,17 +656,17 @@ PHP_METHOD(bint, search)
 PHP_METHOD(bint, to_array)
 {
     bint_object *intern = Z_BINT_OBJ_P(getThis());
-    RETURN_ZVAL(intern->bint_data->to_array(false), 1, 1);
+    RETURN_ZVAL(intern->bnode_data->to_array(false), 1, 1);
 }
 PHP_METHOD(bint, to_meta_array)
 {
     bint_object *intern = Z_BINT_OBJ_P(getThis());
-    RETURN_ZVAL(intern->bint_data->to_array(true), 1, 1);
+    RETURN_ZVAL(intern->bnode_data->to_array(true), 1, 1);
 }
 PHP_METHOD(bint, __toString)
 {
     bint_object *intern = Z_BINT_OBJ_P(getThis());
-    std::string result = intern->bint_data->encode();
+    std::string result = intern->bnode_data->encode();
     RETURN_STRINGL(result.c_str(), result.length());
 }
 static zend_function_entry bint_methods[] = {

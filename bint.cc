@@ -36,7 +36,7 @@ zval * bint::parse(const std::string &ben, size_t &pt) {
     zend_object *zo = zend_container::bint_object_new(zend_container::bint_ce);
     ZVAL_OBJ(zv, zo);
     bint_object *intern = zend_container::bint_fetch_object(Z_OBJ_P(zv));
-    intern->bint_data = new bint(result);
+    intern->bnode_data = new bint(result);
     return zv;
 }
 

@@ -13,7 +13,7 @@ extern "C" {
 
 #define ZEND_CONTAINER_PRE(bclass)      \
     typedef struct {                    \
-        bclass *bclass##_data;          \
+        bclass *bnode_data;             \
         zend_object std;                \
     } bclass##_object;
 

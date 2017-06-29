@@ -35,7 +35,7 @@ zval * bstr::parse(const std::string &ben, size_t &pt) {
     zend_object *zo = zend_container::bstr_object_new(zend_container::bstr_ce);
     ZVAL_OBJ(zv, zo);
     bstr_object *intern = zend_container::bstr_fetch_object(Z_OBJ_P(zv));
-    intern->bstr_data = new bstr(ben.substr(pt, len));
+    intern->bnode_data = new bstr(ben.substr(pt, len));
     pt += len;
     return zv;
 }
