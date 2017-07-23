@@ -88,9 +88,9 @@ zval * bdict::get_path(const std::string &key, size_t &pt) const {
         zval *subnode = zend_hash_str_find(_data, current_key.c_str(), current_key.length());
         std::string class_name = zend_container::bnode_object_get_class_name(subnode);
         if (class_name == "bdict") {
-            return zend_container::bdict_fetch_object(Z_OBJ_P(subnode))->bdict_data->get_path(key, pt);
+            return zend_container::bdict_fetch_object(Z_OBJ_P(subnode))->bnode_data->get_path(key, pt);
         } else if (class_name == "blist") {
-            return zend_container::blist_fetch_object(Z_OBJ_P(subnode))->blist_data->get_path(key, pt);
+            return zend_container::blist_fetch_object(Z_OBJ_P(subnode))->bnode_data->get_path(key, pt);
         } else {
             return bitem::get_zval_bool(false);
         }
@@ -119,9 +119,9 @@ void bdict::set_path(const std::string &key, size_t &pt, zval *value) {
                 return;
             }
         } else if (sub_class_name == "bdict") {
-            zend_container::bdict_fetch_object(Z_OBJ_P(subnode))->bdict_data->set_path(key, pt, value);
+            zend_container::bdict_fetch_object(Z_OBJ_P(subnode))->bnode_data->set_path(key, pt, value);
         } else if (sub_class_name == "blist") {
-            zend_container::blist_fetch_object(Z_OBJ_P(subnode))->blist_data->set_path(key, pt, value);
+            zend_container::blist_fetch_object(Z_OBJ_P(subnode))->bnode_data->set_path(key, pt, value);
         }
     } else {
         if (pt >= key.length()) {
@@ -135,15 +135,15 @@ void bdict::set_path(const std::string &key, size_t &pt, zval *value) {
             pt = backup_pt;
             if (bitem::is_ull(next_key)) {
                 zend_object *zo = zend_container::blist_object_new(zend_container::blist_ce);
-                zend_container::blist_fetch_object(zo)->blist_data = new blist();
-                zend_container::blist_fetch_object(zo)->blist_data->set_path(key, pt, value);
+                zend_container::blist_fetch_object(zo)->bnode_data = new blist();
+                zend_container::blist_fetch_object(zo)->bnode_data->set_path(key, pt, value);
                 zval *zv = new zval();
                 ZVAL_OBJ(zv, zo);
                 zend_hash_str_add(_data, current_key.c_str(), current_key.length(), zv);
             } else {
                 zend_object *zo = zend_container::bdict_object_new(zend_container::bdict_ce);
-                zend_container::bdict_fetch_object(zo)->bdict_data = new bdict();
-                zend_container::bdict_fetch_object(zo)->bdict_data->set_path(key, pt, value);
+                zend_container::bdict_fetch_object(zo)->bnode_data = new bdict();
+                zend_container::bdict_fetch_object(zo)->bnode_data->set_path(key, pt, value);
                 zval *zv = new zval();
                 ZVAL_OBJ(zv, zo);
                 zend_hash_str_add(_data, current_key.c_str(), current_key.length(), zv);
@@ -163,9 +163,9 @@ bool bdict::del_path(const std::string &key, size_t &pt) {
         zval *subnode = zend_hash_str_find(_data, current_key.c_str(), current_key.length());
         std::string class_name = zend_container::bnode_object_get_class_name(subnode);
         if (class_name == "bdict") {
-            return zend_container::bdict_fetch_object(Z_OBJ_P(subnode))->bdict_data->del_path(key, pt);
+            return zend_container::bdict_fetch_object(Z_OBJ_P(subnode))->bnode_data->del_path(key, pt);
         } else if (class_name == "blist") {
-            return zend_container::blist_fetch_object(Z_OBJ_P(subnode))->blist_data->del_path(key, pt);
+            return zend_container::blist_fetch_object(Z_OBJ_P(subnode))->bnode_data->del_path(key, pt);
         } else {
             return false;
         }
@@ -187,7 +187,7 @@ zval * bdict::parse(const std::string &ben, size_t &pt) {
     zend_object *zo = zend_container::bdict_object_new(zend_container::bdict_ce);
     ZVAL_OBJ(zv, zo);
     bdict_object *intern = zend_container::bdict_fetch_object(Z_OBJ_P(zv));
-    intern->bdict_data = new bdict();
+    intern->bnode_data = new bdict();
     ++pt;
 
     while (ben[pt] != 'e') {
@@ -199,16 +199,16 @@ zval * bdict::parse(const std::string &ben, size_t &pt) {
         pt += std::stoull(key_len);
         if (ben[pt] == 'd') {
             zval *bnode = bdict::parse(ben, pt);
-            zend_hash_str_add(intern->bdict_data->_data, key.c_str(), key.length(), bnode);
+            zend_hash_str_add(intern->bnode_data->_data, key.c_str(), key.length(), bnode);
         } else if (ben[pt] == 'l') {
             zval *bnode = blist::parse(ben, pt);
-            zend_hash_str_add(intern->bdict_data->_data, key.c_str(), key.length(), bnode);
+            zend_hash_str_add(intern->bnode_data->_data, key.c_str(), key.length(), bnode);
         } else if (isdigit(ben[pt])) {
             zval *bnode = bstr::parse(ben, pt);
-            zend_hash_str_add(intern->bdict_data->_data, key.c_str(), key.length(), bnode);
+            zend_hash_str_add(intern->bnode_data->_data, key.c_str(), key.length(), bnode);
         } else if (ben[pt] == 'i') {
             zval *bnode = bint::parse(ben, pt);
-            zend_hash_str_add(intern->bdict_data->_data, key.c_str(), key.length(), bnode);
+            zend_hash_str_add(intern->bnode_data->_data, key.c_str(), key.length(), bnode);
         } else {
             return bitem::throw_general_exception("Error parsing bdict");
         }
@@ -226,19 +226,10 @@ std::string bdict::encode() const {
         zend_ulong num_index;
         zend_hash_get_current_key(_data, &_str_index, &num_index);
         zval *value = zend_hash_get_current_data(_data);
-        std::string class_name = zend_container::bnode_object_get_class_name(value);
         std::string str_index(ZSTR_VAL(_str_index), ZSTR_LEN(_str_index));
 
-        result += std::to_string(str_index.length()) + ":" + str_index;
-        if (class_name == "bdict") {
-            result += (zend_container::bdict_fetch_object(Z_OBJ_P(value)))->bdict_data->encode();
-        } else if (class_name == "blist") {
-            result += (zend_container::blist_fetch_object(Z_OBJ_P(value)))->blist_data->encode();
-        } else if (class_name == "bstr") {
-            result += (zend_container::bstr_fetch_object(Z_OBJ_P(value)))->bstr_data->encode();
-        } else if (class_name == "bint") {
-            result += (zend_container::bint_fetch_object(Z_OBJ_P(value)))->bint_data->encode();
-        }
+        result += std::to_string(str_index.length()) + ":" + str_index
+            + zend_container::bnode_fetch_object_data(Z_OBJ_P(value))->encode();
     }
     return result + "e";
 }
@@ -250,47 +241,20 @@ zval * bdict::to_array(const bool include_meta) const {
     for(zend_hash_internal_pointer_reset(_data);
             zend_hash_has_more_elements(_data) == SUCCESS;
             zend_hash_move_forward(_data)) {
-        zend_string *_str_index;
+        zend_string *str_index;
         zend_ulong num_index;
-        zend_hash_get_current_key(_data, &_str_index, &num_index);
+        zend_hash_get_current_key(_data, &str_index, &num_index);
         zval *value = zend_hash_get_current_data(_data);
-        std::string class_name = zend_container::bnode_object_get_class_name(value);
-        char *str_index = (char *)emalloc(ZSTR_LEN(_str_index) + 1);
-        memcpy(str_index, ZSTR_VAL(_str_index), ZSTR_LEN(_str_index));
-        if (class_name == "bdict") {
-            bdict_object *bnode = zend_container::bdict_fetch_object(Z_OBJ_P(value));
-            zval *subarray = bnode->bdict_data->to_array(include_meta);
-            add_assoc_zval_ex(zv, str_index, ZSTR_LEN(_str_index), subarray);
-        } else if (class_name == "blist") {
-            blist_object *bnode = zend_container::blist_fetch_object(Z_OBJ_P(value));
-            zval *subarray = bnode->blist_data->to_array(include_meta);
-            add_assoc_zval_ex(zv, str_index, ZSTR_LEN(_str_index), subarray);
-        } else if (class_name == "bstr") {
-            bstr_object *bnode = zend_container::bstr_fetch_object(Z_OBJ_P(value));
-            zval *subarray = bnode->bstr_data->to_array(include_meta);
-            add_assoc_zval_ex(zv, str_index, ZSTR_LEN(_str_index), subarray);
-        } else if (class_name == "bint") {
-            bint_object *bnode = zend_container::bint_fetch_object(Z_OBJ_P(value));
-            zval *subarray = bnode->bint_data->to_array(include_meta);
-            add_assoc_zval_ex(zv, str_index, ZSTR_LEN(_str_index), subarray);
-        }
-        efree(str_index);
+        zval *subarray = zend_container::bnode_fetch_object_data(Z_OBJ_P(value))->to_array(include_meta);
+        zend_hash_add(Z_ARR_P(zv), str_index, subarray);
     }
 
     if (include_meta) {
-        char *_type = estrdup("_type");
-        char *_type_data = estrdup("bdict");
-        char *_length = estrdup("_length");
-        char *_data = estrdup("_data");
         zval *zv_outer = new zval();
         array_init(zv_outer);
-        add_assoc_string(zv_outer, _type, _type_data);
-        add_assoc_long(zv_outer, _length, length());
-        add_assoc_zval(zv_outer, _data, zv);
-        efree(_type);
-        efree(_type_data);
-        efree(_length);
-        efree(_data);
+        add_assoc_string(zv_outer, (char *)"_type", (char *)"bdict");
+        add_assoc_long(zv_outer, (char *)"_length", length());
+        add_assoc_zval(zv_outer, (char *)"_data", zv);
         return zv_outer;
     }
     return zv;
@@ -299,11 +263,6 @@ zval * bdict::to_array(const bool include_meta) const {
 zval * bdict::search(const std::string &needle, const long &mode, const std::string path) const {
     if (mode < 0 || mode > 1)
         bitem::throw_general_exception("Illegal search mode");
-    bool modek = false, modev = false;
-    if (mode == 0)
-        modek = true;
-    else
-        modev = true;
 
     zval *zv = new zval();
     array_init(zv);
@@ -315,27 +274,15 @@ zval * bdict::search(const std::string &needle, const long &mode, const std::str
         zend_ulong num_index;
         zend_hash_get_current_key(_data, &_str_index, &num_index);
         zval *value = zend_hash_get_current_data(_data);
-        std::string class_name = zend_container::bnode_object_get_class_name(value);
-        std::string str_index(ZSTR_VAL(_str_index));
+        std::string str_index(ZSTR_VAL(_str_index), ZSTR_LEN(_str_index));
         std::string current_path = (path == "" ? "" : path + "/") + bitem::escape_key(str_index);
 
-        if (modek && str_index.find(needle) != std::string::npos) {
+        if (mode == 0 && str_index.find(needle) != std::string::npos) {
             add_next_index_stringl(zv, current_path.c_str(), current_path.length());
         }
 
-        if (class_name == "bdict") {
-            zval *next_result = (zend_container::bdict_fetch_object(Z_OBJ_P(value)))->bdict_data->search(needle, mode, current_path);
-            zend_hash_append_strings(Z_ARRVAL_P(zv), Z_ARRVAL_P(next_result));
-        } else if (class_name == "blist") {
-            zval *next_result = (zend_container::blist_fetch_object(Z_OBJ_P(value)))->blist_data->search(needle, mode, current_path);
-            zend_hash_append_strings(Z_ARRVAL_P(zv), Z_ARRVAL_P(next_result));
-        } else if (modev && class_name == "bstr") {
-            if ((zend_container::bstr_fetch_object(Z_OBJ_P(value)))->bstr_data->_value.find(needle) != std::string::npos)
-                add_next_index_stringl(zv, current_path.c_str(), current_path.length());
-        } else if (modev && bitem::is_ll(needle) && class_name == "bint") {
-            if ((zend_container::bint_fetch_object(Z_OBJ_P(value)))->bint_data->_value == std::stoll(needle))
-                add_next_index_stringl(zv, current_path.c_str(), current_path.length());
-        }
+        zval *next_result = zend_container::bnode_fetch_object_data(Z_OBJ_P(value))->search(needle, mode, current_path);
+        zend_hash_append_strings(Z_ARRVAL_P(zv), Z_ARRVAL_P(next_result));
     }
 
     return zv;

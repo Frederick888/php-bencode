@@ -23,7 +23,7 @@ std::string bitem::get_current_key(const std::string &path, size_t &pt) {
     std::string current_key = path.substr(start, pt - start);
     ++pt;
     size_t escape = current_key.find("\\/");
-    while (escape >= 0 && escape < current_key.length()) {
+    while (escape < current_key.length()) {
         current_key.replace(escape, 2, "/");
         escape = current_key.find("\\/");
     }
@@ -66,9 +66,9 @@ void bitem::zend_hash_append_strings(HashTable *target, HashTable *source) {
     for(zend_hash_internal_pointer_reset(source);
             zend_hash_has_more_elements(source) == SUCCESS;
             zend_hash_move_forward(source)) {
-        zend_string *_str_index;
+        zend_string *str_index;
         zend_ulong num_index;
-        zend_hash_get_current_key(source, &_str_index, &num_index);
+        zend_hash_get_current_key(source, &str_index, &num_index);
         zval *value = zend_hash_get_current_data(source);
         zend_hash_next_index_insert(target, value);
     }
@@ -113,8 +113,4 @@ void bitem::save(const std::string &file_path) const {
     }
     ben_file << encode();
     ben_file.close();
-}
-
-zval * bitem::search(const std::string &needle, const long &mode, const std::string path) const {
-    return nullptr;
 }
