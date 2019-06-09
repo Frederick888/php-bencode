@@ -19,7 +19,7 @@ PHP_METHOD(bitem, parse)
         RETURN_NULL();
     }
     std::string ben_str(ben, ben_len);
-    RETURN_ZVAL(bitem::parse(ben_str), 1, 1);
+    CALL_AND_HANDLE(RETURN_ZVAL(bitem::parse(ben_str), 1, 1));
 }
 PHP_METHOD(bitem, load)
 {
@@ -29,7 +29,7 @@ PHP_METHOD(bitem, load)
         RETURN_NULL();
     }
     std::string file_path_str(file_path, file_path_len);
-    RETURN_ZVAL(bitem::load(file_path_str), 1, 1);
+    CALL_AND_HANDLE(RETURN_ZVAL(bitem::load(file_path_str), 1, 1));
 }
 PHP_METHOD(bitem, save)
 {
@@ -210,7 +210,7 @@ PHP_METHOD(bdict, parse)
     if (!ben_len) RETURN_NULL();
     std::string tmp(ben, ben_len);
     size_t pt = 0;
-    RETURN_ZVAL(bdict::parse(tmp, pt), 1, 1);
+    CALL_AND_HANDLE(RETURN_ZVAL(bdict::parse(tmp, pt), 1, 1));
 }
 PHP_METHOD(bdict, encode)
 {
@@ -228,7 +228,7 @@ PHP_METHOD(bdict, search)
     }
     std::string tmp(needle, needle_len);
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    RETURN_ZVAL(intern->bnode_data->search(tmp, mode, ""), 1, 1);
+    CALL_AND_HANDLE(RETURN_ZVAL(intern->bnode_data->search(tmp, mode, ""), 1, 1));
 }
 PHP_METHOD(bdict, to_array)
 {
@@ -425,7 +425,7 @@ PHP_METHOD(blist, parse)
     if (!ben_len) RETURN_NULL();
     std::string tmp(ben, ben_len);
     size_t pt = 0;
-    RETURN_ZVAL(blist::parse(tmp, pt), 1, 1);
+    CALL_AND_HANDLE(RETURN_ZVAL(blist::parse(tmp, pt), 1, 1));
 }
 PHP_METHOD(blist, encode)
 {
@@ -443,7 +443,7 @@ PHP_METHOD(blist, search)
     }
     std::string tmp(needle, needle_len);
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    RETURN_ZVAL(intern->bnode_data->search(tmp, mode, ""), 1, 1);
+    CALL_AND_HANDLE(RETURN_ZVAL(intern->bnode_data->search(tmp, mode, ""), 1, 1));
 }
 PHP_METHOD(blist, to_array)
 {
@@ -544,7 +544,7 @@ PHP_METHOD(bstr, parse)
     if (!ben_len) RETURN_NULL();
     std::string tmp(ben);
     size_t pt = 0;
-    RETURN_ZVAL(bstr::parse(tmp, pt), 1, 1);
+    CALL_AND_HANDLE(RETURN_ZVAL(bstr::parse(tmp, pt), 1, 1));
 }
 PHP_METHOD(bstr, encode)
 {
@@ -641,7 +641,7 @@ PHP_METHOD(bint, parse)
     if (!ben_len) RETURN_NULL();
     std::string tmp(ben, ben_len);
     size_t pt = 0;
-    RETURN_ZVAL(bint::parse(tmp, pt), 1, 1);
+    CALL_AND_HANDLE(RETURN_ZVAL(bint::parse(tmp, pt), 1, 1));
 }
 PHP_METHOD(bint, encode)
 {
