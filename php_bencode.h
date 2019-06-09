@@ -2,7 +2,7 @@
 #define PHP_BENCODE_H
 
 #define PHP_BENCODE_EXTNAME     "bencode"
-#define PHP_BENCODE_EXTVER      "1.2.3"
+#define PHP_BENCODE_EXTVER      "1.2.4"
 
 extern "C" {
 #include "php.h"
