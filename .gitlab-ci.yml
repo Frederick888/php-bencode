@@ -14,7 +14,7 @@ php71:
     - make -j$(nproc)
     - make test TESTS="-m"
   artifacts:
-    name: "${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}_PHP71"
+    name: "${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}"
     expire_in: 2 weeks
     paths:
       - modules/bencode.so
@@ -28,7 +28,7 @@ php72:
     - make -j$(nproc)
     - make test TESTS="-m"
   artifacts:
-    name: "${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}_PHP72"
+    name: "${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}"
     expire_in: 2 weeks
     paths:
       - modules/bencode.so
@@ -42,7 +42,7 @@ php73:
     - make -j$(nproc)
     - make test # TESTS="-m"
   artifacts:
-    name: "${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}_PHP73"
+    name: "${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}"
     expire_in: 2 weeks
     paths:
       - modules/bencode.so
