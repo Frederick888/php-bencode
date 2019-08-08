@@ -16,6 +16,8 @@ addons:
 
 php:
   - '7.1'
+  - '7.2'
+  - '7.3'
 
 before_install:
     - export CC=gcc-5
@@ -26,4 +28,4 @@ script:
     - phpize
     - ./configure --enable-bencode
     - make -j$(nproc)
-    - make test TESTS="-m"
+    - bash -c '[[ -z `php -v | grep "^PHP 7.3"` ]] && make test TESTS="-m" || make test'
