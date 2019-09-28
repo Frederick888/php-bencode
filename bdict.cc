@@ -1,23 +1,27 @@
-#include <string>
-#include "bitem.h"
 #include "bdict.h"
+#include "bint.h"
+#include "bitem.h"
 #include "blist.h"
 #include "bstr.h"
-#include "bint.h"
 #include "zend_container.h"
+#include <string>
 
-bdict::bdict() : bitem() {
+bdict::bdict()
+    : bitem()
+{
     ALLOC_HASHTABLE(_data);
     zend_hash_init(_data, 0, NULL, ZVAL_PTR_DTOR, 0);
 }
 
-bdict::bdict(const bdict *that) : bitem() {
+bdict::bdict(const bdict *that)
+    : bitem()
+{
     ALLOC_HASHTABLE(_data);
     zend_hash_init(_data, 0, NULL, ZVAL_PTR_DTOR, 0);
     //zend_hash_copy(_data, that->_data, (copy_ctor_func_t) ZVAL_COPY_CTOR);
-    for(zend_hash_internal_pointer_reset(that->_data);
-            zend_hash_has_more_elements(that->_data) == SUCCESS;
-            zend_hash_move_forward(that->_data)) {
+    for (zend_hash_internal_pointer_reset(that->_data);
+         zend_hash_has_more_elements(that->_data) == SUCCESS;
+         zend_hash_move_forward(that->_data)) {
         zval *tmp = new zval();
         ZVAL_OBJ(tmp, zend_container::bnode_object_clone(zend_hash_get_current_data(that->_data)));
         zend_string *_str_index;
@@ -27,23 +31,27 @@ bdict::bdict(const bdict *that) : bitem() {
     }
 }
 
-bdict::~bdict() {
+bdict::~bdict()
+{
     zend_hash_destroy(_data);
     FREE_HASHTABLE(_data);
 }
 
-std::string bdict::get_type() const {
+std::string bdict::get_type() const
+{
     return "bdict";
 }
 
-zval * bdict::get(const std::string &key) const {
+zval *bdict::get(const std::string &key) const
+{
     if (!zend_hash_str_exists(_data, key.c_str(), key.length())) {
         return bitem::get_zval_bool(false);
     }
     return zend_hash_str_find(_data, key.c_str(), key.length());
 }
 
-bool bdict::has(const std::string &key) const {
+bool bdict::has(const std::string &key) const
+{
     if (zend_hash_str_exists(_data, key.c_str(), key.length())) {
         return true;
     } else {
@@ -51,11 +59,12 @@ bool bdict::has(const std::string &key) const {
     }
 }
 
-void bdict::set(const std::string &key, zval *value) {
+void bdict::set(const std::string &key, zval *value)
+{
     std::string class_name = zend_container::bnode_object_get_class_name(value);
     zend_object *clone_object = NULL;
     if (class_name == "bdict" || class_name == "blist" ||
-            class_name == "bstr" || class_name == "bint") {
+        class_name == "bstr" || class_name == "bint") {
         clone_object = zend_container::bnode_object_clone(value);
     } else {
         return;
@@ -69,7 +78,8 @@ void bdict::set(const std::string &key, zval *value) {
     }
 }
 
-bool bdict::del(const std::string &key) {
+bool bdict::del(const std::string &key)
+{
     if (zend_hash_str_del(_data, key.c_str(), key.length()) == SUCCESS) {
         return true;
     } else {
@@ -77,7 +87,8 @@ bool bdict::del(const std::string &key) {
     }
 }
 
-zval * bdict::get_path(const std::string &key, size_t &pt) const {
+zval *bdict::get_path(const std::string &key, size_t &pt) const
+{
     std::string current_key = bitem::get_current_key(key, pt);
     if (!zend_hash_str_exists(_data, current_key.c_str(), current_key.length())) {
         return bitem::get_zval_bool(false);
@@ -97,10 +108,11 @@ zval * bdict::get_path(const std::string &key, size_t &pt) const {
     }
 }
 
-void bdict::set_path(const std::string &key, size_t &pt, zval *value) {
+void bdict::set_path(const std::string &key, size_t &pt, zval *value)
+{
     std::string class_name = zend_container::bnode_object_get_class_name(value);
     if (!(class_name == "bdict" || class_name == "blist" ||
-            class_name == "bstr" || class_name == "bint")) {
+          class_name == "bstr" || class_name == "bint")) {
         bitem::throw_general_exception("Unsupported node given");
         return;
     }
@@ -152,7 +164,8 @@ void bdict::set_path(const std::string &key, size_t &pt, zval *value) {
     }
 }
 
-bool bdict::del_path(const std::string &key, size_t &pt) {
+bool bdict::del_path(const std::string &key, size_t &pt)
+{
     std::string current_key = bitem::get_current_key(key, pt);
     if (!zend_hash_str_exists(_data, current_key.c_str(), current_key.length())) {
         return false;
@@ -172,15 +185,18 @@ bool bdict::del_path(const std::string &key, size_t &pt) {
     }
 }
 
-size_t bdict::length() const {
+size_t bdict::length() const
+{
     return (encode().length() / sizeof(char));
 }
 
-size_t bdict::count() const {
+size_t bdict::count() const
+{
     return zend_array_count(_data);
 }
 
-zval * bdict::parse(const std::string &ben, size_t &pt) {
+zval *bdict::parse(const std::string &ben, size_t &pt)
+{
     if (ben[pt] != 'd')
         return bitem::throw_general_exception("Error parsing bdict");
     zval *zv = new zval();
@@ -192,7 +208,8 @@ zval * bdict::parse(const std::string &ben, size_t &pt) {
 
     while (ben[pt] != 'e') {
         size_t start = pt;
-        while (isdigit(ben[pt])) ++pt;
+        while (isdigit(ben[pt]))
+            ++pt;
         std::string key_len = ben.substr(start, pt - start);
         ++pt;
         std::string key = ben.substr(pt, std::stoull(key_len));
@@ -217,30 +234,32 @@ zval * bdict::parse(const std::string &ben, size_t &pt) {
     return zv;
 }
 
-std::string bdict::encode() const {
+std::string bdict::encode() const
+{
     std::string result = "d";
-    for(zend_hash_internal_pointer_reset(_data);
-            zend_hash_has_more_elements(_data) == SUCCESS;
-            zend_hash_move_forward(_data)) {
+    for (zend_hash_internal_pointer_reset(_data);
+         zend_hash_has_more_elements(_data) == SUCCESS;
+         zend_hash_move_forward(_data)) {
         zend_string *_str_index;
         zend_ulong num_index;
         zend_hash_get_current_key(_data, &_str_index, &num_index);
         zval *value = zend_hash_get_current_data(_data);
         std::string str_index(ZSTR_VAL(_str_index), ZSTR_LEN(_str_index));
 
-        result += std::to_string(str_index.length()) + ":" + str_index
-            + zend_container::bnode_fetch_object_data(Z_OBJ_P(value))->encode();
+        result += std::to_string(str_index.length()) + ":" + str_index +
+                  zend_container::bnode_fetch_object_data(Z_OBJ_P(value))->encode();
     }
     return result + "e";
 }
 
-zval * bdict::to_array(const bool include_meta) const {
+zval *bdict::to_array(const bool include_meta) const
+{
     zval *zv = new zval();
     array_init(zv);
 
-    for(zend_hash_internal_pointer_reset(_data);
-            zend_hash_has_more_elements(_data) == SUCCESS;
-            zend_hash_move_forward(_data)) {
+    for (zend_hash_internal_pointer_reset(_data);
+         zend_hash_has_more_elements(_data) == SUCCESS;
+         zend_hash_move_forward(_data)) {
         zend_string *str_index;
         zend_ulong num_index;
         zend_hash_get_current_key(_data, &str_index, &num_index);
@@ -260,16 +279,17 @@ zval * bdict::to_array(const bool include_meta) const {
     return zv;
 }
 
-zval * bdict::search(const std::string &needle, const long &mode, const std::string path) const {
+zval *bdict::search(const std::string &needle, const long &mode, const std::string path) const
+{
     if (mode < 0 || mode > 1)
         bitem::throw_general_exception("Illegal search mode");
 
     zval *zv = new zval();
     array_init(zv);
 
-    for(zend_hash_internal_pointer_reset(_data);
-            zend_hash_has_more_elements(_data) == SUCCESS;
-            zend_hash_move_forward(_data)) {
+    for (zend_hash_internal_pointer_reset(_data);
+         zend_hash_has_more_elements(_data) == SUCCESS;
+         zend_hash_move_forward(_data)) {
         zend_string *_str_index;
         zend_ulong num_index;
         zend_hash_get_current_key(_data, &_str_index, &num_index);

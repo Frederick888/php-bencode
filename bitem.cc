@@ -1,25 +1,29 @@
-#include <string>
 #include "bitem.h"
 #include "bdict.h"
+#include "bint.h"
 #include "blist.h"
 #include "bstr.h"
-#include "bint.h"
 #include "zend_container.h"
+#include <string>
 
-zval * bitem::throw_general_exception(const std::string message) {
+zval *bitem::throw_general_exception(const std::string message)
+{
     zend_throw_exception(NULL, message.c_str(), 1);
     return bitem::get_zval_bool(false);
 }
 
-zval * bitem::get_zval_bool(const bool value) {
+zval *bitem::get_zval_bool(const bool value)
+{
     zval *zv = new zval();
     ZVAL_BOOL(zv, value);
     return zv;
 }
 
-std::string bitem::get_current_key(const std::string &path, size_t &pt) {
+std::string bitem::get_current_key(const std::string &path, size_t &pt)
+{
     size_t start = pt;
-    while (!(path[pt] == '/' && path[pt - 1] != '\\') && pt < path.length()) ++pt;
+    while (!(path[pt] == '/' && path[pt - 1] != '\\') && pt < path.length())
+        ++pt;
     std::string current_key = path.substr(start, pt - start);
     ++pt;
     size_t escape = current_key.find("\\/");
@@ -30,7 +34,8 @@ std::string bitem::get_current_key(const std::string &path, size_t &pt) {
     return current_key;
 }
 
-std::string bitem::escape_key(const std::string &key) {
+std::string bitem::escape_key(const std::string &key)
+{
     std::string result = "";
     size_t pt = 0;
     size_t to_esc = std::min(key.find('/', pt), key.find('\\', pt));
@@ -46,15 +51,19 @@ std::string bitem::escape_key(const std::string &key) {
     return result + key.substr(pt);
 }
 
-bool bitem::is_ull(const std::string &s) {
-    if(s.empty() || !isdigit(s[0])) return false;
+bool bitem::is_ull(const std::string &s)
+{
+    if (s.empty() || !isdigit(s[0]))
+        return false;
     char *p;
     strtoull(s.c_str(), &p, 10);
     return (*p == 0);
 }
 
-bool bitem::is_ll(const std::string &s) {
-    if(s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;
+bool bitem::is_ll(const std::string &s)
+{
+    if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+')))
+        return false;
 
     char *p;
     strtoll(s.c_str(), &p, 10);
@@ -62,10 +71,11 @@ bool bitem::is_ll(const std::string &s) {
     return (*p == 0);
 }
 
-void bitem::zend_hash_append_strings(HashTable *target, HashTable *source) {
-    for(zend_hash_internal_pointer_reset(source);
-            zend_hash_has_more_elements(source) == SUCCESS;
-            zend_hash_move_forward(source)) {
+void bitem::zend_hash_append_strings(HashTable *target, HashTable *source)
+{
+    for (zend_hash_internal_pointer_reset(source);
+         zend_hash_has_more_elements(source) == SUCCESS;
+         zend_hash_move_forward(source)) {
         zend_string *str_index;
         zend_ulong num_index;
         zend_hash_get_current_key(source, &str_index, &num_index);
@@ -74,11 +84,13 @@ void bitem::zend_hash_append_strings(HashTable *target, HashTable *source) {
     }
 }
 
-std::string bitem::get_type() const {
+std::string bitem::get_type() const
+{
     return "bitem";
 }
 
-zval * bitem::parse(const std::string &ben) {
+zval *bitem::parse(const std::string &ben)
+{
     size_t pt = 0;
     if (ben[0] == 'd') {
         return bdict::parse(ben, pt);
@@ -93,19 +105,21 @@ zval * bitem::parse(const std::string &ben) {
     }
 }
 
-zval * bitem::load(const std::string &file_path) {
+zval *bitem::load(const std::string &file_path)
+{
     std::ifstream ben_file(file_path);
     if (!ben_file.is_open()) {
         return bitem::throw_general_exception("Error opening file");
     }
     std::string ben((std::istreambuf_iterator<char>(ben_file)),
-            (std::istreambuf_iterator<char>()));
+                    (std::istreambuf_iterator<char>()));
     ben_file.close();
     zval *result = parse(ben);
     return result;
 }
 
-void bitem::save(const std::string &file_path) const {
+void bitem::save(const std::string &file_path) const
+{
     std::ofstream ben_file(file_path);
     if (!ben_file.is_open()) {
         bitem::throw_general_exception("Error opening file");

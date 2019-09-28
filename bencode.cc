@@ -1,8 +1,8 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#include "php_bencode.h"
 #include "binit.h"
+#include "php_bencode.h"
 
 /**** BITEM *****/
 PHP_METHOD(bitem, __construct)
@@ -60,11 +60,13 @@ PHP_METHOD(bitem, save)
     RETURN_FALSE;
 }
 static zend_function_entry bitem_methods[] = {
+    /* clang-format off */
     PHP_ME(bitem, __construct,          NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(bitem, parse,                NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(bitem, load,                 NULL, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(bitem, save,                 NULL, ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
+    /* clang-format on */
 };
 
 /**** BDICT *****/
@@ -86,7 +88,7 @@ PHP_METHOD(bdict, get)
     char *key;
     size_t key_len = 0;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
-            RETURN_NULL();
+        RETURN_NULL();
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key, key_len);
@@ -97,7 +99,7 @@ PHP_METHOD(bdict, get_path)
     char *key;
     size_t key_len = 0;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
-            RETURN_NULL();
+        RETURN_NULL();
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key, key_len);
@@ -109,7 +111,7 @@ PHP_METHOD(bdict, get_copy)
     char *key;
     size_t key_len = 0;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
-            RETURN_NULL();
+        RETURN_NULL();
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key, key_len);
@@ -120,7 +122,7 @@ PHP_METHOD(bdict, get_path_copy)
     char *key;
     size_t key_len = 0;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
-            RETURN_NULL();
+        RETURN_NULL();
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key, key_len);
@@ -133,7 +135,7 @@ PHP_METHOD(bdict, set)
     size_t key_len = 0;
     zval *zv;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "so", &key, &key_len, &zv) == FAILURE) {
-            RETURN_FALSE;
+        RETURN_FALSE;
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key, key_len);
@@ -146,7 +148,7 @@ PHP_METHOD(bdict, set_path)
     size_t key_len = 0;
     zval *zv;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "so", &key, &key_len, &zv) == FAILURE) {
-            RETURN_FALSE;
+        RETURN_FALSE;
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     size_t pt = 0;
@@ -159,7 +161,7 @@ PHP_METHOD(bdict, has)
     char *key;
     size_t key_len = 0;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
-            RETURN_NULL();
+        RETURN_NULL();
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key, key_len);
@@ -170,7 +172,7 @@ PHP_METHOD(bdict, del)
     char *key;
     size_t key_len = 0;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
-            RETURN_NULL();
+        RETURN_NULL();
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key, key_len);
@@ -181,7 +183,7 @@ PHP_METHOD(bdict, del_path)
     char *key;
     size_t key_len = 0;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
-            RETURN_NULL();
+        RETURN_NULL();
     }
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
     std::string _key(key, key_len);
@@ -207,7 +209,8 @@ PHP_METHOD(bdict, parse)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ben, &ben_len) == FAILURE) {
         RETURN_NULL();
     }
-    if (!ben_len) RETURN_NULL();
+    if (!ben_len)
+        RETURN_NULL();
     std::string tmp(ben, ben_len);
     size_t pt = 0;
     CALL_AND_HANDLE(RETURN_ZVAL(bdict::parse(tmp, pt), 1, 1));
@@ -247,6 +250,7 @@ PHP_METHOD(bdict, __toString)
     RETURN_STRINGL(result.c_str(), result.length());
 }
 static zend_function_entry bdict_methods[] = {
+    /* clang-format off */
     PHP_ME(bdict, __construct,          NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(bdict, get_type,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, get,                  NULL, ZEND_ACC_PUBLIC)
@@ -268,6 +272,7 @@ static zend_function_entry bdict_methods[] = {
     PHP_ME(bdict, to_meta_array,        NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, __toString,           NULL, ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
+    /* clang-format on */
 };
 
 /**** BLIST *****/
@@ -288,7 +293,7 @@ PHP_METHOD(blist, get)
 {
     long key;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &key) == FAILURE) {
-            RETURN_NULL();
+        RETURN_NULL();
     }
     if (key < 0) {
         RETURN_NULL();
@@ -301,7 +306,7 @@ PHP_METHOD(blist, get_path)
     char *key;
     size_t key_len;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
-            RETURN_NULL();
+        RETURN_NULL();
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     std::string _key(key, key_len);
@@ -312,7 +317,7 @@ PHP_METHOD(blist, get_copy)
 {
     long key;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &key) == FAILURE) {
-            RETURN_NULL();
+        RETURN_NULL();
     }
     if (key < 0) {
         RETURN_NULL();
@@ -325,7 +330,7 @@ PHP_METHOD(blist, get_path_copy)
     char *key;
     size_t key_len;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
-            RETURN_NULL();
+        RETURN_NULL();
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     std::string _key(key, key_len);
@@ -336,7 +341,7 @@ PHP_METHOD(blist, add)
 {
     zval *zv;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "o", &zv) == FAILURE) {
-            RETURN_FALSE;
+        RETURN_FALSE;
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     intern->bnode_data->add(zv);
@@ -348,7 +353,7 @@ PHP_METHOD(blist, set_path)
     long key_len;
     zval *zv;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lo", &key, &key_len, &zv) == FAILURE) {
-            RETURN_FALSE;
+        RETURN_FALSE;
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     std::string _key(key, key_len);
@@ -361,7 +366,7 @@ PHP_METHOD(blist, set)
     long key;
     zval *zv;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lo", &key, &zv) == FAILURE) {
-            RETURN_FALSE;
+        RETURN_FALSE;
     }
     if (key < 0) {
         RETURN_FALSE;
@@ -374,7 +379,7 @@ PHP_METHOD(blist, has)
 {
     long key;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &key) == FAILURE) {
-            RETURN_NULL();
+        RETURN_NULL();
     }
     if (key < 0) {
         RETURN_FALSE;
@@ -386,7 +391,7 @@ PHP_METHOD(blist, del)
 {
     long key;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &key) == FAILURE) {
-            RETURN_NULL();
+        RETURN_NULL();
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     RETURN_BOOL(intern->bnode_data->del(key));
@@ -396,7 +401,7 @@ PHP_METHOD(blist, del_path)
     char *key;
     size_t key_len;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &key, &key_len) == FAILURE) {
-            RETURN_NULL();
+        RETURN_NULL();
     }
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
     std::string _key(key, key_len);
@@ -422,7 +427,8 @@ PHP_METHOD(blist, parse)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ben, &ben_len) == FAILURE) {
         RETURN_NULL();
     }
-    if (!ben_len) RETURN_NULL();
+    if (!ben_len)
+        RETURN_NULL();
     std::string tmp(ben, ben_len);
     size_t pt = 0;
     CALL_AND_HANDLE(RETURN_ZVAL(blist::parse(tmp, pt), 1, 1));
@@ -462,6 +468,7 @@ PHP_METHOD(blist, __toString)
     RETURN_STRINGL(result.c_str(), result.length());
 }
 static zend_function_entry blist_methods[] = {
+    /* clang-format off */
     PHP_ME(blist, __construct,          NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(blist, get_type,             NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, get,                  NULL, ZEND_ACC_PUBLIC)
@@ -484,6 +491,7 @@ static zend_function_entry blist_methods[] = {
     PHP_ME(blist, to_meta_array,        NULL, ZEND_ACC_PUBLIC)
     PHP_ME(blist, __toString,           NULL, ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
+    /* clang-format on */
 };
 
 /**** BSTR *****/
@@ -492,7 +500,7 @@ PHP_METHOD(bstr, __construct)
     char *value;
     size_t value_len = 0;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|s", &value, &value_len) == FAILURE) {
-            RETURN_NULL();
+        RETURN_NULL();
     }
     bstr *bnode = NULL;
     if (value_len > 0) {
@@ -541,7 +549,8 @@ PHP_METHOD(bstr, parse)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ben, &ben_len) == FAILURE) {
         RETURN_NULL();
     }
-    if (!ben_len) RETURN_NULL();
+    if (!ben_len)
+        RETURN_NULL();
     std::string tmp(ben);
     size_t pt = 0;
     CALL_AND_HANDLE(RETURN_ZVAL(bstr::parse(tmp, pt), 1, 1));
@@ -573,6 +582,7 @@ PHP_METHOD(bstr, __toString)
     RETURN_STRINGL(result.c_str(), result.length());
 }
 static zend_function_entry bstr_methods[] = {
+    /* clang-format off */
     PHP_ME(bstr, __construct,           NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(bstr, get_type,              NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bstr, get,                   NULL, ZEND_ACC_PUBLIC)
@@ -585,6 +595,7 @@ static zend_function_entry bstr_methods[] = {
     PHP_ME(bstr, to_meta_array,         NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bstr, __toString,            NULL, ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
+    /* clang-format on */
 };
 
 /**** BINT *****/
@@ -592,7 +603,7 @@ PHP_METHOD(bint, __construct)
 {
     long value;
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|l", &value) == FAILURE) {
-            RETURN_NULL();
+        RETURN_NULL();
     }
     bint *bnode = NULL;
     if (ZEND_NUM_ARGS()) {
@@ -638,7 +649,8 @@ PHP_METHOD(bint, parse)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &ben, &ben_len) == FAILURE) {
         RETURN_NULL();
     }
-    if (!ben_len) RETURN_NULL();
+    if (!ben_len)
+        RETURN_NULL();
     std::string tmp(ben, ben_len);
     size_t pt = 0;
     CALL_AND_HANDLE(RETURN_ZVAL(bint::parse(tmp, pt), 1, 1));
@@ -670,6 +682,7 @@ PHP_METHOD(bint, __toString)
     RETURN_STRINGL(result.c_str(), result.length());
 }
 static zend_function_entry bint_methods[] = {
+    /* clang-format off */
     PHP_ME(bint, __construct,           NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
     PHP_ME(bint, get_type,              NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bint, get,                   NULL, ZEND_ACC_PUBLIC)
@@ -682,6 +695,7 @@ static zend_function_entry bint_methods[] = {
     PHP_ME(bint, to_meta_array,         NULL, ZEND_ACC_PUBLIC)
     PHP_ME(bint, __toString,            NULL, ZEND_ACC_PUBLIC)
     {NULL, NULL, NULL}
+    /* clang-format on */
 };
 
 /**** PHP ****/
@@ -706,7 +720,7 @@ PHP_MINIT_FUNCTION(bencode)
         ce.ce_flags |= ZEND_ACC_IMPLICIT_ABSTRACT_CLASS;
         zend_container::bitem_ce = zend_register_internal_class(&ce TSRMLS_CC);
         memcpy(&zend_container::bitem_object_handlers,
-                zend_get_std_object_handlers(), sizeof(zend_object_handlers));
+               zend_get_std_object_handlers(), sizeof(zend_object_handlers));
         zend_container::bitem_object_handlers.offset = XtOffsetOf(bitem_object, std);
     } while (0);
     BI_MINIT(bdict)
@@ -727,17 +741,16 @@ zend_module_entry bencode_module_entry = {
     STANDARD_MODULE_HEADER,
 #endif
     PHP_BENCODE_EXTNAME,
-    NULL,                       //FUNCTIONS
-    PHP_MINIT(bencode),         //PHP_MINIT
-    PHP_MSHUTDOWN(bencode),     //PHP_MSHUTDOWN(bencode),
-    NULL,                       //PHP_RINIT(bencode),
-    NULL,                       //PHP_RSHUTDOWN
-    NULL,                       //PHP_MINFO
+    NULL,                   //FUNCTIONS
+    PHP_MINIT(bencode),     //PHP_MINIT
+    PHP_MSHUTDOWN(bencode), //PHP_MSHUTDOWN(bencode),
+    NULL,                   //PHP_RINIT(bencode),
+    NULL,                   //PHP_RSHUTDOWN
+    NULL,                   //PHP_MINFO
 #if ZEND_MODULE_API_NO >= 20010901
     PHP_BENCODE_EXTVER,
 #endif
-    STANDARD_MODULE_PROPERTIES
-};
+    STANDARD_MODULE_PROPERTIES};
 
 #ifdef COMPILE_DL_BENCODE
 extern "C" {
