@@ -8,7 +8,7 @@
 
 zval *bitem::throw_general_exception(const std::string message)
 {
-    zend_throw_exception(NULL, message.c_str(), 1);
+    zend_throw_exception(NULL, message.c_str(), BENCODE_ERROR_BITEM);
     return bitem::get_zval_bool(false);
 }
 

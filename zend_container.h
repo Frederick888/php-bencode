@@ -11,6 +11,14 @@ extern "C" {
 #include "blist.h"
 #include "bstr.h"
 
+/* clang-format off */
+#define BENCODE_ERROR_BITEM             1
+#define BENCODE_ERROR_INVALID_ARGUMENT  2
+#define BENCODE_ERROR_OUT_OF_RANGE      3
+#define BENCODE_ERROR_UNDEFINED         4
+#define BENCODE_ERROR_UNKNOWN           5
+/* clang-format on */
+
 #define ZEND_CONTAINER_PRE(bclass) \
     typedef struct {               \
         bclass *bnode_data;        \

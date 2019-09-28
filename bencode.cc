@@ -4,6 +4,23 @@
 #include "binit.h"
 #include "php_bencode.h"
 
+#define CALL_AND_HANDLE(expr)                                                                                                \
+    try {                                                                                                                    \
+        expr;                                                                                                                \
+    } catch (const std::invalid_argument &ia) {                                                                              \
+        zend_throw_exception(NULL, ("Invalid argument: " + std::string(ia.what())).c_str(), BENCODE_ERROR_INVALID_ARGUMENT); \
+        RETURN_NULL();                                                                                                       \
+    } catch (const std::out_of_range &oor) {                                                                                 \
+        zend_throw_exception(NULL, ("Out of Range error: " + std::string(oor.what())).c_str(), BENCODE_ERROR_OUT_OF_RANGE);  \
+        RETURN_NULL();                                                                                                       \
+    } catch (const std::exception &e) {                                                                                      \
+        zend_throw_exception(NULL, ("Undefined error: " + std::string(e.what())).c_str(), BENCODE_ERROR_UNDEFINED);          \
+        RETURN_NULL();                                                                                                       \
+    } catch (...) {                                                                                                          \
+        zend_throw_exception(NULL, "Unknown error", BENCODE_ERROR_UNKNOWN);                                                  \
+        RETURN_NULL();                                                                                                       \
+    }
+
 /**** BITEM *****/
 PHP_METHOD(bitem, __construct)
 {
