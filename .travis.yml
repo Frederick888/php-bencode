@@ -1,32 +1,26 @@
-dist: trusty
+dist: bionic
 sudo: required
 
 language: php
 
 addons:
-    apt:
-        sources:
-            - sourceline: 'ppa:ubuntu-toolchain-r/test'
-        packages:
-            - autoconf
-            - build-essential
-            - gcc-5
-            - g++-5
-            - valgrind
+  apt:
+    packages:
+      - autoconf
+      - build-essential
+      - valgrind
 
 php:
   - '7.1'
   - '7.2'
   - '7.3'
 
-before_install:
-    - export CC=gcc-5
-    - export CXX=g++-5
-    - export NO_INTERACTION=1
+env:
+  - NO_INTERACTION=1
 
 script:
-    - phpize
-    - ./configure --enable-bencode
-    - make -j$(nproc)
-    - chmod 600 ./.valgrindrc
-    - make test TESTS="-m"
+  - phpize
+  - ./configure --enable-bencode
+  - make -j$(nproc)
+  - chmod 600 ./.valgrindrc
+  - make test TESTS="-m"
