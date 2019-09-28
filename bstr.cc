@@ -54,7 +54,7 @@ std::string bstr::encode() const
 zval *bstr::to_array(const bool include_meta) const
 {
     zval *zv = new zval();
-    char *_data = (char *)emalloc(_value.length() + 1);
+    char *_data = (char *)ecalloc(1, _value.length() + 1);
     memcpy(_data, _value.c_str(), _value.length());
     if (include_meta) {
         array_init(zv);
