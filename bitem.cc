@@ -6,16 +6,16 @@
 #include "zend_container.h"
 #include <string>
 
-zval *bitem::throw_general_exception(const std::string message)
+zval bitem::throw_general_exception(const std::string message)
 {
     zend_throw_exception(NULL, message.c_str(), BENCODE_ERROR_BITEM);
     return bitem::get_zval_bool(false);
 }
 
-zval *bitem::get_zval_bool(const bool value)
+zval bitem::get_zval_bool(const bool value)
 {
-    zval *zv = new zval();
-    ZVAL_BOOL(zv, value);
+    zval zv;
+    ZVAL_BOOL(&zv, value);
     return zv;
 }
 
@@ -89,7 +89,7 @@ std::string bitem::get_type() const
     return "bitem";
 }
 
-zval *bitem::parse(const std::string &ben)
+zval bitem::parse(const std::string &ben)
 {
     size_t pt = 0;
     if (ben[0] == 'd') {
@@ -105,7 +105,7 @@ zval *bitem::parse(const std::string &ben)
     }
 }
 
-zval *bitem::load(const std::string &file_path)
+zval bitem::load(const std::string &file_path)
 {
     std::ifstream ben_file(file_path);
     if (!ben_file.is_open()) {
@@ -114,8 +114,7 @@ zval *bitem::load(const std::string &file_path)
     std::string ben((std::istreambuf_iterator<char>(ben_file)),
                     (std::istreambuf_iterator<char>()));
     ben_file.close();
-    zval *result = parse(ben);
-    return result;
+    return parse(ben);
 }
 
 void bitem::save(const std::string &file_path) const
