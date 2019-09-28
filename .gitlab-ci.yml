@@ -2,47 +2,33 @@ image: php:latest
 
 before_script:
   - export NO_INTERACTION=1
+  - sed -i 's/deb\.debian/ftp.jp.debian/' /etc/apt/sources.list
   - apt-get -y update
+  - apt-get -y upgrade
   - apt-get -y install autoconf build-essential gcc g++ valgrind
 
-php71:
-  image: php:7.1
+.php:
   stage: build
   script:
     - phpize
     - ./configure --enable-bencode
     - make -j$(nproc)
+    - chmod 600 ./.valgrindrc
     - make test TESTS="-m"
   artifacts:
-    name: "${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}"
+    name: '${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}'
     expire_in: 2 weeks
     paths:
       - modules/bencode.so
+
+php71:
+  extends: .php
+  image: php:7.1
 
 php72:
+  extends: .php
   image: php:7.2
-  stage: build
-  script:
-    - phpize
-    - ./configure --enable-bencode
-    - make -j$(nproc)
-    - make test TESTS="-m"
-  artifacts:
-    name: "${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}"
-    expire_in: 2 weeks
-    paths:
-      - modules/bencode.so
 
 php73:
+  extends: .php
   image: php:7.3
-  stage: build
-  script:
-    - phpize
-    - ./configure --enable-bencode
-    - make -j$(nproc)
-    - make test # TESTS="-m"
-  artifacts:
-    name: "${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}"
-    expire_in: 2 weeks
-    paths:
-      - modules/bencode.so

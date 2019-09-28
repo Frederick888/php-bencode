@@ -28,4 +28,5 @@ script:
     - phpize
     - ./configure --enable-bencode
     - make -j$(nproc)
-    - bash -c '[[ -z `php -v | grep "^PHP 7.3"` ]] && make test TESTS="-m" || make test'
+    - chmod 600 ./.valgrindrc
+    - make test TESTS="-m"
