@@ -2,7 +2,6 @@ image: php:latest
 
 before_script:
   - export NO_INTERACTION=1
-  - sed -i 's/deb\.debian/ftp.jp.debian/' /etc/apt/sources.list
   - apt-get -y update
   - apt-get -y upgrade
   - apt-get -y install autoconf build-essential gcc g++ valgrind
