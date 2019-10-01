@@ -1,4 +1,3 @@
-.vscode/
 autom4te.cache/
 build/
 include/
@@ -12,6 +11,7 @@ aclocal.m4
 *.la
 config.*
 configure
+configure.ac
 configure.in
 install-sh
 libtool
@@ -23,8 +23,5 @@ mkinstalldirs
 *.php
 .deps
 
-.ycm_extra_conf.py
-
 !config.m4
 !php_bencode_doc.php
-
