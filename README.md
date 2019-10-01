@@ -1,6 +1,7 @@
 Code Status
 ===
-[![Build Status](https://travis-ci.org/Frederick888/php-bencode.svg?branch=master)](https://travis-ci.org/Frederick888/php-bencode)
+Travis CI [![Travis Status](https://travis-ci.org/Frederick888/php-bencode.svg?branch=master)](https://travis-ci.org/Frederick888/php-bencode)
+GitLab CI [![GitLab CI Status](https://git.tsundere.moe/Frederick888/php-bencode/badges/master/pipeline.svg)](https://git.tsundere.moe/Frederick888/php-bencode/commits/master)
 
 Introduction
 ===
@@ -127,10 +128,3 @@ Array
 
 )
 ```
-TODO
-===
-1. code cleaning
-2. ~~set/get by node paths~~
-3. ~~search through a Bencode tree~~
-4. ~~registration in a given namespace~~
-5. PHP 5.6 support
