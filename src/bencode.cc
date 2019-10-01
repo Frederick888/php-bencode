@@ -6,7 +6,8 @@
 
 #define CALL_AND_HANDLE(expr)                                                                                                \
     try {                                                                                                                    \
-        expr;                                                                                                                \
+        zval zv = expr;                                                                                                      \
+        RETURN_ZVAL(&zv, 1, 1);                                                                                              \
     } catch (const std::invalid_argument &ia) {                                                                              \
         zend_throw_exception(NULL, ("Invalid argument: " + std::string(ia.what())).c_str(), BENCODE_ERROR_INVALID_ARGUMENT); \
         RETURN_NULL();                                                                                                       \
@@ -36,8 +37,7 @@ PHP_METHOD(bitem, parse)
         RETURN_NULL();
     }
     std::string ben_str(ben, ben_len);
-    zval zv = bitem::parse(ben_str);
-    RETURN_ZVAL(&zv, 1, 1);
+    CALL_AND_HANDLE(bitem::parse(ben_str));
 }
 PHP_METHOD(bitem, load)
 {
@@ -47,8 +47,7 @@ PHP_METHOD(bitem, load)
         RETURN_NULL();
     }
     std::string file_path_str(file_path, file_path_len);
-    zval zv = bitem::load(file_path_str);
-    RETURN_ZVAL(&zv, 1, 1);
+    CALL_AND_HANDLE(bitem::load(file_path_str));
 }
 PHP_METHOD(bitem, save)
 {
@@ -236,8 +235,7 @@ PHP_METHOD(bdict, parse)
         RETURN_NULL();
     std::string tmp(ben, ben_len);
     size_t pt = 0;
-    zval zv = bdict::parse(tmp, pt);
-    RETURN_ZVAL(&zv, 1, 1);
+    CALL_AND_HANDLE(bdict::parse(tmp, pt));
 }
 PHP_METHOD(bdict, encode)
 {
@@ -255,8 +253,7 @@ PHP_METHOD(bdict, search)
     }
     std::string tmp(needle, needle_len);
     bdict_object *intern = Z_BDICT_OBJ_P(getThis());
-    zval zv = intern->bnode_data->search(tmp, mode, "");
-    RETURN_ZVAL(&zv, 1, 1);
+    CALL_AND_HANDLE(intern->bnode_data->search(tmp, mode, ""));
 }
 PHP_METHOD(bdict, to_array)
 {
@@ -462,8 +459,7 @@ PHP_METHOD(blist, parse)
         RETURN_NULL();
     std::string tmp(ben, ben_len);
     size_t pt = 0;
-    zval zv = blist::parse(tmp, pt);
-    RETURN_ZVAL(&zv, 1, 1);
+    CALL_AND_HANDLE(blist::parse(tmp, pt));
 }
 PHP_METHOD(blist, encode)
 {
@@ -481,8 +477,7 @@ PHP_METHOD(blist, search)
     }
     std::string tmp(needle, needle_len);
     blist_object *intern = Z_BLIST_OBJ_P(getThis());
-    zval zv = intern->bnode_data->search(tmp, mode, "");
-    RETURN_ZVAL(&zv, 1, 1);
+    CALL_AND_HANDLE(intern->bnode_data->search(tmp, mode, ""));
 }
 PHP_METHOD(blist, to_array)
 {
@@ -588,8 +583,7 @@ PHP_METHOD(bstr, parse)
         RETURN_NULL();
     std::string tmp(ben);
     size_t pt = 0;
-    zval zv = bstr::parse(tmp, pt);
-    RETURN_ZVAL(&zv, 1, 1);
+    CALL_AND_HANDLE(bstr::parse(tmp, pt));
 }
 PHP_METHOD(bstr, encode)
 {
@@ -691,8 +685,7 @@ PHP_METHOD(bint, parse)
         RETURN_NULL();
     std::string tmp(ben, ben_len);
     size_t pt = 0;
-    zval zv = bint::parse(tmp, pt);
-    RETURN_ZVAL(&zv, 1, 1);
+    CALL_AND_HANDLE(bint::parse(tmp, pt));
 }
 PHP_METHOD(bint, encode)
 {
