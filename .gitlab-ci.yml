@@ -31,3 +31,7 @@ php72:
 php73:
   extends: .php
   image: php:7.3
+
+php74:
+  extends: .php
+  image: php:7.4
