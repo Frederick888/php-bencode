@@ -4,6 +4,7 @@
 #include "blist.h"
 #include "bstr.h"
 #include "zend_container.h"
+#include "zend_sort.h"
 #include <string>
 
 bdict::bdict()
@@ -241,6 +242,11 @@ zval bdict::parse(const std::string &ben, size_t &pt)
 std::string bdict::encode() const
 {
     std::string result = "d";
+
+    // according to BEP http://bittorrent.org/beps/bep_0003.html
+    // keys must be strings and appear in sorted order (sorted as raw strings, not alphanumerics).
+    zend_hash_sort_ex(_data, zend_sort, php_array_key_compare_string, 0);
+
     for (zend_hash_internal_pointer_reset(_data);
          zend_hash_has_more_elements(_data) == SUCCESS;
          zend_hash_move_forward(_data)) {

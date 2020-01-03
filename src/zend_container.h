@@ -3,6 +3,33 @@
 
 extern "C" {
 #include "php.h"
+
+// c func borrowed from https://github.com/php/php-src/blob/e08ce4c13db6e9aecd3497cd270b72d06c649bc7/ext/standard/array.c#L245
+static int php_array_key_compare_string(const void *a, const void *b)
+{
+    Bucket *f = (Bucket *)a;
+    Bucket *s = (Bucket *)b;
+    const char *s1, *s2;
+    size_t l1, l2;
+    char buf1[MAX_LENGTH_OF_LONG + 1];
+    char buf2[MAX_LENGTH_OF_LONG + 1];
+
+    if (f->key) {
+        s1 = f->key->val;
+        l1 = f->key->len;
+    } else {
+        s1 = zend_print_long_to_buf(buf1 + sizeof(buf1) - 1, f->h);
+        l1 = buf1 + sizeof(buf1) - 1 - s1;
+    }
+    if (s->key) {
+        s2 = s->key->val;
+        l2 = s->key->len;
+    } else {
+        s2 = zend_print_long_to_buf(buf2 + sizeof(buf2) - 1, s->h);
+        l2 = buf2 + sizeof(buf2) - 1 - s2;
+    }
+    return zend_binary_strcmp(s1, l1, s2, l2);
+}
 }
 
 #include "bdict.h"
