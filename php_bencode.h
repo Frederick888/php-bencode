@@ -3,7 +3,7 @@
 
 /* clang-format off */
 #define PHP_BENCODE_EXTNAME     "bencode"
-#define PHP_BENCODE_EXTVER      "1.2.4"
+#define PHP_BENCODE_EXTVER      "1.2.5"
 /* clang-format on */
 
 extern "C" {
