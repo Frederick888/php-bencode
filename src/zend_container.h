@@ -92,7 +92,7 @@ public:
     }
     static inline bitem *bnode_fetch_object_data(zend_object *obj)
     {
-        return (bitem *)(*((uintptr_t *)((char *)obj - sizeof(uintptr_t))));
+        return (bitem *)(*((uintptr_t *)((char *)obj - XtOffsetOf(bitem_object, std))));
     }
 };
 
