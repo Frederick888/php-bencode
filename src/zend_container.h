@@ -4,8 +4,30 @@
 extern "C" {
 #include "php.h"
 
+#if PHP_MAJOR_VERSION >= 8
+#define TSRMLS_CC
+#define TSRMLS_C
+#define TSRMLS_DC
+#define TSRMLS_D
+#define TSRMLS_FETCH()
+#define FETCH_OBJ(obj) obj
+#define VAL_OR_OBJ(val) val->value.obj
+#define VAL_OR_OBJ2(val) Z_OBJ(val)
+typedef zend_object clone_obj_t;
+typedef Bucket sorting_val_t;
+ZEND_BEGIN_ARG_INFO_EX(arginfo_void, 0, 0, 0)
+ZEND_END_ARG_INFO()
+#else
+#define FETCH_OBJ(obj) Z_OBJ_P(obj)
+#define VAL_OR_OBJ(val) val
+#define VAL_OR_OBJ2(val) &val
+typedef zval clone_obj_t;
+typedef const void sorting_val_t;
+#define arginfo_void NULL
+#endif
+
 // c func borrowed from https://github.com/php/php-src/blob/e08ce4c13db6e9aecd3497cd270b72d06c649bc7/ext/standard/array.c#L245
-static int php_array_key_compare_string(const void *a, const void *b)
+static int php_array_key_compare_string(sorting_val_t *a, sorting_val_t *b)
 {
     Bucket *f = (Bucket *)a;
     Bucket *s = (Bucket *)b;
@@ -63,7 +85,7 @@ ZEND_CONTAINER_PRE(bint)
     static zend_class_entry *bclass##_ce;                              \
     static bclass##_object *bclass##_fetch_object(zend_object *obj);   \
     static void bclass##_free_storage(zend_object *object TSRMLS_DC);  \
-    static zend_object *bclass##_object_clone(zval *object TSRMLS_DC); \
+    static zend_object *bclass##_object_clone(clone_obj_t *object TSRMLS_DC); \
     static zend_object *bclass##_object_new(zend_class_entry *ce TSRMLS_DC);
 
 class zend_container
@@ -84,10 +106,10 @@ public:
             return class_name;
         }
     }
-    static zend_object *bnode_object_clone(zval *object)
+    static zend_object *bnode_object_clone(clone_obj_t *object)
     {
         zval new_object;
-        ZVAL_OBJ(&new_object, Z_OBJ_P(object)->handlers->clone_obj(object));
+        ZVAL_OBJ(&new_object, FETCH_OBJ(object)->handlers->clone_obj(object));
         return Z_OBJ(new_object);
     }
     static inline bitem *bnode_fetch_object_data(zend_object *obj)
