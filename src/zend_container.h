@@ -80,11 +80,11 @@ ZEND_CONTAINER_PRE(blist)
 ZEND_CONTAINER_PRE(bstr)
 ZEND_CONTAINER_PRE(bint)
 
-#define ZEND_CONTAINER_INIT(bclass)                                    \
-    static zend_object_handlers bclass##_object_handlers;              \
-    static zend_class_entry *bclass##_ce;                              \
-    static bclass##_object *bclass##_fetch_object(zend_object *obj);   \
-    static void bclass##_free_storage(zend_object *object TSRMLS_DC);  \
+#define ZEND_CONTAINER_INIT(bclass)                                           \
+    static zend_object_handlers bclass##_object_handlers;                     \
+    static zend_class_entry *bclass##_ce;                                     \
+    static bclass##_object *bclass##_fetch_object(zend_object *obj);          \
+    static void bclass##_free_storage(zend_object *object TSRMLS_DC);         \
     static zend_object *bclass##_object_clone(clone_obj_t *object TSRMLS_DC); \
     static zend_object *bclass##_object_new(zend_class_entry *ce TSRMLS_DC);
 
