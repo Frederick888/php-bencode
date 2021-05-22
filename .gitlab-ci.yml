@@ -8,6 +8,8 @@ before_script:
 
 .php:
   stage: build
+  except:
+    - HEAD
   script:
     - phpize
     - ./configure --enable-bencode
