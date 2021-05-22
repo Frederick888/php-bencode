@@ -15,23 +15,19 @@ before_script:
     - chmod 600 ./.valgrindrc
     - make test TESTS="-m"
   artifacts:
-    name: '${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}'
+    name: "${CI_BUILD_NAME}_${CI_BUILD_REF_NAME}"
     expire_in: 2 weeks
     paths:
       - modules/bencode.so
 
-php71:
+php80:
   extends: .php
-  image: php:7.1
-
-php72:
-  extends: .php
-  image: php:7.2
-
-php73:
-  extends: .php
-  image: php:7.3
+  image: php:8.0
 
 php74:
   extends: .php
   image: php:7.4
+
+php73:
+  extends: .php
+  image: php:7.3

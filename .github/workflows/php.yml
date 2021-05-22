@@ -1,0 +1,58 @@
+name: Build and Test
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  push:
+    branches:
+      - "**"
+    tags-ignore:
+      - "*"
+
+env:
+  NO_INTERACTION: 1
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        php-version: ["8.0", "7.4", "7.3"]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Git Commit Hash
+        id: git_commit
+        run: |
+          echo "::set-output name=hash::$(git rev-parse HEAD)"
+
+      - name: Cancel Previous Runs
+        if: contains(matrix.os, 'ubuntu') && contains(matrix.php-version, '8.0')
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Install Linux Dependencies
+        if: contains(matrix.os, 'ubuntu')
+        run: sudo apt-get install -y autoconf build-essential gcc g++ valgrind
+      - name: Install PHP
+        id: install_php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: phpize
+
+      - name: Build
+        run: |
+          phpize
+          ./configure --enable-bencode
+          make -j$(nproc)
+      - name: Test
+        run: |
+          chmod 600 ./.valgrindrc
+          make test TESTS="-m"
