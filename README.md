@@ -7,8 +7,6 @@ Introduction
 ===
 The `php-bencode` is a PHP extension which can boost the process of encoding and decoding of [Bencode](https://en.wikipedia.org/wiki/Bencode).
 
-`php-bencode` now supports **only PHP 7** with no need of any external libraries. For PHP 5 support, please check the [php-5](https://github.com/Frederick888/php-bencode/tree/php-5) branch, which needs [PHP-CPP](https://github.com/CopernicaMarketingSoftware/PHP-CPP). (PHP 5 may be supported in the future, but it would take me a little long to get familiar with the old Zend APIs. So any PRs are welcomed.)
-
 Installation
 ===
 ***Step 1*** Install dependencies
