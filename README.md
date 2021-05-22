@@ -1,6 +1,5 @@
 Code Status
 ===
-Travis CI [![Travis Status](https://travis-ci.org/Frederick888/php-bencode.svg?branch=master)](https://travis-ci.org/Frederick888/php-bencode)
 GitLab CI [![GitLab CI Status](https://git.tsundere.moe/Frederick888/php-bencode/badges/master/pipeline.svg)](https://git.tsundere.moe/Frederick888/php-bencode/commits/master)
 
 Introduction
