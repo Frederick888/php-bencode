@@ -23,7 +23,7 @@ blist::blist(const blist *that)
          zend_hash_has_more_elements(that->_data) == SUCCESS;
          zend_hash_move_forward(that->_data)) {
         zval tmp;
-        ZVAL_OBJ(&tmp, zend_container::bnode_object_clone(zend_hash_get_current_data(that->_data)));
+        ZVAL_OBJ(&tmp, zend_container::bnode_object_clone(VAL_OR_OBJ(zend_hash_get_current_data(that->_data))));
         zend_string *str_index;
         zend_ulong num_index;
         zend_hash_get_current_key(that->_data, &str_index, &num_index);
@@ -67,7 +67,7 @@ void blist::add(zval *value)
     zend_object *clone_object = NULL;
     if (class_name == "bdict" || class_name == "blist" ||
         class_name == "bstr" || class_name == "bint") {
-        clone_object = zend_container::bnode_object_clone(value);
+        clone_object = zend_container::bnode_object_clone(VAL_OR_OBJ(value));
     } else {
         return;
     }
@@ -82,7 +82,7 @@ void blist::set(const size_t &key, zval *value)
     zend_object *clone_object = NULL;
     if (class_name == "bdict" || class_name == "blist" ||
         class_name == "bstr" || class_name == "bint") {
-        clone_object = zend_container::bnode_object_clone(value);
+        clone_object = zend_container::bnode_object_clone(VAL_OR_OBJ(value));
     } else {
         return;
     }
@@ -105,7 +105,7 @@ bool blist::del(const size_t &key)
                     zend_hash_index_del(_data, i);
                 }
                 zval *copy_next = new zval();
-                ZVAL_OBJ(copy_next, zend_container::bnode_object_clone(zend_hash_index_find(_data, i + 1)));
+                ZVAL_OBJ(copy_next, zend_container::bnode_object_clone(VAL_OR_OBJ(zend_hash_index_find(_data, i + 1))));
                 zend_hash_index_update(_data, i, copy_next);
             }
             zend_hash_index_del(_data, constant_count);
@@ -163,7 +163,7 @@ void blist::set_path(const std::string &key, size_t &pt, zval *value)
         std::string sub_class_name = zend_container::bnode_object_get_class_name(subnode);
         if (sub_class_name == "bstr" || sub_class_name == "bint") {
             if (pt >= key.length()) {
-                zend_object *clone_object = zend_container::bnode_object_clone(value);
+                zend_object *clone_object = zend_container::bnode_object_clone(VAL_OR_OBJ(value));
                 zval *tmp = new zval();
                 ZVAL_OBJ(tmp, clone_object);
                 zend_hash_index_update(_data, current_key_long, tmp);
@@ -178,7 +178,7 @@ void blist::set_path(const std::string &key, size_t &pt, zval *value)
         }
     } else {
         if (pt >= key.length()) {
-            zend_object *clone_object = zend_container::bnode_object_clone(value);
+            zend_object *clone_object = zend_container::bnode_object_clone(VAL_OR_OBJ(value));
             zval *tmp = new zval();
             ZVAL_OBJ(tmp, clone_object);
             zend_hash_next_index_insert(_data, tmp);
