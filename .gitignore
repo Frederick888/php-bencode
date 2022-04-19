@@ -4,6 +4,7 @@ include/
 modules/
 .libs/
 
+src/*.dep
 acinclude.m4
 aclocal.m4
 *.lo
