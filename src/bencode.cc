@@ -294,7 +294,7 @@ static zend_function_entry bdict_methods[] = {
     PHP_ME(bdict, search,               arginfo_void, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, to_array,             arginfo_void, ZEND_ACC_PUBLIC)
     PHP_ME(bdict, to_meta_array,        arginfo_void, ZEND_ACC_PUBLIC)
-    PHP_ME(bdict, __toString,           arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(bdict, __toString,           arginfo_void, ZEND_ACC_PUBLIC | ZEND_ACC_HAS_RETURN_TYPE)
     {NULL, NULL, NULL}
     /* clang-format on */
 };
@@ -519,7 +519,7 @@ static zend_function_entry blist_methods[] = {
     PHP_ME(blist, search,               arginfo_void, ZEND_ACC_PUBLIC)
     PHP_ME(blist, to_array,             arginfo_void, ZEND_ACC_PUBLIC)
     PHP_ME(blist, to_meta_array,        arginfo_void, ZEND_ACC_PUBLIC)
-    PHP_ME(blist, __toString,           arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(blist, __toString,           arginfo_void, ZEND_ACC_PUBLIC | ZEND_ACC_HAS_RETURN_TYPE)
     {NULL, NULL, NULL}
     /* clang-format on */
 };
@@ -625,7 +625,7 @@ static zend_function_entry bstr_methods[] = {
     PHP_ME(bitem, save,                 arginfo_void, ZEND_ACC_PUBLIC)
     PHP_ME(bstr, to_array,              arginfo_void, ZEND_ACC_PUBLIC)
     PHP_ME(bstr, to_meta_array,         arginfo_void, ZEND_ACC_PUBLIC)
-    PHP_ME(bstr, __toString,            arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(bstr, __toString,            arginfo_void, ZEND_ACC_PUBLIC | ZEND_ACC_HAS_RETURN_TYPE)
     {NULL, NULL, NULL}
     /* clang-format on */
 };
@@ -727,7 +727,7 @@ static zend_function_entry bint_methods[] = {
     PHP_ME(bitem, save,                 arginfo_void, ZEND_ACC_PUBLIC)
     PHP_ME(bint, to_array,              arginfo_void, ZEND_ACC_PUBLIC)
     PHP_ME(bint, to_meta_array,         arginfo_void, ZEND_ACC_PUBLIC)
-    PHP_ME(bint, __toString,            arginfo_void, ZEND_ACC_PUBLIC)
+    PHP_ME(bint, __toString,            arginfo_void, ZEND_ACC_PUBLIC | ZEND_ACC_HAS_RETURN_TYPE)
     {NULL, NULL, NULL}
     /* clang-format on */
 };
