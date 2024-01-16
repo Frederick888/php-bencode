@@ -22,13 +22,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        php-version: ["8.2", "8.1", "8.0", "7.4", "7.3"]
+        php-version: ["8.3", "8.2", "8.1", "8.0", "7.4", "7.3"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Cancel Previous Runs
-        if: contains(matrix.os, 'ubuntu') && contains(matrix.php-version, '8.2')
+        if: contains(matrix.os, 'ubuntu') && contains(matrix.php-version, '8.3')
         uses: styfle/cancel-workflow-action@0.11.0
         with:
           access_token: ${{ github.token }}
