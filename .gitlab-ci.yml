@@ -22,6 +22,10 @@ before_script:
     paths:
       - modules/bencode.so
 
+php83:
+  extends: .php
+  image: php:8.3
+
 php82:
   extends: .php
   image: php:8.2
